@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOP MANAŽER — Holánek</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f0e0c;--surface:#1a1916;--surface2:#222018;--border:#2e2c27;
+  --accent:#c8a96e;--accent2:#8b6914;--green:#4a7c59;--green-light:#1a2e22;
+  --red:#8b3a3a;--red-light:#2a1515;--amber:#8b6914;--amber-light:#241e0a;
+  --text:#e8e4dc;--muted:#6b6559;--muted2:#4a4640;
+  --mono:'DM Mono',monospace;--display:'Bebas Neue',sans-serif;--serif:'Crimson Pro',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);font-size:19px;min-height:100vh;}
+header{background:linear-gradient(180deg,#1a1916,#0f0e0c);border-bottom:1px solid var(--border);padding:0 48px;height:72px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:16px;}
+.logo-mark{width:44px;height:44px;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);}
+.logo-text{font-family:var(--display);font-size:26px;letter-spacing:5px;}
+.logo-sub{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:2px;}
+.hdate{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;}
+.hdate strong{display:block;color:var(--accent);font-size:13px;margin-bottom:2px;}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;display:flex;overflow-x:auto;position:sticky;top:72px;z-index:99;}
+.nb{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;padding:14px 16px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.nb:hover{color:var(--text);}
+.nb.active{color:var(--accent);border-bottom-color:var(--accent);}
+main{max-width:1140px;margin:0 auto;padding:36px 48px;}
+.page{display:none;}.page.active{display:block;}
+.sh{font-family:var(--display);font-size:15px;letter-spacing:5px;color:var(--muted);text-transform:uppercase;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.shq{font-family:var(--serif);font-style:italic;font-size:14px;letter-spacing:0;color:var(--muted2);font-weight:300;text-transform:none;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:24px;margin-bottom:16px;}
+.ca{border-left:3px solid var(--accent);}.cg{border-left:3px solid var(--green);}.cr{border-left:3px solid var(--red);}
+.ct{font-family:var(--display);font-size:16px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--serif);font-size:18px;padding:10px 14px;outline:none;transition:border-color .2s;border-radius:2px;resize:vertical;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+select option{background:var(--surface);}
+label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.f{margin-bottom:14px;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;border:none;padding:10px 20px;cursor:pointer;transition:all .15s;border-radius:2px;}
+.ba{background:var(--accent);color:#000;}.ba:hover{background:#d4b87a;}
+.bg{background:none;border:1px solid var(--border);color:var(--muted);}.bg:hover{border-color:var(--accent);color:var(--accent);}
+.bsm{padding:6px 14px;font-size:10px;}
+.task{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;margin-bottom:8px;}
+.chk{width:22px;height:22px;border:1px solid var(--muted2);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:12px;color:transparent;transition:all .15s;}
+.chk.done{background:var(--green);border-color:var(--green);color:#fff;}
+.tx{flex:1;font-size:18px;}.tx.done{text-decoration:line-through;color:var(--muted);}
+.xbtn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:18px;padding:0 4px;}.xbtn:hover{color:var(--red);}
+.pnum{font-family:var(--display);font-size:40px;color:var(--border);line-height:1;min-width:42px;flex-shrink:0;margin-top:-4px;}
+.pitem.filled .pnum{color:var(--accent);}
+.pitem{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);}
+.pitem:last-child{border-bottom:none;}
+.pcont{flex:1;}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.dstat{background:var(--surface);border:1px solid var(--border);padding:20px 24px;position:relative;overflow:hidden;}
+.dstat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);}
+.dlabel{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.dval{font-family:var(--display);font-size:50px;letter-spacing:2px;line-height:1;color:var(--accent);}
+.dsub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px;}
+.qbox{border-left:2px solid var(--accent);padding:14px 20px;margin-bottom:22px;background:rgba(200,169,110,.04);}
+.qtxt{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--accent);line-height:1.6;}
+.qsrc{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.pkg{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;margin-bottom:8px;}
+.pcat{font-family:var(--mono);font-size:10px;letter-spacing:1px;padding:3px 10px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+.cn{background:rgba(200,169,110,.1);color:var(--accent);border:1px solid var(--accent2);}
+.cp{background:var(--red-light);color:#cc6666;border:1px solid var(--red);}
+.cs{background:rgba(74,124,89,.12);color:#6aaa80;border:1px solid var(--green);}
+.cz{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border);}
+.dtbl{width:100%;border-collapse:collapse;}
+.dtbl th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--border);}
+.dtbl td{padding:12px 12px;border-bottom:1px solid var(--border);font-size:17px;vertical-align:middle;}
+.dtbl tr:last-child td{border-bottom:none;}
+.dtbl tr:hover td{background:var(--surface2);}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);width:100%;max-width:720px;max-height:90vh;overflow-y:auto;border-radius:2px;}
+.modal-header{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-body{padding:28px;}
+.modal-title{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--accent);}
+.tag-imp{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid var(--accent2);font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:2px;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);}
+@media(max-width:800px){header,nav{padding:0 20px;}main{padding:20px;}
+.r2,.r3,.dg{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">H</div>
+    <div>
+      <div class="logo-text">TOP MANAŽER</div>
+      <div class="logo-sub">Holánek Company · CEO systém</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:3px;">REŽIM DNE</div>
+      <select id="rezimDne" onchange="saveRezim(this.value)" style="background:var(--surface2);border:1px solid var(--accent);color:var(--accent);font-family:var(--mono);font-size:12px;padding:4px 10px;width:auto;">
+        <option value="ceo">⬛ CEO</option>
+        <option value="vyroba">🔧 Výroba</option>
+        <option value="obchod">💼 Obchod</option>
+        <option value="finance">💰 Finance</option>
+        <option value="rodina">🏠 Rodina</option>
+      </select>
+    </div>
+    <button class="btn bg" onclick="exportDen()" style="font-size:10px;">⬇ Export</button>
+    <div class="hdate"><strong id="hDate"></strong><span id="hTime"></span></div>
+  </div>
+</header>
+
+<nav>
+  <button class="nb active" onclick="showPage('dashboard',this)">⬛ Dashboard</button>
+  <button class="nb" onclick="showPage('denni',this)">☀ Denní plán</button>
+  <button class="nb" onclick="showPage('vyhodnoceni',this)">✓ Vyhodnocení</button>
+  <button class="nb" onclick="showPage('parking',this)">💡 Parking</button>
+  <button class="nb" onclick="showPage('delegace',this)">→ Delegace</button>
+  <button class="nb" onclick="showPage('lide',this)">👥 Lidé / tým</button>
+  <button class="nb" onclick="showPage('porada',this)">◎ Porada</button>
+  <button class="nb" onclick="showPage('tyden',this)">◻ Týden</button>
+  <button class="nb" onclick="showPage('systemy',this)">⚙ Systémy</button>
+  <button class="nb" onclick="showPage('akademie',this)">★ CEO Akademie</button>
+</nav>
+
+<main>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="page active" id="page-dashboard">
+  <div class="sh">CEO Dashboard <span class="shq" id="dashQuote"></span></div>
+
+  <div style="background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(200,169,110,.04));border:1px solid var(--accent);border-left:4px solid var(--accent);padding:18px 24px;margin-bottom:16px;border-radius:2px;">
+    <div style="font-family:var(--display);font-size:17px;letter-spacing:3px;color:var(--accent);margin-bottom:8px;">🎯 CO DNES NESMÍM DĚLAT JÁ?</div>
+    <div style="display:flex;flex-direction:column;gap:6px;" id="nesmi-list"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <input type="text" id="nesmi-input" placeholder="Co přenechám ostatním..." style="flex:1;">
+      <button class="btn ba" onclick="addNesmi()">+</button>
+    </div>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--accent);margin-bottom:20px;">
+    <div class="ct">Když nevím co dělat, zeptám se:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="padding:10px 14px;background:var(--surface2);border-radius:2px;font-size:17px;">❓ Je to moje práce?</div>
+      <div style="padding:10px 14px;background:var(--surface2);border-radius:2px;font-size:17px;">👥 Může to udělat někdo jiný?</div>
+      <div style="padding:10px 14px;background:var(--surface2);border-radius:2px;font-size:17px;">⚡ Je to důležité, nebo jen urgentní?</div>
+      <div style="padding:10px 14px;background:var(--surface2);border-radius:2px;font-size:17px;">🔍 Řeším příčinu, nebo následek?</div>
+      <div style="padding:10px 14px;background:var(--surface2);border-radius:2px;font-size:17px;">📈 Pomáhá to firmě dlouhodobě?</div>
+      <div style="padding:10px 14px;background:var(--surface2);border-radius:2px;font-size:17px;">⚙ Vytvářím systém, nebo jen hasím?</div>
+    </div>
+  </div>
+
+  <div class="dg" id="dashStats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div><div class="sh" style="font-size:12px;">Dnešní priority</div><div id="dashPriority"></div></div>
+    <div><div class="sh" style="font-size:12px;">Otevřené delegace</div><div id="dashDelegace"></div></div>
+  </div>
+</div>
+
+<!-- ===== DENNÍ PLÁN ===== -->
+<div class="page" id="page-denni">
+  <div class="sh">Denní CEO plán <span class="shq">Přestaň hasit chaos. Měj systém.</span></div>
+  <div class="qbox"><div class="qtxt">Tvůj čas je nejdražší čas firmy. Nesmíš ho utopit v detailech.</div><div class="qsrc">Top manažer Holánek · Kap. 5</div></div>
+  <div class="r2" style="margin-bottom:20px;">
+    <div class="card ca">
+      <div class="ct">3 hlavní priority dne</div>
+      <div class="pitem" id="p1"><div class="pnum">1</div><div class="pcont">
+        <input type="text" id="p1-input" placeholder="Co je dnes nejdůležitější?" oninput="savePriority(1,this.value)" style="background:none;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0;font-size:19px;">
+        <div style="margin-top:10px;display:flex;gap:8px;"><button class="btn bsm" id="p1-me" onclick="setPT(1,'me')">Já</button><button class="btn bsm bg" id="p1-del" onclick="setPT(1,'delegovat')">Deleguji</button><button class="btn bsm bg" id="p1-poc" onclick="setPT(1,'pockat')">Počká</button></div>
+      </div></div>
+      <div class="pitem" id="p2"><div class="pnum">2</div><div class="pcont">
+        <input type="text" id="p2-input" placeholder="Druhá priorita..." oninput="savePriority(2,this.value)" style="background:none;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0;font-size:19px;">
+        <div style="margin-top:10px;display:flex;gap:8px;"><button class="btn bsm bg" id="p2-me" onclick="setPT(2,'me')">Já</button><button class="btn bsm bg" id="p2-del" onclick="setPT(2,'delegovat')">Deleguji</button><button class="btn bsm bg" id="p2-poc" onclick="setPT(2,'pockat')">Počká</button></div>
+      </div></div>
+      <div class="pitem" id="p3"><div class="pnum">3</div><div class="pcont">
+        <input type="text" id="p3-input" placeholder="Třetí priorita..." oninput="savePriority(3,this.value)" style="background:none;border:none;border-bottom:1px solid var(--border);border-radius:0;padding:4px 0;font-size:19px;">
+        <div style="margin-top:10px;display:flex;gap:8px;"><button class="btn bsm bg" id="p3-me" onclick="setPT(3,'me')">Já</button><button class="btn bsm bg" id="p3-del" onclick="setPT(3,'delegovat')">Deleguji</button><button class="btn bsm bg" id="p3-poc" onclick="setPT(3,'pockat')">Počká</button></div>
+      </div></div>
+    </div>
+    <div>
+      <div class="card cg" style="margin-bottom:14px;">
+        <div class="ct">Co musím udělat já</div>
+        <div id="moje-ukoly"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="moje-input" placeholder="Přidat úkol pro mě..."><button class="btn ba" onclick="addMuj()">+</button></div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--muted2);">
+        <div class="ct">Co počká</div>
+        <div id="pocka-ukoly"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="pocka-input" placeholder="Co odložím..."><button class="btn bg" onclick="addPocka()">+</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="ct">Poznámka dne</div><textarea id="denni-poznamka" rows="3" placeholder="Myšlenky, rozhodnutí..." oninput="sN('denni-poznamka',this.value)"></textarea></div>
+</div>
+
+<!-- ===== VYHODNOCENÍ ===== -->
+<div class="page" id="page-vyhodnoceni">
+  <div class="sh">Denní vyhodnocení <span class="shq">Byl jsem dnes CEO, nebo hasič?</span></div>
+  <div class="card ca" style="margin-bottom:16px;">
+    <div class="ct">5 otázek na konec dne</div>
+    <div class="f"><label>✅ Co jsem dnes dokončil?</label><textarea id="vyh-1" rows="2" placeholder="Konkrétní výsledky..." oninput="sN('vyh-1',this.value)"></textarea></div>
+    <div class="f"><label>🔁 Co jsem zbytečně řešil já?</label><textarea id="vyh-2" rows="2" placeholder="Co šlo delegovat..." oninput="sN('vyh-2',this.value)"></textarea></div>
+    <div class="f"><label>→ Co jsem měl delegovat?</label><textarea id="vyh-3" rows="2" placeholder="Příště předám..." oninput="sN('vyh-3',this.value)"></textarea></div>
+    <div class="f"><label>⚡ Co zítra nesmím zapomenout?</label><textarea id="vyh-4" rows="2" placeholder="Urgentní na zítřek..." oninput="sN('vyh-4',this.value)"></textarea></div>
+    <div class="f"><label>🎯 Byl jsem dnes CEO, nebo hasič?</label>
+      <div style="display:flex;gap:12px;margin-top:6px;">
+        <button class="btn ba" id="vyh-ceo-btn" onclick="setVyhMode('ceo')" style="flex:1;">✓ CEO — pracoval jsem na systému</button>
+        <button class="btn bg" id="vyh-hasic-btn" onclick="setVyhMode('hasic')" style="flex:1;">🚒 Hasič — řešil jsem operativu</button>
+      </div>
+      <div id="vyh-mode-label" style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;"></div>
+    </div>
+  </div>
+  <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+    <div class="sh" style="font-size:12px;margin-bottom:16px;">Týdenní CEO review</div>
+    <div class="r2">
+      <div class="f"><label>Co jsem tento týden zlepšil v systému?</label><textarea id="rev-1" rows="2" placeholder="" oninput="sN('rev-1',this.value)"></textarea></div>
+      <div class="f"><label>Co jsem zbytečně řešil já?</label><textarea id="rev-2" rows="2" placeholder="" oninput="sN('rev-2',this.value)"></textarea></div>
+      <div class="f"><label>Co jsem měl delegovat?</label><textarea id="rev-3" rows="2" placeholder="" oninput="sN('rev-3',this.value)"></textarea></div>
+      <div class="f"><label>Koho musím posunout?</label><textarea id="rev-4" rows="2" placeholder="" oninput="sN('rev-4',this.value)"></textarea></div>
+      <div class="f"><label>Jaký problém se opakuje?</label><textarea id="rev-5" rows="2" placeholder="" oninput="sN('rev-5',this.value)"></textarea></div>
+      <div class="f"><label>Priorita příští týden?</label><textarea id="rev-6" rows="2" placeholder="" oninput="sN('rev-6',this.value)"></textarea></div>
+    </div>
+    <div class="f"><label>🎯 Byl jsem tento týden CEO, nebo hasič?</label>
+      <div style="display:flex;gap:12px;margin-top:6px;">
+        <button class="btn ba" id="rev-ceo-btn" onclick="setRevMode('ceo')" style="flex:1;">✓ CEO</button>
+        <button class="btn bg" id="rev-hasic-btn" onclick="setRevMode('hasic')" style="flex:1;">🚒 Hasič</button>
+      </div>
+      <div id="rev-mode-label" style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;"></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:12px;margin-top:16px;">
+    <button class="btn bg" onclick="exportDen()" style="flex:1;">⬇ Exportovat zápis dne (.txt)</button>
+    <button class="btn bg" onclick="clearVyh()" style="flex:1;border-color:var(--red);color:var(--red);">🗑 Vymazat</button>
+  </div>
+</div>
+
+<!-- ===== PARKING ===== -->
+<div class="page" id="page-parking">
+  <div class="sh">Parking list <span class="shq">Nejdřív zachyť, pak třiď.</span></div>
+  <div class="card ca">
+    <div class="ct">Rychlý zápis</div>
+    <div class="r2">
+      <div class="f"><label>Nápad / úkol</label><input type="text" id="park-text" placeholder="Co tě napadlo..."></div>
+      <div class="f"><label>Kategorie</label><select id="park-cat"><option value="napad">💡 Nápad</option><option value="problem">🔴 Problém</option><option value="system">⚙️ Systémové</option><option value="pozdeji">⏰ Později</option></select></div>
+    </div>
+    <button class="btn ba" onclick="addPark()">Zapsat</button>
+  </div>
+  <div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap;">
+    <button class="btn bg bsm" onclick="filterPark('vse')" id="pf-vse" style="border-color:var(--accent);color:var(--accent);">Vše</button>
+    <button class="btn bg bsm" onclick="filterPark('napad')" id="pf-napad">💡 Nápady</button>
+    <button class="btn bg bsm" onclick="filterPark('problem')" id="pf-problem">🔴 Problémy</button>
+    <button class="btn bg bsm" onclick="filterPark('system')" id="pf-system">⚙️ Systémové</button>
+    <button class="btn bg bsm" onclick="filterPark('pozdeji')" id="pf-pozdeji">⏰ Později</button>
+  </div>
+  <div id="parking-list"></div>
+</div>
+
+<!-- ===== DELEGACE ===== -->
+<div class="page" id="page-delegace">
+  <div class="sh">Delegování úkolů <span class="shq">Když šéf řeší vše sám, firma nikdy nevyroste.</span></div>
+  <div class="card ca">
+    <div class="ct">Přidat delegaci</div>
+    <div class="r3">
+      <div class="f"><label>Komu</label><input type="text" id="del-kdo" placeholder="Jméno..."></div>
+      <div class="f"><label>Termín</label><input type="date" id="del-termin"></div>
+      <div class="f"><label>Stav</label><select id="del-stav"><option value="open">Otevřené</option><option value="progress">V řešení</option><option value="done">Hotovo</option></select></div>
+    </div>
+    <div class="f"><label>Co má udělat</label><textarea id="del-ukol" rows="2" placeholder="Popis úkolu a očekávaný výsledek..."></textarea></div>
+    <button class="btn ba" onclick="addDel()">Zadat úkol</button>
+  </div>
+  <div style="display:flex;gap:8px;margin:14px 0;flex-wrap:wrap;">
+    <button class="btn bg bsm" onclick="filterDel('vse')" id="df-vse" style="border-color:var(--accent);color:var(--accent);">Vše</button>
+    <button class="btn bg bsm" onclick="filterDel('open')" id="df-open">Otevřené</button>
+    <button class="btn bg bsm" onclick="filterDel('progress')" id="df-progress">V řešení</button>
+    <button class="btn bg bsm" onclick="filterDel('done')" id="df-done">Hotovo</button>
+  </div>
+  <table class="dtbl"><thead><tr><th>Kdo</th><th>Úkol</th><th>Termín</th><th>Stav</th><th></th></tr></thead><tbody id="del-body"></tbody></table>
+</div>
+
+<!-- ===== LIDÉ / TÝM ===== -->
+<div class="page" id="page-lide">
+  <div class="sh">Lidé / tým <span class="shq">Firma nikdy nevyroste nad kvalitu svého managementu.</span></div>
+  <div class="card ca" style="margin-bottom:16px;">
+    <div class="ct">Přidat člena týmu</div>
+    <div class="r3">
+      <div class="f"><label>Jméno</label><input type="text" id="lid-jmeno" placeholder="Jméno..."></div>
+      <div class="f"><label>Role</label><input type="text" id="lid-role" placeholder="Pozice..."></div>
+      <div class="f"><label>Za co odpovídá</label><input type="text" id="lid-odp" placeholder="Klíčová odpovědnost..."></div>
+    </div>
+    <button class="btn ba" onclick="addLid()">Přidat do týmu</button>
+  </div>
+  <div id="lid-karty"></div>
+</div>
+
+<!-- MODAL: Detail člověka -->
+<div class="modal-bg" id="lid-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-jmeno">—</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px;" id="modal-role">—</div>
+      </div>
+      <button class="xbtn" onclick="closeModal()" style="font-size:24px;">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="r2" style="margin-bottom:16px;">
+        <div class="f"><label>Za co odpovídá</label><input type="text" id="modal-odp" oninput="saveModalField('odp',this.value)"></div>
+        <div class="f"><label>Co má zlepšit</label><input type="text" id="modal-zlepsit" oninput="saveModalField('zlepsit',this.value)"></div>
+        <div class="f"><label>Poslední 1:1 kontrola</label><input type="date" id="modal-kontrola" oninput="saveModalField('kontrola',this.value)"></div>
+        <div class="f"><label>Další krok</label><input type="text" id="modal-krok" oninput="saveModalField('krok',this.value)"></div>
+      </div>
+      <div class="f"><label>Poznámky z 1:1</label><textarea id="modal-poznamky" rows="3" oninput="saveModalField('poznamky',this.value)" placeholder="Co se mu daří, co potřebuje, jak se cítí..."></textarea></div>
+      <div class="f"><label>Dohoda do příště</label><textarea id="modal-dohoda" rows="2" oninput="saveModalField('dohoda',this.value)" placeholder="Co udělá do příštího 1:1..."></textarea></div>
+      <div class="f"><label>Co se zlepšilo</label><textarea id="modal-zlepsilo" rows="2" oninput="saveModalField('zlepsilo',this.value)" placeholder="Pozitivní vývoj..."></textarea></div>
+      <div class="f"><label>Co se opakuje za chyby</label><textarea id="modal-chyby" rows="2" oninput="saveModalField('chyby',this.value)" placeholder="Opakující se problémy..."></textarea></div>
+      <div style="padding-top:16px;border-top:1px solid var(--border);">
+        <div class="ct" style="margin-bottom:12px;">Historie dohod</div>
+        <div id="modal-historie" style="margin-bottom:12px;max-height:200px;overflow-y:auto;"></div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="modal-nova-dohoda" placeholder="Přidat dohodu do historie...">
+          <button class="btn ba" onclick="addHistorie()">Zapsat</button>
+        </div>
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn bg" onclick="closeModal()">Zavřít</button>
+        <button class="btn bg bsm" onclick="delLidModal()" style="border-color:var(--red);color:var(--red);">Smazat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RANNÍ PORADA ===== -->
+<div class="page" id="page-porada">
+  <div class="sh">Ranní porada <span class="shq">Krátká, jasná, věcná. Každý den.</span></div>
+  <div class="r2">
+    <div>
+      <div class="card cr"><div class="ct">🔥 Co dnes hoří</div><div id="hora-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="hora-input" placeholder="Urgentní věc..."><button class="btn ba" onclick="addPor('hora')">+</button></div></div>
+      <div class="card ca"><div class="ct">📦 Co musí odejít</div><div id="odejit-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="odejit-input" placeholder="Zakázka / dodávka..."><button class="btn ba" onclick="addPor('odejit')">+</button></div></div>
+    </div>
+    <div>
+      <div class="card cg"><div class="ct">👤 Kdo za co odpovídá</div><div id="odp-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="odp-input" placeholder="Jméno: úkol..."><button class="btn ba" onclick="addPor('odp')">+</button></div></div>
+      <div class="card" style="border-left:3px solid var(--muted2);"><div class="ct">❓ Co potřebuje rozhodnutí</div><div id="rozh-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="rozh-input" placeholder="Otázka..."><button class="btn ba" onclick="addPor('rozh')">+</button></div></div>
+    </div>
+  </div>
+  <div class="card"><div class="ct">Zápis z porady</div><textarea id="porada-zapis" rows="3" placeholder="Co bylo dohodnuto..." oninput="sN('porada-zapis',this.value)"></textarea></div>
+</div>
+
+<!-- ===== TÝDEN ===== -->
+<div class="page" id="page-tyden">
+  <div class="sh">Týdenní management <span class="shq">Pracuj NA firmě, ne ve firmě.</span></div>
+  <div class="r2" style="margin-bottom:16px;">
+    <div class="card ca"><div class="ct">Cíle tohoto týdne</div><div id="tyden-cile"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="cil-input" placeholder="Přidat cíl..."><button class="btn ba" onclick="addSL('cile','cil-input','tyden-cile','togCil','delCil')">+</button></div></div>
+    <div class="card cr"><div class="ct">Problémy firmy</div><div id="problemy-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="problem-input" placeholder="Popsat problém..."><button class="btn ba" onclick="addSL('problemy','problem-input','problemy-list','togPro','delPro')">+</button></div></div>
+  </div>
+  <div class="r2" style="margin-bottom:16px;">
+    <div class="card cg"><div class="ct">Odpovědnosti týmu</div><div id="odp-tyden-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="odp-tyden-input" placeholder="Jméno: odpovědnost..."><button class="btn ba" onclick="addSL('odp','odp-tyden-input','odp-tyden-list','togOdp','delOdp')">+</button></div></div>
+    <div class="card" style="border-left:3px solid var(--accent);"><div class="ct">Systémová zlepšení</div><div id="system-list"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="system-input" placeholder="Co zlepšit v systému..."><button class="btn ba" onclick="addSL('system','system-input','system-list','togSys','delSys')">+</button></div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Vyhodnocení týdne</div>
+    <div class="r2">
+      <div class="f"><label>Co se povedlo</label><textarea id="tyden-plus" rows="3" placeholder="Úspěchy..." oninput="sN('tyden-plus',this.value)"></textarea></div>
+      <div class="f"><label>Co zlepšit příště</label><textarea id="tyden-minus" rows="3" placeholder="Co udělat jinak..." oninput="sN('tyden-minus',this.value)"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SYSTÉMOVÉ PROBLÉMY ===== -->
+<div class="page" id="page-systemy">
+  <div class="sh">Systémové problémy <span class="shq">CEO nehasí symptomy. Opravuje systém.</span></div>
+  <div class="qbox"><div class="qtxt">Každý opakující se problém je signál, že v systému chybí pravidlo, proces nebo odpovědnost.</div></div>
+  <div class="card cr" style="margin-bottom:16px;">
+    <div class="ct">Přidat problém</div>
+    <div class="r2">
+      <div class="f"><label>Problém</label><input type="text" id="sys-problem" placeholder="Co se opakuje..."></div>
+      <div class="f"><label>Proč vznikl?</label><input type="text" id="sys-proc" placeholder="Příčina..."></div>
+      <div class="f"><label>Systémové řešení</label><input type="text" id="sys-reseni" placeholder="Jaký proces zavedeme..."></div>
+      <div class="f"><label>Kdo / termín</label><input type="text" id="sys-kdo" placeholder="Jméno · datum..."></div>
+    </div>
+    <button class="btn ba" onclick="addSysProblem()">Přidat</button>
+  </div>
+  <div id="sys-list"></div>
+</div>
+
+<!-- ===== CEO AKADEMIE ===== -->
+<div class="page" id="page-akademie">
+  <div class="sh">CEO Akademie <span class="shq">Co není napsané, neexistuje.</span></div>
+  <div class="r2" style="margin-bottom:16px;">
+    <div class="card ca">
+      <div class="ct">Zásady silného CEO</div>
+      <div id="zasady-list"></div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent);">
+      <div class="ct">Moje osobní pravidla</div>
+      <div id="pravidla-list" style="margin-bottom:14px;"></div>
+      <div style="display:flex;gap:8px;"><input type="text" id="pravidlo-input" placeholder="Moje pravidlo jako CEO..."><button class="btn ba" onclick="addPravidlo()">+</button></div>
+    </div>
+  </div>
+  <div class="card" style="border-left:3px solid var(--accent);margin-bottom:16px;">
+    <div class="ct">Pravidla firmy Holánek</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:14px;letter-spacing:1px;">Klikni ★ pro označení důležitého pravidla</div>
+    <div id="firem-pravidla-list" style="margin-bottom:14px;"></div>
+    <div style="display:flex;gap:8px;"><input type="text" id="firem-pravidlo-input" placeholder="Přidat pravidlo firmy..."><button class="btn ba" onclick="addFiremPravidlo()">+</button></div>
+  </div>
+  <div class="card">
+    <div class="ct">Když nevím co dělat, zeptám se:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:2px;font-size:17px;">❓ Je to moje práce?</div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:2px;font-size:17px;">👥 Může to udělat někdo jiný?</div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:2px;font-size:17px;">⚡ Je to důležité, nebo jen urgentní?</div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:2px;font-size:17px;">🔍 Řeším příčinu, nebo následek?</div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:2px;font-size:17px;">📈 Pomáhá to firmě dlouhodobě?</div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:2px;font-size:17px;">⚙ Vytvářím systém, nebo jen hasím?</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+const SK='ceo_v3';
+const QUOTES=['Silné firmy nevznikají náhodou.','Co toleruješ, to podporuješ.','Nepřines problém bez návrhu řešení.','Firma nikdy nevyroste nad kvalitu svého managementu.','Emoce často lžou. Čísla většinou ne.','Křik není autorita. Křik je ztráta kontroly.'];
+const catLabel={napad:'💡 Nápad',problem:'🔴 Problém',system:'⚙️ Systémové',pozdeji:'⏰ Později'};
+const catClass={napad:'cn',problem:'cp',system:'cs',pozdeji:'cz'};
+
+let dat={
+  priorities:{1:{text:'',tag:'me'},2:{text:'',tag:'me'},3:{text:'',tag:'me'}},
+  mojeUkoly:[],pockaUkoly:[],parking:[],delegace:[],
+  porada:{hora:[],odejit:[],odp:[],rozh:[]},
+  tyden:{cile:[],problemy:[],odp:[],system:[]},
+  notes:{},lide:[],sysProblemy:[],pravidla:[],
+  firemPravidla:[],nesmi:[],rezim:'ceo'
+};
+
+function load(){try{const s=localStorage.getItem(SK);if(s)dat=JSON.parse(s);}catch(e){}}
+function save(){try{localStorage.setItem(SK,JSON.stringify(dat));}catch(e){}}
+load();
+
+// ===== CLOCK =====
+function updateClock(){const n=new Date();document.getElementById('hDate').textContent=n.toLocaleDateString('cs-CZ',{weekday:'long',day:'numeric',month:'long'});document.getElementById('hTime').textContent=n.toLocaleTimeString('cs-CZ',{hour:'2-digit',minute:'2-digit'});}
+setInterval(updateClock,1000);updateClock();
+
+// ===== NAV =====
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='dashboard')renderDashboard();
+}
+
+// ===== NOTES =====
+function sN(k,v){dat.notes[k]=v;save();}
+function initNotes(){
+  const keys=['denni-poznamka','porada-zapis','tyden-plus','tyden-minus','vyh-1','vyh-2','vyh-3','vyh-4','rev-1','rev-2','rev-3','rev-4','rev-5','rev-6'];
+  keys.forEach(k=>{const el=document.getElementById(k);if(el&&dat.notes[k])el.value=dat.notes[k];});
+}
+
+// ===== REZIM =====
+function saveRezim(v){dat.rezim=v;save();}
+function initRezim(){const el=document.getElementById('rezimDne');if(el&&dat.rezim)el.value=dat.rezim;}
+
+// ===== NESMI =====
+function addNesmi(){const v=document.getElementById('nesmi-input').value.trim();if(!v)return;if(!dat.nesmi)dat.nesmi=[];dat.nesmi.push(v);document.getElementById('nesmi-input').value='';save();renderNesmi();}
+function delNesmi(i){dat.nesmi.splice(i,1);save();renderNesmi();}
+function renderNesmi(){
+  const el=document.getElementById('nesmi-list');if(!el)return;
+  const items=dat.nesmi||[];
+  el.innerHTML=items.map((n,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:17px;border-bottom:1px dashed rgba(200,169,110,.2);"><span style="color:var(--accent);font-size:14px;">✗</span><span style="flex:1;">${n}</span><button class="xbtn" onclick="delNesmi(${i})">×</button></div>`).join('');
+}
+
+// ===== PRIORITIES =====
+function savePriority(n,v){if(!dat.priorities[n])dat.priorities[n]={text:'',tag:'me'};dat.priorities[n].text=v;save();}
+function setPT(n,tag){if(!dat.priorities[n])dat.priorities[n]={text:'',tag:'me'};dat.priorities[n].tag=tag;save();renderPTBtns(n);}
+function renderPTBtns(n){
+  const tag=dat.priorities[n]?.tag||'me';
+  const styles={me:'background:var(--amber-light);border:1px solid var(--amber);color:var(--accent);',delegovat:'background:var(--green-light);border:1px solid var(--green);color:#6aaa80;',pockat:'background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);'};
+  [['me','me'],['delegovat','del'],['pockat','poc']].forEach(([t,s])=>{const b=document.getElementById('p'+n+'-'+s);if(!b)return;b.style.cssText=tag===t?styles[t]:'';if(tag!==t)b.className='btn bsm bg';});
+}
+function initPriorities(){for(let n=1;n<=3;n++){const inp=document.getElementById('p'+n+'-input');if(inp&&dat.priorities[n])inp.value=dat.priorities[n].text||'';renderPTBtns(n);}}
+
+// ===== TASKS =====
+function renderTasks(listId,tasks,dFn,tFn){
+  const el=document.getElementById(listId);if(!el)return;
+  if(!tasks||!tasks.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:8px 0;">Prázdné</div>';return;}
+  el.innerHTML=tasks.map((t,i)=>`<div class="task"><div class="chk ${t.done?'done':''}" onclick="${tFn}(${i})">✓</div><div class="tx ${t.done?'done':''}">${t.text}</div><button class="xbtn" onclick="${dFn}(${i})">×</button></div>`).join('');
+}
+function addMuj(){const v=document.getElementById('moje-input').value.trim();if(!v)return;dat.mojeUkoly.push({text:v,done:false});document.getElementById('moje-input').value='';save();renderTasks('moje-ukoly',dat.mojeUkoly,'delMuj','togMuj');}
+function togMuj(i){dat.mojeUkoly[i].done=!dat.mojeUkoly[i].done;save();renderTasks('moje-ukoly',dat.mojeUkoly,'delMuj','togMuj');}
+function delMuj(i){dat.mojeUkoly.splice(i,1);save();renderTasks('moje-ukoly',dat.mojeUkoly,'delMuj','togMuj');}
+function addPocka(){const v=document.getElementById('pocka-input').value.trim();if(!v)return;dat.pockaUkoly.push({text:v,done:false});document.getElementById('pocka-input').value='';save();renderTasks('pocka-ukoly',dat.pockaUkoly,'delPocka','togPocka');}
+function togPocka(i){dat.pockaUkoly[i].done=!dat.pockaUkoly[i].done;save();renderTasks('pocka-ukoly',dat.pockaUkoly,'delPocka','togPocka');}
+function delPocka(i){dat.pockaUkoly.splice(i,1);save();renderTasks('pocka-ukoly',dat.pockaUkoly,'delPocka','togPocka');}
+
+// ===== PARKING =====
+let parkF='vse';
+function addPark(){const t=document.getElementById('park-text').value.trim();const c=document.getElementById('park-cat').value;if(!t)return;dat.parking.unshift({text:t,cat:c,ts:new Date().toLocaleDateString('cs-CZ'),done:false});document.getElementById('park-text').value='';save();renderPark();}
+function delPark(i){dat.parking.splice(i,1);save();renderPark();}
+function donePark(i){dat.parking[i].done=!dat.parking[i].done;save();renderPark();}
+function filterPark(f){parkF=f;document.querySelectorAll('[id^="pf-"]').forEach(b=>{b.style.borderColor='';b.style.color='';});const b=document.getElementById('pf-'+f);if(b){b.style.borderColor='var(--accent)';b.style.color='var(--accent)';}renderPark();}
+function renderPark(){
+  const el=document.getElementById('parking-list');if(!el)return;
+  const items=dat.parking.filter(p=>parkF==='vse'||p.cat===parkF);
+  if(!items.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:12px 0;">Žádné položky</div>';return;}
+  el.innerHTML=items.map(p=>{const ri=dat.parking.indexOf(p);return `<div class="pkg" style="${p.done?'opacity:.4':''}"><span class="pcat ${catClass[p.cat]}">${catLabel[p.cat]}</span><div style="flex:1;font-size:17px;${p.done?'text-decoration:line-through;color:var(--muted)':''}">${p.text}</div><span style="font-family:var(--mono);font-size:11px;color:var(--muted2);margin-right:8px;">${p.ts||''}</span><div class="chk ${p.done?'done':''}" onclick="donePark(${ri})" style="cursor:pointer;">✓</div><button class="xbtn" onclick="delPark(${ri})">×</button></div>`;}).join('');
+}
+
+// ===== DELEGACE =====
+let delF='vse';
+function addDel(){const kdo=document.getElementById('del-kdo').value.trim();const ukol=document.getElementById('del-ukol').value.trim();const termin=document.getElementById('del-termin').value;const stav=document.getElementById('del-stav').value;if(!kdo||!ukol)return;dat.delegace.unshift({kdo,ukol,termin,stav,ts:new Date().toLocaleDateString('cs-CZ')});document.getElementById('del-kdo').value='';document.getElementById('del-ukol').value='';document.getElementById('del-termin').value='';save();renderDel();}
+function delDelItem(i){dat.delegace.splice(i,1);save();renderDel();}
+function stavDel(i,stav){dat.delegace[i].stav=stav;save();renderDel();}
+function filterDel(f){delF=f;document.querySelectorAll('[id^="df-"]').forEach(b=>{b.style.borderColor='';b.style.color='';});const b=document.getElementById('df-'+f);if(b){b.style.borderColor='var(--accent)';b.style.color='var(--accent)';}renderDel();}
+function renderDel(){
+  const el=document.getElementById('del-body');if(!el)return;
+  const items=dat.delegace.filter(d=>delF==='vse'||d.stav===delF);
+  if(!items.length){el.innerHTML='<tr><td colspan="5" style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:16px;">Žádné delegace</td></tr>';return;}
+  el.innerHTML=items.map(d=>{const ri=dat.delegace.indexOf(d);const ts=d.termin?new Date(d.termin).toLocaleDateString('cs-CZ'):'—';const late=d.termin&&new Date(d.termin)<new Date()&&d.stav!=='done';return `<tr><td><b>${d.kdo}</b></td><td>${d.ukol}</td><td style="${late?'color:#cc6666;font-weight:600;':''}">${ts}${late?' ⚠':''}</td><td><select onchange="stavDel(${ri},this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:4px 8px;width:auto;"><option ${d.stav==='open'?'selected':''} value="open">Otevřené</option><option ${d.stav==='progress'?'selected':''} value="progress">V řešení</option><option ${d.stav==='done'?'selected':''} value="done">Hotovo</option></select></td><td><button class="xbtn" onclick="delDelItem(${ri})">×</button></td></tr>`;}).join('');
+}
+
+// ===== LIDÉ / TÝM + MODAL =====
+let currentLidIdx = -1;
+function addLid(){
+  const jmeno=document.getElementById('lid-jmeno').value.trim();if(!jmeno)return;
+  dat.lide.push({jmeno,role:document.getElementById('lid-role').value.trim(),odp:document.getElementById('lid-odp').value.trim(),zlepsit:'',kontrola:'',poznamky:'',dohoda:'',zlepsilo:'',chyby:'',krok:'',historie:[]});
+  ['lid-jmeno','lid-role','lid-odp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  save();renderLide();
+}
+function delLid(i){dat.lide.splice(i,1);save();renderLide();}
+function delLidModal(){if(currentLidIdx<0)return;dat.lide.splice(currentLidIdx,1);save();renderLide();closeModal();}
+function renderLide(){
+  const el=document.getElementById('lid-karty');if(!el)return;
+  if(!dat.lide||!dat.lide.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:16px;">Žádní členové týmu.</div>';return;}
+  el.innerHTML=dat.lide.map((l,i)=>{
+    const kd=l.kontrola?new Date(l.kontrola).toLocaleDateString('cs-CZ'):'Nikdy';
+    const stary=l.kontrola&&(new Date()-new Date(l.kontrola))>30*24*60*60*1000;
+    return `<div class="card" style="border-left:3px solid var(--accent);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="flex:1;min-width:200px;">
+        <div style="font-family:var(--display);font-size:20px;letter-spacing:2px;color:var(--text);">${l.jmeno}</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px;">${l.role||'—'}</div>
+        ${l.odp?`<div style="font-size:15px;color:var(--muted);margin-top:6px;">Za: ${l.odp}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+        ${l.zlepsit?`<div style="font-family:var(--mono);font-size:11px;color:var(--accent);">↑ ${l.zlepsit}</div>`:''}
+        <div style="font-family:var(--mono);font-size:11px;color:${stary?'#cc6666':'var(--muted2)'};">1:1: ${kd}${stary?' ⚠':''}</div>
+        ${l.dohoda?`<div style="font-size:14px;color:var(--muted);font-style:italic;">"${l.dohoda}"</div>`:''}
+        <div style="display:flex;gap:8px;">
+          <button class="btn ba bsm" onclick="openModal(${i})">Detail / 1:1</button>
+          <button class="xbtn" onclick="delLid(${i})">×</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openModal(i){
+  currentLidIdx=i;const l=dat.lide[i];
+  document.getElementById('modal-jmeno').textContent=l.jmeno;
+  document.getElementById('modal-role').textContent=l.role||'';
+  ['odp','zlepsit','kontrola','krok','poznamky','dohoda','zlepsilo','chyby'].forEach(k=>{const el=document.getElementById('modal-'+k);if(el)el.value=l[k]||'';});
+  renderHistorie();
+  document.getElementById('lid-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('lid-modal').classList.remove('open');currentLidIdx=-1;}
+function saveModalField(field,val){if(currentLidIdx<0)return;dat.lide[currentLidIdx][field]=val;save();}
+function addHistorie(){
+  const v=document.getElementById('modal-nova-dohoda').value.trim();if(!v||currentLidIdx<0)return;
+  if(!dat.lide[currentLidIdx].historie)dat.lide[currentLidIdx].historie=[];
+  dat.lide[currentLidIdx].historie.unshift({text:v,ts:new Date().toLocaleDateString('cs-CZ')});
+  document.getElementById('modal-nova-dohoda').value='';
+  save();renderHistorie();
+}
+function delHistorie(i){if(currentLidIdx<0)return;dat.lide[currentLidIdx].historie.splice(i,1);save();renderHistorie();}
+function renderHistorie(){
+  const el=document.getElementById('modal-historie');if(!el||currentLidIdx<0)return;
+  const hist=dat.lide[currentLidIdx].historie||[];
+  if(!hist.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);">Žádná historie</div>';return;}
+  el.innerHTML=hist.map((h,i)=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:16px;"><span style="font-family:var(--mono);font-size:11px;color:var(--muted2);flex-shrink:0;margin-top:2px;">${h.ts}</span><span style="flex:1;">${h.text}</span><button class="xbtn" onclick="delHistorie(${i})">×</button></div>`).join('');
+}
+
+// ===== PORADA =====
+function addPor(typ){const inp=document.getElementById(typ+'-input');const v=inp.value.trim();if(!v)return;dat.porada[typ].push({text:v,done:false});inp.value='';save();renderPor(typ);}
+function togPor(typ,i){dat.porada[typ][i].done=!dat.porada[typ][i].done;save();renderPor(typ);}
+function delPor(typ,i){dat.porada[typ].splice(i,1);save();renderPor(typ);}
+function renderPor(typ){
+  const el=document.getElementById(typ+'-list');if(!el)return;
+  const items=dat.porada[typ]||[];
+  if(!items.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:8px 0;">Prázdné</div>';return;}
+  el.innerHTML=items.map((t,i)=>`<div class="task" style="padding:8px 12px;"><div class="chk ${t.done?'done':''}" onclick="togPor('${typ}',${i})">✓</div><div class="tx ${t.done?'done':''}">${t.text}</div><button class="xbtn" onclick="delPor('${typ}',${i})">×</button></div>`).join('');
+}
+
+// ===== SIMPLE LISTS (TÝDEN) =====
+function addSL(k,inp,listId,togFn,delFn){const v=document.getElementById(inp).value.trim();if(!v)return;dat.tyden[k].push({text:v,done:false});document.getElementById(inp).value='';save();renderSL(k,listId,togFn,delFn);}
+function renderSL(k,listId,togFn,delFn){
+  const el=document.getElementById(listId);if(!el)return;
+  const items=dat.tyden[k]||[];
+  if(!items.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:8px 0;">Prázdné</div>';return;}
+  el.innerHTML=items.map((t,i)=>`<div class="task" style="padding:8px 12px;"><div class="chk ${t.done?'done':''}" onclick="${togFn}(${i})">✓</div><div class="tx ${t.done?'done':''}">${t.text}</div><button class="xbtn" onclick="${delFn}(${i})">×</button></div>`).join('');
+}
+function togCil(i){dat.tyden.cile[i].done=!dat.tyden.cile[i].done;save();renderSL('cile','tyden-cile','togCil','delCil');}
+function delCil(i){dat.tyden.cile.splice(i,1);save();renderSL('cile','tyden-cile','togCil','delCil');}
+function togPro(i){dat.tyden.problemy[i].done=!dat.tyden.problemy[i].done;save();renderSL('problemy','problemy-list','togPro','delPro');}
+function delPro(i){dat.tyden.problemy.splice(i,1);save();renderSL('problemy','problemy-list','togPro','delPro');}
+function togOdp(i){dat.tyden.odp[i].done=!dat.tyden.odp[i].done;save();renderSL('odp','odp-tyden-list','togOdp','delOdp');}
+function delOdp(i){dat.tyden.odp.splice(i,1);save();renderSL('odp','odp-tyden-list','togOdp','delOdp');}
+function togSys(i){dat.tyden.system[i].done=!dat.tyden.system[i].done;save();renderSL('system','system-list','togSys','delSys');}
+function delSys(i){dat.tyden.system.splice(i,1);save();renderSL('system','system-list','togSys','delSys');}
+
+// ===== SYSTÉMOVÉ PROBLÉMY =====
+function addSysProblem(){const p=document.getElementById('sys-problem').value.trim();if(!p)return;dat.sysProblemy.unshift({problem:p,proc:document.getElementById('sys-proc').value.trim(),reseni:document.getElementById('sys-reseni').value.trim(),kdo:document.getElementById('sys-kdo').value.trim(),done:false,ts:new Date().toLocaleDateString('cs-CZ')});['sys-problem','sys-proc','sys-reseni','sys-kdo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});save();renderSys();}
+function delSysP(i){dat.sysProblemy.splice(i,1);save();renderSys();}
+function doneSysP(i){dat.sysProblemy[i].done=!dat.sysProblemy[i].done;save();renderSys();}
+function renderSys(){
+  const el=document.getElementById('sys-list');if(!el)return;
+  const items=dat.sysProblemy||[];
+  if(!items.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:12px;">Žádné systémové problémy.</div>';return;}
+  el.innerHTML=items.map((s,i)=>`<div class="card ${s.done?'':'cr'}" style="${s.done?'opacity:.5;border-left:3px solid var(--green);':''}margin-bottom:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+      <div style="font-size:18px;font-weight:600;">${s.problem}</div>
+      <div style="display:flex;gap:8px;flex-shrink:0;margin-left:16px;">
+        <button class="btn bsm ${s.done?'bg':'ba'}" onclick="doneSysP(${i})">${s.done?'↩ Otevřít':'✓ Vyřešeno'}</button>
+        <button class="xbtn" onclick="delSysP(${i})">×</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px;">PŘÍČINA</div><div style="font-size:16px;color:var(--muted)">${s.proc||'—'}</div></div>
+      <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px;">ŘEŠENÍ</div><div style="font-size:16px;color:var(--accent)">${s.reseni||'—'}</div></div>
+      <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px;">KDO / TERMÍN</div><div style="font-size:16px;">${s.kdo||'—'}</div></div>
+    </div>
+  </div>`).join('');
+}
+
+// ===== CEO AKADEMIE =====
+const ZASADY=[
+  'Co není napsané, neexistuje.',
+  'Nepřines problém bez návrhu řešení.',
+  'Max 3 priority denně.',
+  'Co toleruješ, to podporuješ.',
+  'Křik není autorita.',
+  'Neřeš symptom, řeš systém.',
+  'Tvůj čas je nejdražší čas firmy.',
+  'Firma nesmí stát na jednom člověku.',
+];
+function renderZasady(){
+  const el=document.getElementById('zasady-list');if(!el)return;
+  el.innerHTML=ZASADY.map((z,i)=>`<div style="display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--display);font-size:22px;">${i+1}</span><span style="font-size:17px;">${z}</span></div>`).join('');
+}
+function addPravidlo(){const v=document.getElementById('pravidlo-input').value.trim();if(!v)return;dat.pravidla.push(v);document.getElementById('pravidlo-input').value='';save();renderPravidla();}
+function delPravidlo(i){dat.pravidla.splice(i,1);save();renderPravidla();}
+function renderPravidla(){
+  const el=document.getElementById('pravidla-list');if(!el)return;
+  if(!dat.pravidla||!dat.pravidla.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);">Přidej svá pravidla...</div>';return;}
+  el.innerHTML=dat.pravidla.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--display);font-size:22px;">${i+1}</span><span style="flex:1;font-size:17px;">${p}</span><button class="xbtn" onclick="delPravidlo(${i})">×</button></div>`).join('');
+}
+
+// ===== PRAVIDLA FIRMY =====
+const FIREM_PRAVIDLA_DEFAULT=[
+  'Řešíme problémy hned.',
+  'Nepřinášíme problém bez návrhu řešení.',
+  'Dodržujeme termíny.',
+  'Kvalita je standard.',
+  'Každý úkol má vlastníka.',
+  'Co není napsané, neexistuje.',
+  'Mluvíme narovinu, ale slušně.',
+  'Pomáháme si jako tým.',
+  'Pořádek je součást práce.',
+  'Zákazník musí vědět, na čem je.',
+];
+function initFiremPravidla(){
+  if(!dat.firemPravidla||!dat.firemPravidla.length){
+    dat.firemPravidla=FIREM_PRAVIDLA_DEFAULT.map(t=>({text:t,dulezite:false}));
+    save();
+  }
+}
+function addFiremPravidlo(){const v=document.getElementById('firem-pravidlo-input').value.trim();if(!v)return;dat.firemPravidla.push({text:v,dulezite:false});document.getElementById('firem-pravidlo-input').value='';save();renderFiremPravidla();}
+function delFiremP(i){dat.firemPravidla.splice(i,1);save();renderFiremPravidla();}
+function togDulezite(i){dat.firemPravidla[i].dulezite=!dat.firemPravidla[i].dulezite;save();renderFiremPravidla();}
+function renderFiremPravidla(){
+  const el=document.getElementById('firem-pravidla-list');if(!el)return;
+  const items=dat.firemPravidla||[];
+  if(!items.length){el.innerHTML='<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);">Žádná pravidla</div>';return;}
+  el.innerHTML=items.map((p,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);${p.dulezite?'background:rgba(200,169,110,.04);margin:0 -24px;padding:9px 24px;':''}">
+    <button onclick="togDulezite(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:${p.dulezite?'var(--accent)':'var(--muted2)'};" title="Označit jako důležité">★</button>
+    <span style="flex:1;font-size:17px;${p.dulezite?'color:var(--accent);font-weight:600;':''}">${p.text}</span>
+    ${p.dulezite?'<span class="tag-imp">Důležité</span>':''}
+    <button class="xbtn" onclick="delFiremP(${i})">×</button>
+  </div>`).join('');
+}
+
+// ===== VYHODNOCENÍ =====
+function setVyhMode(m){dat.notes['vyh-mode']=m;save();const l={ceo:'✅ CEO — dnes jsi pracoval na systému firmy',hasic:'🚒 Hasič — příště více deleguj a plánuj'};const c={ceo:'var(--green)',hasic:'#cc6666'};document.getElementById('vyh-mode-label').textContent=l[m];document.getElementById('vyh-mode-label').style.color=c[m];document.getElementById('vyh-ceo-btn').className=m==='ceo'?'btn ba':'btn bg';document.getElementById('vyh-hasic-btn').className=m==='hasic'?'btn ba':'btn bg';}
+function setRevMode(m){dat.notes['rev-mode']=m;save();const l={ceo:'✅ CEO — tento týden jsi pracoval na systému',hasic:'🚒 Hasič — příští týden více plánuj a deleguj'};const c={ceo:'var(--green)',hasic:'#cc6666'};document.getElementById('rev-mode-label').textContent=l[m];document.getElementById('rev-mode-label').style.color=c[m];document.getElementById('rev-ceo-btn').className=m==='ceo'?'btn ba':'btn bg';document.getElementById('rev-hasic-btn').className=m==='hasic'?'btn ba':'btn bg';}
+function initVyh(){
+  ['vyh-1','vyh-2','vyh-3','vyh-4'].forEach(k=>{const el=document.getElementById(k);if(el&&dat.notes[k])el.value=dat.notes[k];});
+  if(dat.notes['vyh-mode'])setVyhMode(dat.notes['vyh-mode']);
+  if(dat.notes['rev-mode'])setRevMode(dat.notes['rev-mode']);
+}
+function clearVyh(){if(!confirm('Opravdu vymazat?'))return;['vyh-1','vyh-2','vyh-3','vyh-4','vyh-mode'].forEach(k=>delete dat.notes[k]);['vyh-1','vyh-2','vyh-3','vyh-4'].forEach(k=>{const el=document.getElementById(k);if(el)el.value='';});document.getElementById('vyh-mode-label').textContent='';document.getElementById('vyh-ceo-btn').className='btn ba';document.getElementById('vyh-hasic-btn').className='btn bg';save();}
+
+// ===== EXPORT =====
+function exportDen(){
+  const d=new Date().toLocaleDateString('cs-CZ');
+  let txt=`TOP MANAŽER HOLÁNEK — DENNÍ ZÁPIS\n${d}\n${'='.repeat(40)}\n\n`;
+  const nesmi=dat.nesmi||[];
+  if(nesmi.length){txt+=`CO DNES NESMÍM DĚLAT JÁ:\n`;nesmi.forEach(n=>txt+=`✗ ${n}\n`);txt+='\n';}
+  const pr=dat.priorities||{};
+  txt+=`PRIORITY DNE:\n`;for(let n=1;n<=3;n++){if(pr[n]&&pr[n].text)txt+=`${n}. ${pr[n].text}\n`;}
+  txt+=`\nVYHODNOCENÍ DNE:\n`;
+  const q={'vyh-1':'Co jsem dokončil:','vyh-2':'Zbytečně řešil:','vyh-3':'Měl delegovat:','vyh-4':'Zítra nesmím zapomenout:'};
+  Object.entries(q).forEach(([k,l])=>{if(dat.notes[k])txt+=`${l}\n${dat.notes[k]}\n\n`;});
+  if(dat.notes['vyh-mode'])txt+=`Byl jsem: ${dat.notes['vyh-mode']==='ceo'?'CEO':'Hasič'}\n\n`;
+  txt+=`OTEVŘENÉ DELEGACE:\n`;(dat.delegace||[]).filter(d=>d.stav!=='done').forEach(d=>txt+=`• ${d.kdo}: ${d.ukol} (${d.termin||'bez termínu'})\n`);
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`CEO_${d.replace(/\./g,'-')}.txt`;a.click();
+}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  document.getElementById('dashQuote').textContent=QUOTES[new Date().getDay()%QUOTES.length];
+  const delOpen=(dat.delegace||[]).filter(d=>d.stav!=='done').length;
+  const mojeOpen=(dat.mojeUkoly||[]).filter(t=>!t.done).length;
+  const parkOpen=(dat.parking||[]).filter(p=>!p.done).length;
+  const probOpen=(dat.tyden?.problemy||[]).filter(p=>!p.done).length;
+  document.getElementById('dashStats').innerHTML=`
+    <div class="dstat"><div class="dlabel">Moje otevřené úkoly</div><div class="dval" style="color:${mojeOpen>5?'#cc6666':'var(--accent)'}">${mojeOpen}</div><div class="dsub">úkolů čeká na mě</div></div>
+    <div class="dstat"><div class="dlabel">Delegace otevřené</div><div class="dval" style="color:${delOpen>10?'#cc6666':'var(--accent)'}">${delOpen}</div><div class="dsub">bez výsledku</div></div>
+    <div class="dstat"><div class="dlabel">Parking list</div><div class="dval">${parkOpen}</div><div class="dsub">nápadů k roztřídění</div></div>
+    <div class="dstat"><div class="dlabel">Otevřené problémy</div><div class="dval" style="color:${probOpen>3?'#cc6666':'var(--accent)'}">${probOpen}</div><div class="dsub">čeká na systém</div></div>`;
+  const pr=dat.priorities||{};
+  const tn={me:'Já řeším',delegovat:'Deleguji',pockat:'Počká'};
+  const tc={me:'cn',delegovat:'cs',pockat:'cz'};
+  let prHtml='';
+  for(let n=1;n<=3;n++){const p=pr[n]||{};if(p.text)prHtml+=`<div class="pitem filled"><div class="pnum">${n}</div><div><span class="pcat ${tc[p.tag]||'cn'}" style="margin-bottom:6px;display:inline-block;">${tn[p.tag]||'Já řeším'}</span><div style="font-size:18px;">${p.text}</div></div></div>`;}
+  document.getElementById('dashPriority').innerHTML=prHtml||'<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:8px 0;">Nastavte priority v Denním plánu</div>';
+  const od=(dat.delegace||[]).filter(d=>d.stav!=='done').slice(0,4);
+  document.getElementById('dashDelegace').innerHTML=od.length?od.map(d=>`<div class="task" style="padding:10px 14px;"><div style="flex:1;"><b>${d.kdo}</b> — <span style="color:var(--muted)">${d.ukol.length>40?d.ukol.slice(0,40)+'...':d.ukol}</span></div><span style="font-family:var(--mono);font-size:10px;color:${d.stav==='progress'?'#6aaa80':'var(--accent)'};">${d.stav==='progress'?'V řešení':'Otevřené'}</span></div>`).join(''):'<div style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:8px 0;">Žádné otevřené delegace</div>';
+}
+
+// ===== PREFILL =====
+function prefill(){
+  if(!dat.lide||!dat.lide.length){
+    dat.lide=[
+      {jmeno:'Dominik Holánek',role:'Jednatel / CEO',odp:'Strategie, finance, obchod',zlepsit:'Více delegovat',kontrola:'',poznamky:'',dohoda:'',zlepsilo:'',chyby:'',krok:'',historie:[]},
+      {jmeno:'Milan Morán',role:'Výrobní ředitel',odp:'Řízení výroby, kvalita',zlepsit:'Systém reportingu',kontrola:'',poznamky:'',dohoda:'',zlepsilo:'',chyby:'',krok:'',historie:[]},
+      {jmeno:'Tomáš Prisčák',role:'Výrobní mistr',odp:'Organizace směny, výstupy',zlepsit:'Samostatnost rozhodování',kontrola:'',poznamky:'',dohoda:'',zlepsilo:'',chyby:'',krok:'',historie:[]},
+      {jmeno:'Venda Hradecký',role:'Výrobní mistr',odp:'Technologie, nářadí',zlepsit:'Komunikace s týmem',kontrola:'',poznamky:'',dohoda:'',zlepsilo:'',chyby:'',krok:'',historie:[]},
+    ];
+  }
+}
+
+// ===== INIT =====
+function init(){
+  if(!dat.priorities)dat.priorities={1:{text:'',tag:'me'},2:{text:'',tag:'me'},3:{text:'',tag:'me'}};
+  ['mojeUkoly','pockaUkoly','parking','delegace','nesmi','pravidla','sysProblemy'].forEach(k=>{if(!dat[k])dat[k]=[];});
+  if(!dat.porada)dat.porada={hora:[],odejit:[],odp:[],rozh:[]};
+  if(!dat.tyden)dat.tyden={cile:[],problemy:[],odp:[],system:[]};
+  if(!dat.notes)dat.notes={};
+  prefill();
+  initFiremPravidla();
+  initRezim();
+  initPriorities();
+  initNotes();
+  initVyh();
+  renderNesmi();
+  renderTasks('moje-ukoly',dat.mojeUkoly,'delMuj','togMuj');
+  renderTasks('pocka-ukoly',dat.pockaUkoly,'delPocka','togPocka');
+  renderPark();renderDel();renderLide();
+  ['hora','odejit','odp','rozh'].forEach(t=>renderPor(t));
+  renderSL('cile','tyden-cile','togCil','delCil');
+  renderSL('problemy','problemy-list','togPro','delPro');
+  renderSL('odp','odp-tyden-list','togOdp','delOdp');
+  renderSL('system','system-list','togSys','delSys');
+  renderSys();renderZasady();renderPravidla();renderFiremPravidla();
+  renderDashboard();
+}
+init();
+</script>
+</body>
+</html>
