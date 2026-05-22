@@ -89,6 +89,8 @@ label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:2px;te
 ::-webkit-scrollbar-thumb{background:var(--border);}
 @media(max-width:800px){header,nav{padding:0 20px;}main{padding:20px;}
 .r2,.r3,.dg{grid-template-columns:1fr;}}
+
+#editDelModal.open { display: flex !important; }
 </style>
 </head>
 <body>
@@ -112,6 +114,9 @@ label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:2px;te
         <option value="rodina">🏠 Rodina</option>
       </select>
     </div>
+    <button class="btn ba" onclick="exportJSON()" style="background:var(--accent);color:#000;font-size:10px;">💾 Záloha</button>
+    <button class="btn bg" onclick="importClick()" style="font-size:10px;">⬆ Obnovit</button>
+    <input type="file" id="importJSONFile" accept=".json" style="display:none" onchange="importJSON(event)">
     <button class="btn bg" onclick="exportDen()" style="font-size:10px;">⬇ Export</button>
     <div class="hdate"><strong id="hDate"></strong><span id="hTime"></span></div>
   </div>
@@ -522,7 +527,7 @@ function renderDel(){
   const el=document.getElementById('del-body');if(!el)return;
   const items=dat.delegace.filter(d=>delF==='vse'||d.stav===delF);
   if(!items.length){el.innerHTML='<tr><td colspan="5" style="font-family:var(--mono);font-size:12px;color:var(--muted2);padding:16px;">Žádné delegace</td></tr>';return;}
-  el.innerHTML=items.map(d=>{const ri=dat.delegace.indexOf(d);const ts=d.termin?new Date(d.termin).toLocaleDateString('cs-CZ'):'—';const late=d.termin&&new Date(d.termin)<new Date()&&d.stav!=='done';return `<tr><td><b>${d.kdo}</b></td><td>${d.ukol}</td><td style="${late?'color:#cc6666;font-weight:600;':''}">${ts}${late?' ⚠':''}</td><td><select onchange="stavDel(${ri},this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:4px 8px;width:auto;"><option ${d.stav==='open'?'selected':''} value="open">Otevřené</option><option ${d.stav==='progress'?'selected':''} value="progress">V řešení</option><option ${d.stav==='done'?'selected':''} value="done">Hotovo</option></select></td><td><button class="xbtn" onclick="delDelItem(${ri})">×</button></td></tr>`;}).join('');
+  el.innerHTML=items.map(d=>{const ri=dat.delegace.indexOf(d);const ts=d.termin?new Date(d.termin).toLocaleDateString('cs-CZ'):'—';const late=d.termin&&new Date(d.termin)<new Date()&&d.stav!=='done';return `<tr><td><b>${d.kdo}</b></td><td>${d.ukol}</td><td style="${late?'color:#cc6666;font-weight:600;':''}">${ts}${late?' ⚠':''}</td><td><button class="btn bg bsm" onclick="editDel(${ri})" style="font-size:10px;">✏ Upravit</button></td><td><select onchange="stavDel(${ri},this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:4px 8px;width:auto;"><option ${d.stav==='open'?'selected':''} value="open">Otevřené</option><option ${d.stav==='progress'?'selected':''} value="progress">V řešení</option><option ${d.stav==='done'?'selected':''} value="done">Hotovo</option></select></td><td><button class="xbtn" onclick="delDelItem(${ri})">×</button></td></tr>`;}).join('');
 }
 
 // ===== LIDÉ / TÝM + MODAL =====
@@ -754,6 +759,38 @@ function prefill(){
 }
 
 // ===== INIT =====
+function editDel(i){
+  const d=dat.delegace[i];if(!d)return;
+  document.getElementById('edit-del-idx').value=i;
+  document.getElementById('edit-del-kdo').value=d.kdo||'';
+  document.getElementById('edit-del-ukol').value=d.ukol||'';
+  document.getElementById('edit-del-termin').value=d.termin||'';
+  document.getElementById('edit-del-stav').value=d.stav||'open';
+  document.getElementById('editDelModal').classList.add('open');
+}
+function closeEditDel(){document.getElementById('editDelModal').classList.remove('open');}
+function saveEditDel(){
+  const i=parseInt(document.getElementById('edit-del-idx').value);
+  dat.delegace[i].kdo=document.getElementById('edit-del-kdo').value.trim();
+  dat.delegace[i].ukol=document.getElementById('edit-del-ukol').value.trim();
+  dat.delegace[i].termin=document.getElementById('edit-del-termin').value;
+  dat.delegace[i].stav=document.getElementById('edit-del-stav').value;
+  save();closeEditDel();renderDel();
+}
+function exportJSON(){
+  const now=new Date();
+  const stamp=now.toISOString().slice(0,10);
+  const blob=new Blob([JSON.stringify(dat,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='top_manazer_holanek_'+stamp+'.json';a.click();
+}
+function importClick(){document.getElementById('importJSONFile').click();}
+function importJSON(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{try{dat=JSON.parse(ev.target.result);save();init();alert('✅ Data obnovena!');}catch(err){alert('Chyba: '+err.message);}};
+  reader.readAsText(file);e.target.value='';
+}
 function init(){
   if(!dat.priorities)dat.priorities={1:{text:'',tag:'me'},2:{text:'',tag:'me'},3:{text:'',tag:'me'}};
   ['mojeUkoly','pockaUkoly','parking','delegace','nesmi','pravidla','sysProblemy'].forEach(k=>{if(!dat[k])dat[k]=[];});
@@ -780,5 +817,34 @@ function init(){
 }
 init();
 </script>
+
+<!-- Modal editace delegace -->
+<div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;" id="editDelModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center;" onclick="if(event.target===this)closeEditDel()">
+  <div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);width:100%;max-width:520px;border-radius:4px;overflow:hidden;">
+    <div style="padding:18px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-family:var(--display);font-size:18px;letter-spacing:3px;color:var(--accent);">UPRAVIT DELEGACI</div>
+      <button onclick="closeEditDel()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;">×</button>
+    </div>
+    <div style="padding:24px;">
+      <input type="hidden" id="edit-del-idx">
+      <div class="f" style="margin-bottom:14px;"><label>Komu</label><input type="text" id="edit-del-kdo" style="width:100%"></div>
+      <div class="f" style="margin-bottom:14px;"><label>Úkol / popis</label><textarea id="edit-del-ukol" rows="3" style="width:100%"></textarea></div>
+      <div class="r2" style="margin-bottom:14px;">
+        <div class="f"><label>Termín</label><input type="date" id="edit-del-termin" style="width:100%"></div>
+        <div class="f"><label>Stav</label>
+          <select id="edit-del-stav" style="width:100%">
+            <option value="open">Otevřené</option>
+            <option value="progress">V řešení</option>
+            <option value="done">Hotovo</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn bg" onclick="closeEditDel()">Zrušit</button>
+        <button class="btn ba" onclick="saveEditDel()">Uložit změny</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
