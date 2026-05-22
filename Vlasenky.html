@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelvion – Vlásenky 2025–2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg: #0f1117; --surface: #181c27; --surface2: #1e2334;
+  --border: #2a3050; --accent: #4f7fff; --accent2: #00d4aa;
+  --accent3: #ff6b6b; --accent4: #f7c948; --text: #e8eaf0; --muted: #6b7799;
+  --w1: #4f7fff; --w2: #00d4aa; --w3: #a855f7; --w4: #ff6b6b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 16px 28px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+.logo span { color: var(--muted); font-weight: 700; }
+.header-right { display: flex; gap: 10px; align-items: center; }
+.save-indicator { font-size: 0.75rem; color: var(--accent2); font-family: 'DM Mono', monospace; }
+
+.month-nav {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  padding: 14px 28px; background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.month-btn {
+  padding: 7px 14px; border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 0.82rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.15s;
+}
+.month-btn:hover { border-color: var(--accent); color: var(--accent); }
+.month-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+.month-btn.has-data { border-color: #2a4080; color: #8aaaf0; }
+.month-btn.active.has-data { background: var(--accent); color: white; }
+
+.content { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
+
+.summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; position: relative; overflow: hidden; }
+.card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--accent); }
+.card.c2::before { background: var(--accent2); }
+.card.c3::before { background: var(--accent4); }
+.card.c4::before { background: var(--accent3); }
+.card.c5::before { background: #a855f7; }
+.card.c6::before { background: var(--accent2); }
+.card-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+.card-value { font-size: 1.55rem; font-weight: 700; font-family: 'Syne', sans-serif; color: var(--text); line-height: 1; }
+.card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+.section-head { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface2); }
+.section-title { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.section-body { padding: 20px; }
+
+.btn { padding: 7px 14px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #3d6de0; }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: transparent; border: 1px solid #3a1a1a; color: var(--accent3); }
+.btn-danger:hover { background: #2a1010; }
+.btn-success { background: var(--accent2); color: #0a1a15; }
+.btn-success:hover { filter: brightness(0.9); }
+.btn-sm { padding: 4px 10px; font-size: 0.76rem; }
+
+input, select { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 7px 10px; font-size: 0.85rem; font-family: 'Inter', sans-serif; outline: none; transition: border 0.15s; }
+input:focus, select:focus { border-color: var(--accent); }
+input[type="number"] { font-family: 'DM Mono', monospace; }
+label { font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 0.3px; }
+
+.workers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.worker-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.worker-header { padding: 14px 16px; display: flex; align-items: center; border-bottom: 1px solid var(--border); }
+.worker-color-bar { width: 4px; height: 36px; border-radius: 2px; margin-right: 12px; flex-shrink: 0; }
+.worker-info { flex: 1; }
+.worker-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+.worker-total { font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; }
+.worker-meta { display: flex; gap: 16px; padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+.worker-meta-item .lbl { color: var(--muted); font-size: 0.72rem; }
+.worker-meta-item .val { font-family: 'DM Mono', monospace; font-weight: 500; }
+.worker-rate-row { display: flex; gap: 10px; padding: 12px 16px; align-items: flex-end; border-bottom: 1px solid var(--border); }
+
+/* CALENDAR */
+.cal-container { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cal-title { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+.cal-hours-input { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+.cal-hours-input input { width: 60px; padding: 4px 8px; font-size: 0.82rem; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-dow-label { text-align: center; font-size: 0.68rem; font-weight: 700; color: var(--muted); padding: 4px 2px; font-family: 'DM Mono', monospace; }
+.cal-dow-label.we { color: #b07a00; }
+.cal-cell { aspect-ratio: 1; border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; font-weight: 600; border: 1px solid transparent; transition: all 0.12s; position: relative; user-select: none; }
+.cal-cell.empty { cursor: default; background: transparent !important; border-color: transparent !important; }
+.cal-cell.normal { background: var(--surface2); color: var(--text); border-color: var(--border); }
+.cal-cell.normal:hover { border-color: var(--accent); color: var(--accent); transform: scale(1.08); z-index: 2; }
+.cal-cell.weekend { background: #1a1608; color: #b07a00; border-color: #2a2208; }
+.cal-cell.weekend:hover { border-color: #f7c948; transform: scale(1.08); z-index: 2; }
+.cal-cell.worked { border-width: 2px; }
+.cal-cell .cal-num { line-height: 1; }
+.cal-cell .cal-h { font-size: 0.62rem; opacity: 0.85; font-family: 'DM Mono', monospace; margin-top: 1px; }
+
+/* DAYS LIST */
+.days-wrap { padding: 12px 16px; }
+.days-list { max-height: 220px; overflow-y: auto; }
+.days-list::-webkit-scrollbar { width: 4px; }
+.days-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.day-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; font-size: 0.83rem; font-family: 'DM Mono', monospace; transition: background 0.1s; }
+.day-row:hover { background: var(--surface2); }
+.day-date { color: var(--muted); min-width: 80px; }
+.day-dow { min-width: 26px; font-size: 0.72rem; font-weight: 700; }
+.day-hours-val { font-weight: 500; flex: 1; display: flex; align-items: center; gap: 4px; }
+.day-hours-val input { width: 60px; padding: 3px 7px; font-size: 0.8rem; }
+.day-del { opacity: 0; cursor: pointer; color: var(--accent3); font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; background: none; border: none; }
+.day-row:hover .day-del { opacity: 1; }
+.we-text { color: #b07a00; }
+
+.elec-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+
+.invoice-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.invoice-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.invoice-date-label { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--accent4); }
+.invoice-total { font-family: 'DM Mono', monospace; font-size: 1.1rem; color: var(--accent2); }
+.invoice-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent2); color: #0a1a15; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transform: translateY(60px); opacity: 0; transition: all 0.3s; z-index: 999; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.no-data-msg { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
+.days-empty { color: var(--muted); font-size: 0.8rem; padding: 8px 0; font-style: italic; }
+
+@media (max-width: 600px) { .content { padding: 14px; } .month-nav, header { padding: 12px 14px; } .workers-grid { grid-template-columns: 1fr; } }
+.chart-wrap { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:20px; }
+.chart-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:18px; color:var(--text); }
+.chart-svg { width:100%; overflow:visible; }
+.bar-label { font-family:'DM Mono',monospace; font-size:11px; fill:var(--muted); }
+.bar-value { font-family:'DM Mono',monospace; font-size:10px; font-weight:600; }
+.chart-legend { display:flex; gap:20px; flex-wrap:wrap; margin-top:14px; font-size:0.78rem; }
+.legend-item { display:flex; align-items:center; gap:6px; color:var(--muted); }
+.legend-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:20px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+.stat-card-label { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; font-family:'DM Mono',monospace; margin-bottom:6px; }
+.stat-card-value { font-size:1.3rem; font-weight:700; font-family:'Syne',sans-serif; }
+
+/* MANAGER TUNING */
+.insight-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+.insight-card { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px; }
+.insight-card.good { border-color:#164837; background:#0d1b18; }
+.insight-card.warn { border-color:#5a3f10; background:#1f190b; }
+.insight-card.bad { border-color:#5a1f1f; background:#211111; }
+.insight-title { font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-family:'DM Mono',monospace; margin-bottom:8px; }
+.insight-value { font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; margin-bottom:5px; }
+.insight-note { color:var(--muted); font-size:0.82rem; line-height:1.4; }
+.quick-table { width:100%; border-collapse:collapse; font-size:0.84rem; }
+.quick-table th, .quick-table td { padding:8px 10px; border-bottom:1px solid var(--border); text-align:left; }
+.quick-table th { color:var(--muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; font-family:'DM Mono',monospace; }
+.quick-table td.num { font-family:'DM Mono',monospace; text-align:right; }
+
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; width:340px; max-width:90vw; }
+.modal h3 { font-family:"Syne",sans-serif; margin-bottom:18px; color:var(--text); font-size:1.1rem; }
+.modal-btns { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+
+
+.year-nav { display:flex; gap:8px; padding:10px 28px; background:var(--surface2); border-bottom:1px solid var(--border); align-items:center; }
+.year-label { font-size:0.72rem; color:var(--muted); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:1px; margin-right:4px; }
+.year-btn { padding:6px 20px; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--muted); cursor:pointer; font-size:0.95rem; font-weight:700; font-family:'Syne',sans-serif; transition:all 0.15s; }
+.year-btn:hover { border-color:var(--accent); color:var(--accent); }
+.year-btn.active { background:var(--accent); border-color:var(--accent); color:white; }
+
+.backup-panel { background:linear-gradient(135deg, rgba(79,127,255,.12), rgba(0,212,170,.08)); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.backup-title { font-family:'Syne',sans-serif; font-weight:800; color:var(--text); margin-bottom:4px; }
+.backup-text { color:var(--muted); font-size:.86rem; }
+.backup-warn { color:var(--accent4); font-weight:700; }
+
+.chart-filter { display:flex; gap:8px; margin-bottom:18px; align-items:center; flex-wrap:wrap; }
+.chart-filter-label { font-size:0.75rem; color:var(--muted); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:1px; margin-right:4px; }
+.chart-filter-btn { padding:7px 16px; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--muted); cursor:pointer; font-weight:700; font-family:'Syne',sans-serif; }
+.chart-filter-btn:hover { border-color:var(--accent); color:var(--accent); }
+.chart-filter-btn.active { background:var(--accent); border-color:var(--accent); color:white; }
+
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Kelvion <span>/ Vlásenky 2025–2026</span></div>
+  <div class="header-right">
+    <span class="save-indicator" id="saveIndicator"></span>
+    <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export JSON</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCsv()">📄 Export CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="importClick()">⬆ Import JSON</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</header>
+<div class="year-nav">
+  <span class="year-label">Rok:</span>
+  <button class="year-btn active" id="ybtn2025" onclick="setYear(2025)">2025</button>
+  <button class="year-btn" id="ybtn2026" onclick="setYear(2026)">2026</button>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 8px"></div>
+  <button class="year-btn" id="ybtnChart" onclick="showChart()">📊 Přehled</button>
+</div>
+<div class="month-nav" id="monthNav"></div>
+<div class="content" id="mainContent"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKERS = ['Josef Čapek','Petr Hájek','Tomáš Malý','Tomáš Živnůstka'];
+const WORKER_COLORS = ['var(--w1)','var(--w2)','var(--w3)','var(--w4)'];
+const MONTH_NAMES = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+const DOW_CS = ['Ne','Po','Út','St','Čt','Pá','So'];
+const DEFAULT_RATES = [325, 325, 250, 300];
+const STORAGE_KEY = 'kelvion_2025_2026';
+
+const INIT_2026 = {"1":{"workers":{"Josef Čapek":{"days":[["2026-01-05",9],["2026-01-06",9],["2026-01-07",9],["2026-01-08",9],["2026-01-12",9],["2026-01-13",3],["2026-01-14",9],["2026-01-15",9],["2026-01-16",7],["2026-01-19",9],["2026-01-20",9],["2026-01-21",3],["2026-01-22",9],["2026-01-23",9],["2026-01-26",9],["2026-01-27",9.5],["2026-01-28",8],["2026-01-29",9],["2026-01-30",7]],"rate":325},"Petr Hájek":{"days":[["2026-01-05",9],["2026-01-06",9],["2026-01-07",9],["2026-01-08",9],["2026-01-09",9],["2026-01-19",9],["2026-01-20",9],["2026-01-21",9],["2026-01-23",6],["2026-01-26",9],["2026-01-27",6],["2026-01-28",10.5],["2026-01-29",7],["2026-01-30",9]],"rate":325},"Tomáš Malý":{"days":[["2026-01-05",8.5],["2026-01-06",8.5],["2026-01-07",8.5],["2026-01-08",8.5],["2026-01-09",8.5],["2026-01-13",8.5],["2026-01-14",8.5],["2026-01-16",6.5],["2026-01-19",8.5],["2026-01-20",8.5],["2026-01-21",6],["2026-01-22",8.5],["2026-01-23",8.5],["2026-01-26",8.5],["2026-01-27",8.5],["2026-01-28",10],["2026-01-29",7],["2026-01-30",8.5]],"rate":250},"Tomáš Živnůstka":{"days":[["2026-01-05",10],["2026-01-06",10],["2026-01-07",8],["2026-01-08",3],["2026-01-09",9],["2026-01-12",2],["2026-01-13",9.5],["2026-01-14",9],["2026-01-15",9.5],["2026-01-16",2],["2026-01-19",10],["2026-01-20",9],["2026-01-21",9.5],["2026-01-22",9],["2026-01-23",3],["2026-01-26",8],["2026-01-27",4],["2026-01-28",10.5],["2026-01-29",9],["2026-01-30",8]],"rate":300}},"electricity":440937.5,"invoices":[{"datum":"15.1.","pocet_hodin":256,"celkem":275200,"pocet_doprav":6,"castka_dopravy":450,"doprava_celkem":2700,"bonus_hodin":8,"bonus_celkem":8600,"odfakturovano":286500},{"datum":"30.1.","pocet_hodin":273.5,"celkem":294012.5,"pocet_doprav":10,"castka_dopravy":450,"doprava_celkem":4500,"bonus_hodin":12,"bonus_celkem":12900,"odfakturovano":311412.5}]},"2":{"workers":{"Josef Čapek":{"days":[["2026-02-02",9],["2026-02-03",9],["2026-02-05",9],["2026-02-06",9],["2026-02-09",9],["2026-02-10",9],["2026-02-11",9],["2026-02-12",8.5],["2026-02-13",7],["2026-02-16",9],["2026-02-17",9],["2026-02-19",8],["2026-02-20",3],["2026-02-23",9],["2026-02-24",9],["2026-02-25",7.5],["2026-02-26",8.5],["2026-02-27",7]],"rate":325},"Petr Hájek":{"days":[["2026-02-02",9],["2026-02-03",9],["2026-02-04",9],["2026-02-05",9],["2026-02-06",9],["2026-02-09",9],["2026-02-10",9],["2026-02-11",8],["2026-02-12",8.5],["2026-02-13",9],["2026-02-16",9],["2026-02-17",9],["2026-02-19",9],["2026-02-20",9],["2026-02-23",9],["2026-02-24",9],["2026-02-25",9],["2026-02-26",9],["2026-02-27",8]],"rate":325},"Tomáš Malý":{"days":[["2026-02-02",8.5],["2026-02-03",8.5],["2026-02-04",6],["2026-02-05",8.5],["2026-02-06",8.5],["2026-02-09",8.5],["2026-02-10",8.5],["2026-02-11",8.5],["2026-02-12",8.5],["2026-02-13",6.5],["2026-02-16",8.5],["2026-02-17",8.5],["2026-02-18",8.5],["2026-02-19",8.5],["2026-02-20",8.5],["2026-02-23",8.5],["2026-02-24",8.5],["2026-02-25",8.5],["2026-02-26",8.5],["2026-02-27",7]],"rate":250},"Tomáš Živnůstka":{"days":[["2026-02-02",8],["2026-02-03",9.5],["2026-02-04",10],["2026-02-05",9.5],["2026-02-06",6],["2026-02-09",10],["2026-02-10",9],["2026-02-11",6.5],["2026-02-12",6],["2026-02-13",5],["2026-02-16",10],["2026-02-17",9],["2026-02-18",9.5],["2026-02-19",9],["2026-02-20",9],["2026-02-23",4],["2026-02-24",10],["2026-02-25",10]],"rate":300}},"electricity":323862.5,"invoices":[{"datum":"15.2.","pocet_hodin":270,"celkem":290250,"pocet_doprav":6,"castka_dopravy":450,"doprava_celkem":2700,"bonus_hodin":12,"bonus_celkem":12900,"odfakturovano":305850},{"datum":"28.2.","pocet_hodin":183.5,"celkem":197262.5,"pocet_doprav":5,"castka_dopravy":450,"doprava_celkem":2250,"bonus_hodin":7,"bonus_celkem":7525,"odfakturovano":207037.5}]},"3":{"workers":{"Josef Čapek":{"days":[["2026-03-02",9],["2026-03-03",9],["2026-03-04",9],["2026-03-05",9],["2026-03-06",8],["2026-03-09",8.5],["2026-03-10",8.5],["2026-03-11",3],["2026-03-12",8.5],["2026-03-13",9],["2026-03-16",7.5],["2026-03-17",9],["2026-03-18",9],["2026-03-19",9],["2026-03-20",9],["2026-03-23",9],["2026-03-24",9],["2026-03-25",9.5],["2026-03-26",5.5],["2026-03-27",4],["2026-03-30",9],["2026-03-31",9]],"rate":325},"Petr Hájek":{"days":[["2026-03-02",8.5],["2026-03-03",9],["2026-03-04",8.5],["2026-03-05",9],["2026-03-06",6.5],["2026-03-09",8],["2026-03-10",8],["2026-03-11",9],["2026-03-12",9],["2026-03-13",9],["2026-03-16",9],["2026-03-17",9],["2026-03-18",9],["2026-03-19",9],["2026-03-20",9],["2026-03-23",9],["2026-03-24",9],["2026-03-25",6],["2026-03-26",10],["2026-03-27",9],["2026-03-30",6.5],["2026-03-31",9]],"rate":325},"Tomáš Malý":{"days":[["2026-03-02",9],["2026-03-03",8.5],["2026-03-04",8.5],["2026-03-05",8.5],["2026-03-06",7.5],["2026-03-09",8.5],["2026-03-10",8.5],["2026-03-11",8.5],["2026-03-12",8.5],["2026-03-13",8.5],["2026-03-16",8.5],["2026-03-17",8.5],["2026-03-18",8.5],["2026-03-19",8.5],["2026-03-20",8.5],["2026-03-23",8.5],["2026-03-24",8.5],["2026-03-25",9.5],["2026-03-26",9.5],["2026-03-27",5.5],["2026-03-30",8.5],["2026-03-31",9.5]],"rate":250},"Tomáš Živnůstka":{"days":[["2026-03-02",8.5],["2026-03-03",10],["2026-03-04",8.5],["2026-03-05",10],["2026-03-06",3],["2026-03-09",9],["2026-03-10",2.5],["2026-03-11",6],["2026-03-12",6],["2026-03-13",9.5],["2026-03-16",10],["2026-03-17",10.5],["2026-03-18",10],["2026-03-19",9],["2026-03-20",10],["2026-03-23",10],["2026-03-24",10],["2026-03-25",5],["2026-03-26",9],["2026-03-27",11],["2026-03-30",10],["2026-03-31",8]],"rate":300}},"electricity":347516.45,"invoices":[{"datum":"15.3.","pocet_hodin":298.5,"celkem":320887.5,"pocet_doprav":7,"castka_dopravy":450,"doprava_celkem":3150,"bonus_hodin":0,"bonus_celkem":0,"odfakturovano":324037.5},{"datum":"30.3.","pocet_hodin":240.5,"celkem":258537.5,"pocet_doprav":0,"castka_dopravy":450,"doprava_celkem":0,"bonus_hodin":0,"bonus_celkem":0,"odfakturovano":258537.5}]},"4":{"workers":{"Josef Čapek":{"days":[],"rate":325},"Petr Hájek":{"days":[],"rate":325},"Tomáš Malý":{"days":[],"rate":250},"Tomáš Živnůstka":{"days":[],"rate":300}},"electricity":256487.5,"invoices":[{"datum":"15.4.","pocet_hodin":236.5,"celkem":254237.5,"pocet_doprav":5,"castka_dopravy":450,"doprava_celkem":2250,"bonus_hodin":0,"bonus_celkem":0,"odfakturovano":256487.5},{"datum":"30.4.","pocet_hodin":0,"celkem":0,"pocet_doprav":0,"castka_dopravy":450,"doprava_celkem":0,"bonus_hodin":0,"bonus_celkem":0,"odfakturovano":0}]}};
+
+// ── STATE ──
+let data = {}; // data[year][month]
+let currentYear = 2025;
+let currentMonth = 4;
+let chartYearFilter = 2026;
+
+// ── HELPERS ──
+function emptyMonth(m) {
+  const workers = {};
+  [...WORKERS, ...(data._extraWorkers||[])].forEach((w,i) => {
+    workers[w] = { days: [], rate: DEFAULT_RATES[Math.min(i, DEFAULT_RATES.length-1)] };
+  });
+  return { workers, electricity:0, elec_price:5.45, elec_kwh:0, invoices:[emptyInvoice(m,'15'), emptyInvoice(m,'30')] };
+}
+function emptyInvoice(m, d) {
+  return { datum:`${d}.${m}.`, pocet_hodin:0, sazba:1075, celkem:0, pocet_doprav:0, castka_dopravy:450, doprava_celkem:0, bonus_hodin:0, bonus_celkem:0, odfakturovano:0 };
+}
+function getMD(y, m) {
+  return (data[y] && data[y][m]) ? data[y][m] : emptyMonth(m);
+}
+function ensureYear(y, startM) {
+  if (!data[y]) data[y] = {};
+  for (let m = startM; m <= 12; m++) {
+    if (!data[y][m]) data[y][m] = emptyMonth(m);
+    const allW = [...WORKERS, ...(data._extraWorkers||[])];
+    allW.forEach((w,i) => {
+      if (!data[y][m].workers[w]) data[y][m].workers[w] = { days:[], rate:DEFAULT_RATES[Math.min(i,DEFAULT_RATES.length-1)] };
+    });
+    if (!data[y][m].invoices) data[y][m].invoices = [emptyInvoice(m,'15'), emptyInvoice(m,'30')];
+    if (data[y][m].elec_price === undefined) data[y][m].elec_price = 5.45;
+    if (data[y][m].elec_kwh === undefined) {
+      const leg = parseFloat(data[y][m].electricity) || 0;
+      const pr = parseFloat(data[y][m].elec_price) || 5.45;
+      data[y][m].elec_kwh = leg > 0 ? Math.round((leg/pr)*100)/100 : 0;
+    }
+    // ensure sazba on invoices
+    (data[y][m].invoices||[]).forEach(inv => { if (inv.sazba === undefined) inv.sazba = 1075; });
+  }
+}
+
+function fmtH(n) { n=parseFloat(n)||0; return n%1===0?n:n.toFixed(1); }
+function parseDate(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function dowOfDate(s) { return parseDate(s).getDay(); }
+function dowName(s) { return DOW_CS[dowOfDate(s)]; }
+function isWeekend(s) { const d=dowOfDate(s); return d===0||d===6; }
+function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
+function dateStr(y,m,d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function sumHours(w) { return (w&&w.days||[]).reduce((a,d)=>a+parseFloat(d[1]||0),0); }
+function workerCost(w) { return sumHours(w)*(w&&w.rate||0) + (parseFloat(w&&w.bonus)||0); }
+function totalMzdy(y,m) {
+  const md = getMD(y,m);
+  return getAllWorkers(y,m).reduce((s,w)=>s+workerCost(md.workers[w]),0);
+}
+function getElecTotal(md) {
+  return (parseFloat(md.elec_price)||5.45) * (parseFloat(md.elec_kwh)||0);
+}
+function getAllWorkers(y,m) {
+  const base = [...WORKERS];
+  const extra = data._extraWorkers || [];
+  return [...new Set([...base,...extra])].filter(w => {
+    if (base.includes(w)) return true;
+    return [2025,2026].some(yr => data[yr] && Object.values(data[yr]).some(md => md&&md.workers&&md.workers[w]));
+  });
+}
+
+// ── STORAGE ──
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      data = JSON.parse(saved);
+      // migrate old flat structure (2026-only saves with data[1]..data[12])
+      if (data[1] && !data[2026]) {
+        data[2026] = {};
+        for (let m=1;m<=12;m++) { data[2026][m]=data[m]; delete data[m]; }
+      }
+    } else {
+      data = { 2026: JSON.parse(JSON.stringify(INIT_2026)) };
+    }
+  } catch(e) { data = { 2026: JSON.parse(JSON.stringify(INIT_2026)) }; }
+  ensureYear(2025, 4);
+  ensureYear(2026, 1);
+}
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  const el=document.getElementById('saveIndicator');
+  el.textContent='✓ Uloženo'; setTimeout(()=>{el.textContent='';},2000);
+}
+function exportData() {
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  const now=new Date();
+  const stamp=now.toISOString().slice(0,10);
+  a.download='kelvion_vlasenky_backup_'+stamp+'.json'; a.click();
+  localStorage.setItem(STORAGE_KEY+'_lastBackup', now.toISOString());
+  showToast('Záloha JSON stažena. Ulož ji ideálně na iCloud/Drive.');
+  render();
+}
+function importClick() { document.getElementById('importFile').click(); }
+function importData(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{try{data=JSON.parse(ev.target.result);saveData();buildNav();render();showToast('Importováno!');}catch(err){alert('Chyba: '+err.message);}};
+  reader.readAsText(file);
+}
+
+
+function findLastFilledMonth() {
+  let last = { y: 2026, m: 1 }; // fallback
+  [2025, 2026].forEach(y => {
+    if (!data[y]) return;
+
+    Object.keys(data[y]).forEach(mm => {
+      const m = parseInt(mm, 10);
+      const md = data[y][m];
+      if (!md) return;
+
+      const workers = Object.keys(md.workers || {});
+      const hasHours = workers.some(w => ((md.workers[w] || {}).days || []).length > 0);
+      const hasInvoices = (md.invoices || []).some(inv =>
+        parseFloat(inv.odfakturovano || 0) > 0 || parseFloat(inv.pocet_hodin || 0) > 0
+      );
+      const hasElec = parseFloat(md.elec_kwh || 0) > 0 || parseFloat(md.electricity || 0) > 0;
+
+      if (hasHours || hasInvoices || hasElec) {
+        if (y > last.y || (y === last.y && m > last.m)) {
+          last = { y, m };
+        }
+      }
+    });
+  });
+
+  return last;
+}
+
+// ── YEAR / NAV ──
+function setYear(y) {
+  currentYear=y;
+  currentMonth=(y===2025)?4:1;
+  document.getElementById('ybtn2025').className='year-btn'+(y===2025?' active':'');
+  document.getElementById('ybtn2026').className='year-btn'+(y===2026?' active':'');
+  document.getElementById('ybtnChart').className='year-btn';
+  document.getElementById('monthNav').style.display='';
+  buildNav(); render();
+}
+function buildNav() {
+  const nav=document.getElementById('monthNav'); nav.innerHTML='';
+  const startM = currentYear===2025 ? 4 : 1;
+  for (let m=startM; m<=12; m++) {
+    const md=getMD(currentYear,m);
+    const allW=getAllWorkers(currentYear,m);
+    const hasData=allW.some(w=>md.workers[w]&&md.workers[w].days.length>0)||md.elec_kwh>0;
+    const btn=document.createElement('button');
+    btn.className='month-btn'+(m===currentMonth?' active':'')+(hasData?' has-data':'');
+    btn.textContent=SHORT[m-1]; btn.title=MONTH_NAMES[m-1];
+    btn.onclick=()=>{currentMonth=m;buildNav();render();};
+    nav.appendChild(btn);
+  }
+}
+
+// ── CALENDAR ──
+function renderCalendar(y, m, wname, wi) {
+  const dim=daysInMonth(y,m);
+  const firstDow=parseDate(dateStr(y,m,1)).getDay();
+  const offset=(firstDow+6)%7;
+  const workedMap={};
+  getMD(y,m).workers[wname].days.forEach(([ds,h])=>{workedMap[ds]=h;});
+  const colorRaw=['#4f7fff','#00d4aa','#a855f7','#ff6b6b'][wi%4];
+  let html=`<div class="chart-filter">
+    <span class="chart-filter-label">Přehled za rok:</span>
+    <button class="chart-filter-btn ${chartYearFilter===2025?'active':''}" onclick="showChart(2025)">2025</button>
+    <button class="chart-filter-btn ${chartYearFilter===2026?'active':''}" onclick="showChart(2026)">2026</button>
+    <button class="chart-filter-btn ${chartYearFilter==='all'?'active':''}" onclick="showChart('all')">Vše</button>
+  </div><div class="cal-container">
+    <div class="cal-header">
+      <span class="cal-title">📅 Klikněte na den pro přidání/odebrání</span>
+      <div class="cal-hours-input"><label style="margin:0">Hod:</label>
+        <input type="number" id="calHours_${wi}" value="9" step="0.5" min="0.5" max="24">
+      </div>
+    </div>
+    <div class="cal-grid">`;
+  ['Po','Út','St','Čt','Pá','So','Ne'].forEach((d,i)=>{
+    html+=`<div class="cal-dow-label${i>=5?' we':''}">${d}</div>`;
+  });
+  for(let i=0;i<offset;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=dateStr(y,m,d);
+    const dow=parseDate(ds).getDay();
+    const we=dow===0||dow===6;
+    const worked=workedMap[ds]!==undefined;
+    const cls='cal-cell '+(we?'weekend':'normal')+(worked?' worked':'');
+    const sty=worked?`border-color:${colorRaw};color:${colorRaw};background:${colorRaw}18`:'';
+    html+=`<div class="${cls}" style="${sty}" onclick="toggleDay(${y},${m},'${wname}',${wi},'${ds}')" title="${ds} (${DOW_CS[dow]})">
+      <span class="cal-num">${d}</span>
+      ${worked?`<span class="cal-h">${fmtH(workedMap[ds])}h</span>`:''}
+    </div>`;
+  }
+  html+=`</div></div>`;
+  return html;
+}
+
+// ── WORKER CARD ──
+function renderWorkerCard(y, m, name, wi) {
+  const md=getMD(y,m);
+  const w=md.workers[name]||{days:[],rate:DEFAULT_RATES[Math.min(wi,DEFAULT_RATES.length-1)]};
+  const total=sumHours(w); const cost=workerCost(w);
+  const color=WORKER_COLORS[wi%4];
+  const colorRaw=['#4f7fff','#00d4aa','#a855f7','#ff6b6b'][wi%4];
+  const isExtra=!WORKERS.includes(name);
+  const sorted=[...w.days].sort((a,b)=>a[0].localeCompare(b[0]));
+
+  let html=`<div class="worker-card">
+    <div class="worker-header">
+      <div class="worker-color-bar" style="background:${color}"></div>
+      <div class="worker-info"><div class="worker-name">${name}</div></div>
+      <div class="worker-total" style="color:${color}">${fmtH(total)} h</div>
+      ${isExtra?`<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removeWorker('${name}')" title="Odebrat">✕</button>`:''}
+    </div>
+    <div class="worker-meta">
+      <div class="worker-meta-item"><div class="lbl">Dní</div><div class="val">${w.days.length}</div></div>
+      <div class="worker-meta-item"><div class="lbl">Sazba</div><div class="val">${w.rate} Kč/h</div></div>
+      <div class="worker-meta-item"><div class="lbl">Náklad</div><div class="val">${cost?cost.toLocaleString('cs-CZ')+' Kč':'—'}</div></div>
+      ${(w.bonus>0)?`<div class="worker-meta-item"><div class="lbl" style="color:var(--accent4)">Bonus</div><div class="val" style="color:var(--accent4)">+${parseFloat(w.bonus).toLocaleString('cs-CZ')} Kč</div></div>`:''}
+    </div>
+    <div class="worker-rate-row">
+      <div class="field-group"><label>Hodinová sazba (Kč/h)</label>
+        <input type="number" value="${w.rate}" style="width:120px" oninput="setRate(${y},${m},'${name}',this.value)">
+      </div>
+      <div class="field-group"><label>🎁 Jednorázový bonus (Kč)</label>
+        <input type="number" value="${w.bonus||''}" placeholder="0" style="width:130px;border-color:var(--accent4)" oninput="setBonus(${y},${m},'${name}',this.value)">
+      </div>
+    </div>`;
+
+  html+=renderCalendar(y,m,name,wi);
+
+  html+=`<div class="days-wrap"><div class="days-list">`;
+  if(sorted.length===0){
+    html+=`<div class="days-empty">Žádné dny. Klikněte v kalendáři výše.</div>`;
+  } else {
+    sorted.forEach(([ds,hours],idx)=>{
+      const dow=dowName(ds); const we=isWeekend(ds);
+      const dp=ds.slice(8)+'.'+ds.slice(5,7)+'.';
+      html+=`<div class="day-row">
+        <span class="day-dow ${we?'we-text':''}">${dow}</span>
+        <span class="day-date ${we?'we-text':''}">${dp}</span>
+        <span class="day-hours-val">
+          <input type="number" value="${hours}" step="0.5" min="0.5" max="24"
+            data-wi="${wi}" data-idx="${idx}"
+            onchange="updateHours(${y},${m},'${name}','${ds}',this.value)"
+            onkeydown="hoursKeyDown(event,${y},${m},'${name}','${ds}',${wi},${idx})"> h
+        </span>
+        <button class="day-del" onclick="delDay(${y},${m},'${name}','${ds}')" title="Smazat">✕</button>
+      </div>`;
+    });
+  }
+  html+=`</div></div></div>`;
+  return html;
+}
+
+// ── INVOICE CARD ──
+function renderInvoiceCard(inv, y, m, ii) {
+  const odfak=parseFloat(inv.odfakturovano||0);
+  const sazba=inv.sazba!==undefined?inv.sazba:1075;
+  return `<div class="invoice-card">
+    <div class="invoice-card-head">
+      <span class="invoice-date-label">Faktura ${inv.datum}</span>
+      <span class="invoice-total" id="inv_total_${y}_${m}_${ii}">${odfak?odfak.toLocaleString('cs-CZ')+' Kč':'—'}</span>
+      <button class="btn btn-danger btn-sm" onclick="delInvoice(${y},${m},${ii})">Smazat</button>
+    </div>
+    <div class="invoice-fields">
+      <div class="field-group"><label>Datum fakturace</label>
+        <input type="text" value="${inv.datum}" style="width:100%" onblur="setInvField(${y},${m},${ii},'datum',this.value)"></div>
+      <div class="field-group"><label>Počet hodin</label>
+        <input type="number" step="0.5" value="${inv.pocet_hodin||''}" style="width:100%"
+          id="inv_h_${y}_${m}_${ii}" onblur="setInvHodiny(${y},${m},${ii},this.value)"></div>
+      <div class="field-group"><label>Sazba (Kč/h)</label>
+        <input type="number" step="1" value="${sazba}" style="width:100%"
+          id="inv_sazba_${y}_${m}_${ii}" onblur="setInvSazba(${y},${m},${ii},this.value)"></div>
+      <div class="field-group"><label>Celkem hodin (Kč)</label>
+        <input type="number" step="0.01" value="${inv.celkem||''}" style="width:100%;background:var(--surface2)"
+          id="inv_celkem_${y}_${m}_${ii}" readonly title="Počet hodin × Sazba"></div>
+      <div class="field-group"><label>Počet doprav</label>
+        <input type="number" value="${inv.pocet_doprav||''}" style="width:100%"
+          onblur="setInvDoprava(${y},${m},${ii},'pocet_doprav',this.value)"></div>
+      <div class="field-group"><label>Částka doprava (Kč/jízda)</label>
+        <input type="number" value="${inv.castka_dopravy||''}" style="width:100%"
+          onblur="setInvDoprava(${y},${m},${ii},'castka_dopravy',this.value)"></div>
+      <div class="field-group"><label>Doprava celkem (Kč)</label>
+        <input type="number" step="0.01" value="${inv.doprava_celkem||''}" style="width:100%;background:var(--surface2)"
+          id="inv_doprava_celkem_${y}_${m}_${ii}" readonly title="Počet doprav × Částka doprava"></div>
+      <div class="field-group"><label>Bonus hodin</label>
+        <input type="number" step="0.5" value="${inv.bonus_hodin||''}" style="width:100%"
+          onblur="setInvBonusHodiny(${y},${m},${ii},this.value)"></div>
+      <div class="field-group"><label>Bonus celkem (Kč)</label>
+        <input type="number" step="0.01" value="${inv.bonus_celkem||''}" style="width:100%;background:var(--surface2)"
+          id="inv_bonus_celkem_${y}_${m}_${ii}" readonly title="Bonus hodin × Sazba"></div>
+      <div class="field-group"><label>⭐ Odfakturováno celkem (Kč)</label>
+        <input type="number" step="0.01" value="${inv.odfakturovano||''}" style="width:100%;border-color:var(--accent4)"
+          id="inv_odfak_${y}_${m}_${ii}" onblur="setInvField(${y},${m},${ii},'odfakturovano',this.value)"></div>
+    </div>
+  </div>`;
+}
+
+
+// ── MANAGER HELPERS ──
+function money(n, digits=0) { return (parseFloat(n)||0).toLocaleString('cs-CZ',{maximumFractionDigits:digits})+' Kč'; }
+function monthNumbers(y,m) {
+  const md=getMD(y,m);
+  const allW=getAllWorkers(y,m);
+  const totalH=allW.reduce((s,w)=>s+sumHours(md.workers[w]||{days:[]}),0);
+  const wage=totalMzdy(y,m);
+  const elec=getElecTotal(md);
+  const invoiced=md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const invoicedHours=md.invoices.reduce((s,inv)=>s+parseFloat(inv.pocet_hodin||0)+parseFloat(inv.bonus_hodin||0),0);
+  const transport=md.invoices.reduce((s,inv)=>s+parseFloat(inv.doprava_celkem||0),0);
+  const cost=wage+elec;
+  const profit=invoiced-cost;
+  return {md, allW, totalH, wage, elec, invoiced, invoicedHours, transport, cost, profit,
+    revenuePerHour: totalH?invoiced/totalH:0,
+    costPerHour: totalH?cost/totalH:0,
+    profitPerHour: totalH?profit/totalH:0,
+    margin: invoiced?profit/invoiced*100:0,
+    hourDiff: invoicedHours-totalH
+  };
+}
+function renderManagerCheck(y,m) {
+  const n=monthNumbers(y,m);
+  const cards=[];
+  const marginClass=n.invoiced===0?'warn':(n.margin>=30?'good':(n.margin>=15?'warn':'bad'));
+  cards.push(`<div class="insight-card ${marginClass}"><div class="insight-title">Marže</div><div class="insight-value" style="color:${n.margin>=30?'var(--accent2)':n.margin>=15?'var(--accent4)':'var(--accent3)'}">${n.invoiced?n.margin.toFixed(1)+' %':'—'}</div><div class="insight-note">Cíl bych držel aspoň kolem 25–30 %. Níže už je potřeba řešit sazbu, bonusy nebo náklady.</div></div>`);
+  cards.push(`<div class="insight-card"><div class="insight-title">Příjem / hod.</div><div class="insight-value" style="color:var(--accent)">${n.totalH?money(n.revenuePerHour,0)+'/h':'—'}</div><div class="insight-note">Kolik zakázka přinesla na jednu skutečně odpracovanou hodinu.</div></div>`);
+  cards.push(`<div class="insight-card"><div class="insight-title">Náklad / hod.</div><div class="insight-value" style="color:var(--accent4)">${n.totalH?money(n.costPerHour,0)+'/h':'—'}</div><div class="insight-note">Mzdy + elektřina děleno odpracovanými hodinami.</div></div>`);
+  const avgInvSazba = n.invoicedHours > 0 ? n.invoiced / n.invoicedHours : 1075;
+  const effBonus = n.hourDiff > 0 ? n.hourDiff * avgInvSazba : 0;
+  const effClass = n.hourDiff >= 0 ? 'good' : 'warn';
+  const effColor = n.hourDiff >= 0 ? 'var(--accent2)' : 'var(--accent4)';
+  let effNote, effExtra = '';
+  if (n.hourDiff > 0) {
+    effNote = `Fakturované hodiny jsou vyšší než evidence pracovníků. Pokud je to díky rychlejší práci nebo bonusu, je to PLUS pro firmu.`;
+    effExtra = `<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:var(--surface);padding:8px 10px;border-radius:6px;font-size:0.78rem;">
+        <div style="color:var(--muted);font-size:0.7rem;margin-bottom:2px;">HODINY DO PLUSU</div>
+        <div style="font-family:'DM Mono',monospace;font-weight:600;color:var(--accent2)">+${fmtH(n.hourDiff)} h</div>
+      </div>
+      <div style="background:var(--surface);padding:8px 10px;border-radius:6px;font-size:0.78rem;">
+        <div style="color:var(--muted);font-size:0.7rem;margin-bottom:2px;">BONUS Z EFEKTIVITY</div>
+        <div style="font-family:'DM Mono',monospace;font-weight:600;color:var(--accent2)">${Math.round(effBonus).toLocaleString('cs-CZ')} Kč</div>
+      </div>
+    </div>`;
+  } else if (n.hourDiff < 0) {
+    effNote = `Evidence pracovníků je vyšší než fakturace. Zkontroluj, jestli jsou v tom bonusy nebo ruční úprava, nebo jestli nechybí hodiny ve faktuře.`;
+  } else {
+    effNote = `✅ Fakturované hodiny sedí s evidencí pracovníků.`;
+  }
+  cards.push(`<div class="insight-card ${effClass}"><div class="insight-title">Kontrola hodin / efektivita</div><div class="insight-value" style="color:${effColor}">${n.hourDiff>=0?'+':''}${fmtH(n.hourDiff)} h</div><div class="insight-note">${effNote}</div>${effExtra}</div>`);
+  const workerRows=n.allW.map(w=>{const ww=n.md.workers[w]||{days:[],rate:0};return {name:w,h:sumHours(ww),cost:workerCost(ww)}}).filter(x=>x.h>0).sort((a,b)=>b.h-a.h);
+  let table=`<table class="quick-table"><thead><tr><th>Pracovník</th><th class="num">Hodiny</th><th class="num">Náklad</th><th class="num">Podíl</th></tr></thead><tbody>`;
+  if(workerRows.length===0) table+=`<tr><td colspan="4" style="color:var(--muted)">Zatím žádné hodiny v tomto měsíci.</td></tr>`;
+  workerRows.forEach(r=>{ table+=`<tr><td>${r.name}</td><td class="num">${fmtH(r.h)} h</td><td class="num">${money(r.cost)}</td><td class="num">${n.totalH?(r.h/n.totalH*100).toFixed(0):0} %</td></tr>`; });
+  table+=`</tbody></table>`;
+  const warnings=[];
+  const avgSazba = n.invoicedHours > 0 ? n.invoiced/n.invoicedHours : 0;
+  const effGain = n.hourDiff > 0 ? n.hourDiff * avgSazba : 0;
+  if (effGain > 0) {
+    const el = document.getElementById('eff_gain_card');
+    if (el) el.innerHTML = `<div class="card-label">Zisk z efektivity</div><div class="card-value" style="color:var(--accent2)">${effGain.toLocaleString('cs-CZ',{maximumFractionDigits:0})} Kč</div><div class="card-sub">${fmtH(n.hourDiff)} h × ${avgSazba.toLocaleString('cs-CZ',{maximumFractionDigits:0})} Kč/h</div>`;
+  }
+  if(n.invoiced===0 && n.totalH>0) warnings.push('Jsou zadané odpracované hodiny, ale žádná fakturace.');
+  if(n.elec===0 && n.totalH>0) warnings.push('Chybí elektřina – zisk může být nadhodnocený.');
+  if(n.profit<0) warnings.push('Měsíc je ve ztrátě. Zkontroluj sazbu, fakturované hodiny a elektřinu.');
+  if(n.hourDiff > 8) warnings.push(`Fakturované hodiny jsou o ${fmtH(n.hourDiff)} h vyšší než evidence. Pokud je to díky rychlejší práci nebo bonusu, je to plus pro firmu (bonus z efektivity: ${Math.round(n.hourDiff*(n.invoicedHours>0?n.invoiced/n.invoicedHours:1075)).toLocaleString('cs-CZ')} Kč).`);
+  if(n.hourDiff < -8) warnings.push(`Pozor: fakturované hodiny nesedí s evidencí pracovníků o ${fmtH(Math.abs(n.hourDiff))} h. Zkontroluj, jestli jsou v tom bonusy nebo ruční úprava, nebo jestli nechybí hodiny ve faktuře.`);
+  const warnHtml=warnings.length?warnings.map(w=>`<div class="insight-card warn"><div class="insight-note">⚠️ ${w}</div></div>`).join(''):`<div class="insight-card good"><div class="insight-note">✅ Základní kontrola nevypadá špatně. Zkontroluj už jen, zda sedí sazba a dopravy.</div></div>`;
+  return `<div class="section"><div class="section-head"><div class="section-title">🧠 Manažerská kontrola měsíce</div></div><div class="section-body"><div class="insight-grid">${cards.join('')}</div><div style="height:14px"></div><div class="insight-grid">${warnHtml}</div><div style="height:18px"></div>${table}</div></div>`;
+}
+function exportCsv() {
+  const rows=[['Rok','Měsíc','Hodiny evidence','Hodiny fakturace vč. bonusu','Mzdy Kč','Elektřina Kč','Náklady Kč','Odfakturováno Kč','Zisk Kč','Marže %','Příjem Kč/h','Náklad Kč/h','Zisk Kč/h']];
+  [[2025,4,12],[2026,1,12]].forEach(([y,start,end])=>{
+    for(let m=start;m<=end;m++){
+      const n=monthNumbers(y,m);
+      rows.push([y,MONTH_NAMES[m-1],n.totalH,n.invoicedHours,n.wage,n.elec,n.cost,n.invoiced,n.profit,n.margin,n.revenuePerHour,n.costPerHour,n.profitPerHour]);
+    }
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kelvion_vlasenky_prehled.csv'; a.click();
+}
+
+// ── MAIN RENDER ──
+function render() {
+  const y=currentYear; const m=currentMonth; const md=getMD(y,m);
+  const allW=getAllWorkers(y,m);
+  const totalH=allW.reduce((s,w)=>s+sumHours(md.workers[w]||{days:[]}),0);
+  const totalCost=totalMzdy(y,m);
+  const totalOdfak=md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const elecT=getElecTotal(md);
+  const cistyZisk=totalOdfak-(totalCost+elecT);
+  const zPos=cistyZisk>=0;
+
+  const invHoursL = md.invoices.reduce((s,inv)=>s+parseFloat(inv.pocet_hodin||0)+parseFloat(inv.bonus_hodin||0),0);
+  const hourDiffL = invHoursL - totalH;
+  const avgSazbaL = invHoursL > 0 ? totalOdfak / invHoursL : 0;
+  const effGainL = hourDiffL > 0 ? hourDiffL * avgSazbaL : 0;
+  const margeL = totalOdfak > 0 ? cistyZisk/totalOdfak*100 : 0;
+  const margeColor = margeL >= 30 ? 'var(--accent2)' : margeL >= 15 ? 'var(--accent4)' : 'var(--accent3)';
+  let html=`<div class="summary-cards">
+    <div class="card"><div class="card-label">Celkem hodin evidence</div><div class="card-value" id="sc_h">${fmtH(totalH)}</div><div class="card-sub">odpracovaných hodin</div></div>
+    <div class="card c2"><div class="card-label">Mzdový náklad</div><div class="card-value" id="sc_c">${totalCost?totalCost.toLocaleString('cs-CZ'):'0'} Kč</div><div class="card-sub">součet za pracovníky</div></div>
+    <div class="card c3"><div class="card-label">Elektřina</div><div class="card-value" id="sc_e">${elecT?elecT.toLocaleString('cs-CZ',{maximumFractionDigits:2}):'0'} Kč</div><div class="card-sub">hala Kelvion</div></div>
+    <div class="card c4"><div class="card-label">Odfakturováno</div><div class="card-value" id="sc_i">${totalOdfak?totalOdfak.toLocaleString('cs-CZ'):'0'} Kč</div><div class="card-sub">fakturované hodiny: ${fmtH(invHoursL)} h</div></div>
+    <div class="card c6" style="border-left-color:${zPos?'var(--accent2)':'var(--accent3)'}"><div class="card-label">Čistý zisk</div><div class="card-value" id="sc_zisk" style="color:${zPos?'var(--accent2)':'var(--accent3)'}">${cistyZisk.toLocaleString('cs-CZ',{maximumFractionDigits:0})} Kč</div><div class="card-sub">Příjem − (mzdy + elektřina)</div></div>
+    <div class="card c5"><div class="card-label">Marže</div><div class="card-value" id="sc_marze" style="color:${margeColor}">${totalOdfak?margeL.toFixed(1)+' %':'—'}</div><div class="card-sub">Cíl: min. 25–30 %</div></div>
+    <div class="card c2"><div class="card-label">Příjem / hod.</div><div class="card-value" style="color:var(--accent)">${totalH?Math.round(totalOdfak/totalH).toLocaleString('cs-CZ')+' Kč':'—'}</div><div class="card-sub">na 1 odpracovanou hodinu</div></div>
+    <div class="card c3"><div class="card-label">Náklad / hod.</div><div class="card-value" style="color:var(--accent4)">${totalH?Math.round((totalCost+elecT)/totalH).toLocaleString('cs-CZ')+' Kč':'—'}</div><div class="card-sub">mzdy + elektřina / hod.</div></div>
+    <div class="card" style="border-left-color:${zPos?'var(--accent2)':'var(--accent3)'}"><div class="card-label">Zisk / hod.</div><div class="card-value" id="sc_profit_hour" style="color:${zPos?'var(--accent2)':'var(--accent3)'}">${totalH?Math.round(cistyZisk/totalH).toLocaleString('cs-CZ')+' Kč':'—'}</div><div class="card-sub">čistý zisk na hodinu</div></div>
+    <div class="card" id="eff_gain_card" style="border-left-color:${hourDiffL>=0?'var(--accent2)':'var(--accent4)'}">
+      ${hourDiffL > 0
+        ? `<div class="card-label">Bonus z efektivity</div>
+           <div class="card-value" style="color:var(--accent2)">${Math.round(effGainL).toLocaleString('cs-CZ')} Kč</div>
+           <div class="card-sub">+${fmtH(hourDiffL)} h rychleji × ${Math.round(avgSazbaL).toLocaleString('cs-CZ')} Kč/h</div>`
+        : `<div class="card-label">Rozdíl hodin</div>
+           <div class="card-value" style="color:${hourDiffL<0?'var(--accent3)':'var(--accent2)'}">${hourDiffL>=0?'+':''}${fmtH(hourDiffL)} h</div>
+           <div class="card-sub">${hourDiffL<0?'⚠ Zkontroluj fakturu':'✅ Hodiny sedí'}</div>`}
+    </div>
+  </div>`;
+
+  html+=renderManagerCheck(y,m);
+
+  // Backup panel with more prominent warning
+  const lastBackupRaw = localStorage.getItem(STORAGE_KEY+'_lastBackup');
+  const lastBackup = lastBackupRaw ? new Date(lastBackupRaw) : null;
+  const daysSinceBackup = lastBackup ? Math.floor((Date.now()-lastBackup.getTime())/86400000) : null;
+  const backupMsg = !lastBackup ? '<span class="backup-warn">Zatím nemáš uloženou žádnou zálohu JSON.</span>' : (daysSinceBackup>14 ? '<span class="backup-warn">Poslední záloha před '+daysSinceBackup+' dny.</span>' : 'Poslední záloha: '+lastBackup.toLocaleDateString('cs-CZ'));
+  html+=`<div class="backup-panel">
+    <div style="flex:1">
+      <div class="backup-title">💾 Bezpečnost dat — záloha JSON</div>
+      <div class="backup-text">${backupMsg}</div>
+      <div style="margin-top:6px;font-size:0.82rem;color:var(--accent4);font-weight:600;">⚠ Po každém větším doplnění dat si stáhni JSON zálohu. Data jsou uložena jen v tomto prohlížeči.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-success" onclick="exportData()">💾 Stáhnout zálohu</button>
+      <button class="btn btn-ghost btn-sm" onclick="importClick()">⬆ Obnovit zálohu</button>
+    </div>
+  </div>`;
+
+  html+=`<div class="section">
+    <div class="section-head">
+      <div class="section-title">👷 Pracovníci – ${MONTH_NAMES[m-1]} ${y}</div>
+      <button class="btn btn-primary btn-sm" onclick="showAddWorkerModal()">+ Přidat pracovníka</button>
+    </div>
+    <div class="section-body"><div class="workers-grid">`;
+  allW.forEach((name,wi)=>{ html+=renderWorkerCard(y,m,name,wi); });
+  html+=`</div></div></div>`;
+
+  const elecKwh=md.elec_kwh||0; const elecPrice=md.elec_price!==undefined?md.elec_price:5.45;
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">⚡ Elektřina hala Kelvion</div></div>
+    <div class="section-body">
+      <div class="elec-row" style="align-items:center;gap:18px;flex-wrap:wrap">
+        <div class="field-group"><label>Cena za kWh (Kč)</label>
+          <input type="number" step="0.01" value="${elecPrice}" style="width:110px"
+            onchange="setElecField(${y},${m},'elec_price',this.value)" onblur="setElecField(${y},${m},'elec_price',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">×</div>
+        <div class="field-group"><label>Počet kWh</label>
+          <input type="number" step="1" value="${elecKwh||''}" placeholder="0" style="width:140px"
+            onchange="setElecField(${y},${m},'elec_kwh',this.value)" onblur="setElecField(${y},${m},'elec_kwh',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">=</div>
+        <div style="align-self:flex-end;padding-bottom:6px">
+          <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-family:'DM Mono',monospace">Náklad za elektřinu</div>
+          <div id="elec_result_${y}_${m}" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent4)">${elecT?elecT.toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč':'— Kč'}</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:0.85rem">
+        Celkový náklad za měsíc (mzdy + elektřina): <b id="elec_total_${y}_${m}" style="color:var(--accent2)">${(totalCost+elecT).toLocaleString('cs-CZ',{maximumFractionDigits:2})} Kč</b>
+      </div>
+    </div>
+  </div>`;
+
+  html+=`<div class="section">
+    <div class="section-head">
+      <div class="section-title">🧾 Fakturace</div>
+      <button class="btn btn-ghost btn-sm" onclick="addInvoice(${y},${m})">+ Přidat fakturu</button>
+    </div>
+    <div class="section-body">`;
+  md.invoices.forEach((inv,ii)=>{ html+=renderInvoiceCard(inv,y,m,ii); });
+  if(!md.invoices.length) html+='<div class="no-data-msg">Žádné faktury.</div>';
+  html+=`</div></div>`;
+
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+// ── ACTIONS ──
+function toggleDay(y,m,name,wi,ds) {
+  const days=data[y][m].workers[name].days;
+  const idx=days.findIndex(d=>d[0]===ds);
+  if(idx>=0){ days.splice(idx,1); saveData(); render(); showToast(`Odstraněno: ${ds.slice(8)}.${ds.slice(5,7)}.`); }
+  else {
+    const hoursEl=document.getElementById('calHours_'+wi);
+    const hours=parseFloat(hoursEl?hoursEl.value:9)||9;
+    days.push([ds,hours]); saveData(); render();
+    showToast(`Přidáno: ${ds.slice(8)}.${ds.slice(5,7)}. – ${hours}h`);
+  }
+}
+function delDay(y,m,name,ds) {
+  const days=data[y][m].workers[name].days;
+  const idx=days.findIndex(d=>d[0]===ds);
+  if(idx>=0){days.splice(idx,1);saveData();render();}
+}
+function updateHours(y,m,name,ds,val) {
+  const hours=parseFloat(val); if(isNaN(hours)) return;
+  const days=data[y][m].workers[name].days;
+  const idx=days.findIndex(d=>d[0]===ds);
+  if(idx>=0){days[idx][1]=hours;saveData();updateSummaryCards();}
+}
+function hoursKeyDown(e,y,m,name,ds,wi,idx) {
+  if(e.key!=='Enter') return; e.preventDefault();
+  const hours=parseFloat(e.target.value);
+  if(!isNaN(hours)){const days=data[y][m].workers[name].days;const i=days.findIndex(d=>d[0]===ds);if(i>=0){days[i][1]=hours;saveData();updateSummaryCards();}}
+  const all=Array.from(document.querySelectorAll(`input[data-wi="${wi}"]`));
+  const next=all[all.indexOf(e.target)+1];
+  if(next){next.focus();next.select();}
+}
+function setRate(y,m,name,val) { data[y][m].workers[name].rate=parseFloat(val)||0; saveData(); updateSummaryCards(); }
+function setBonus(y,m,name,val) { data[y][m].workers[name].bonus=parseFloat(val)||0; saveData(); updateSummaryCards(); }
+
+function setElecField(y,m,field,val) {
+  data[y][m][field]=parseFloat(val)||0;
+  saveData();
+  const total=getElecTotal(data[y][m]);
+  const el=document.getElementById(`elec_result_${y}_${m}`); if(el) el.textContent=total?total.toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč':'— Kč';
+  const el2=document.getElementById(`elec_total_${y}_${m}`); if(el2) el2.textContent=(totalMzdy(y,m)+total).toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč';
+  updateSummaryCards();
+}
+
+function setInvField(y,m,ii,field,val) {
+  data[y][m].invoices[ii][field]=isNaN(parseFloat(val))?val:parseFloat(val);
+  saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvDoprava(y,m,ii,field,val) {
+  const inv=data[y][m].invoices[ii];
+  inv[field]=parseFloat(val)||0;
+  inv.doprava_celkem=(parseFloat(inv.pocet_doprav)||0)*(parseFloat(inv.castka_dopravy)||0);
+  const el=document.getElementById(`inv_doprava_celkem_${y}_${m}_${ii}`); if(el) el.value=inv.doprava_celkem||'';
+  inv.odfakturovano=(parseFloat(inv.celkem)||0)+inv.doprava_celkem+(parseFloat(inv.bonus_celkem)||0);
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  saveData(); refreshInvDisplay(y,m,ii);
+}
+
+function setInvCalc(y,m,ii,field,val) {
+  data[y][m].invoices[ii][field]=parseFloat(val)||0;
+  const inv=data[y][m].invoices[ii];
+  inv.odfakturovano=(parseFloat(inv.celkem)||0)+(parseFloat(inv.doprava_celkem)||0)+(parseFloat(inv.bonus_celkem)||0);
+  const el=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(el) el.value=inv.odfakturovano||'';
+  saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvHodiny(y,m,ii,val) {
+  const inv=data[y][m].invoices[ii];
+  inv.pocet_hodin=parseFloat(val)||0;
+  const sazba=inv.sazba!==undefined?inv.sazba:1075;
+  inv.celkem=inv.pocet_hodin*sazba;
+  const cel=document.getElementById(`inv_celkem_${y}_${m}_${ii}`); if(cel) cel.value=inv.celkem||'';
+  inv.odfakturovano=(inv.celkem||0)+(parseFloat(inv.doprava_celkem)||0)+(parseFloat(inv.bonus_celkem)||0);
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvBonusHodiny(y,m,ii,val) {
+  const inv=data[y][m].invoices[ii];
+  inv.bonus_hodin=parseFloat(val)||0;
+  const sazba=inv.sazba!==undefined?inv.sazba:1075;
+  inv.bonus_celkem=inv.bonus_hodin*sazba;
+  const bon=document.getElementById(`inv_bonus_celkem_${y}_${m}_${ii}`); if(bon) bon.value=inv.bonus_celkem||'';
+  inv.odfakturovano=(parseFloat(inv.celkem)||0)+(parseFloat(inv.doprava_celkem)||0)+inv.bonus_celkem;
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvSazba(y,m,ii,val) {
+  const inv=data[y][m].invoices[ii];
+  inv.sazba=parseFloat(val)||1075;
+  inv.celkem=(inv.pocet_hodin||0)*inv.sazba;
+  inv.bonus_celkem=(inv.bonus_hodin||0)*inv.sazba;
+  const cel=document.getElementById(`inv_celkem_${y}_${m}_${ii}`); if(cel) cel.value=inv.celkem||'';
+  const bon=document.getElementById(`inv_bonus_celkem_${y}_${m}_${ii}`); if(bon) bon.value=inv.bonus_celkem||'';
+  inv.odfakturovano=(inv.celkem||0)+(parseFloat(inv.doprava_celkem)||0)+inv.bonus_celkem;
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  saveData(); refreshInvDisplay(y,m,ii);
+}
+function refreshInvDisplay(y,m,ii) {
+  const inv=data[y][m].invoices[ii];
+  const odfak=parseFloat(inv.odfakturovano||0);
+  const el=document.getElementById(`inv_total_${y}_${m}_${ii}`); if(el) el.textContent=odfak?odfak.toLocaleString('cs-CZ')+' Kč':'—';
+  const totalOdfak=data[y][m].invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const sc=document.getElementById('sc_i'); if(sc) sc.textContent=(totalOdfak?totalOdfak.toLocaleString('cs-CZ'):'0')+' Kč';
+  const totalCost=totalMzdy(y,m); const elecT=getElecTotal(getMD(y,m));
+  const zisk=totalOdfak-(totalCost+elecT);
+  const zEl=document.getElementById('sc_zisk');
+  if(zEl){zEl.textContent=zisk.toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč';zEl.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const ph=document.getElementById('sc_profit_hour'); if(ph){ph.textContent=totalH?Math.round(zisk/totalH).toLocaleString('cs-CZ')+' Kč':'—';ph.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const zCard=zEl&&zEl.closest('.card'); if(zCard) zCard.style.borderLeftColor=zisk>=0?'var(--accent2)':'var(--accent3)';
+  const marze=totalOdfak>0?zisk/totalOdfak*100:0;
+  const mEl=document.getElementById('sc_marze');
+  if(mEl){mEl.textContent=totalOdfak?marze.toFixed(1)+' %':'—';mEl.style.color=marze>=30?'var(--accent2)':marze>=15?'var(--accent4)':'var(--accent3)';}
+}
+function addInvoice(y,m) { data[y][m].invoices.push(emptyInvoice(m, data[y][m].invoices.length+1)); saveData(); render(); }
+function delInvoice(y,m,ii) { if(!confirm('Smazat fakturu?'))return; data[y][m].invoices.splice(ii,1); saveData(); render(); }
+
+function updateSummaryCards() {
+  const y=currentYear; const m=currentMonth; const md=getMD(y,m);
+  const allW=getAllWorkers(y,m);
+  const totalH=allW.reduce((s,w)=>s+sumHours(md.workers[w]||{days:[]}),0);
+  const totalCost=totalMzdy(y,m);
+  const totalOdfak=md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const elecT=getElecTotal(md);
+  const h=document.getElementById('sc_h'); if(h) h.textContent=fmtH(totalH);
+  const c=document.getElementById('sc_c'); if(c) c.textContent=(totalCost?totalCost.toLocaleString('cs-CZ'):'0')+' Kč';
+  const e=document.getElementById('sc_e'); if(e) e.textContent=(elecT?elecT.toLocaleString('cs-CZ',{maximumFractionDigits:2}):'0')+' Kč';
+  const i=document.getElementById('sc_i'); if(i) i.textContent=(totalOdfak?totalOdfak.toLocaleString('cs-CZ'):'0')+' Kč';
+  const zisk=totalOdfak-(totalCost+elecT);
+  const zEl=document.getElementById('sc_zisk');
+  if(zEl){zEl.textContent=zisk.toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč';zEl.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const ph=document.getElementById('sc_profit_hour'); if(ph){ph.textContent=totalH?Math.round(zisk/totalH).toLocaleString('cs-CZ')+' Kč':'—';ph.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const zCard=zEl&&zEl.closest('.card'); if(zCard) zCard.style.borderLeftColor=zisk>=0?'var(--accent2)':'var(--accent3)';
+  const marze=totalOdfak>0?zisk/totalOdfak*100:0;
+  const mEl=document.getElementById('sc_marze');
+  if(mEl){mEl.textContent=totalOdfak?marze.toFixed(1)+' %':'—';mEl.style.color=marze>=30?'var(--accent2)':marze>=15?'var(--accent4)':'var(--accent3)';}
+}
+
+// ── WORKERS ──
+function getAllWorkers(y,m) {
+  const base=[...WORKERS]; const extra=data._extraWorkers||[];
+  return [...new Set([...base,...extra])].filter(w=>{
+    if(base.includes(w)) return true;
+    return [2025,2026].some(yr=>data[yr]&&Object.values(data[yr]).some(md=>md&&md.workers&&md.workers[w]));
+  });
+}
+function showAddWorkerModal() {
+  document.getElementById('addWorkerModal').classList.add('open');
+  document.getElementById('newWorkerName').value='';
+  document.getElementById('newWorkerRate').value='300';
+  document.getElementById('newWorkerName').focus();
+}
+function closeAddWorkerModal() { document.getElementById('addWorkerModal').classList.remove('open'); }
+function confirmAddWorker() {
+  const name=document.getElementById('newWorkerName').value.trim();
+  const rate=parseFloat(document.getElementById('newWorkerRate').value)||300;
+  if(!name){document.getElementById('newWorkerName').focus();return;}
+  if(getAllWorkers(currentYear,currentMonth).includes(name)){showToast('Pracovník již existuje!');closeAddWorkerModal();return;}
+  if(!data._extraWorkers) data._extraWorkers=[];
+  if(!data._extraWorkers.includes(name)) data._extraWorkers.push(name);
+  [2025,2026].forEach(yr=>{
+    ensureYear(yr, yr===2025?4:1);
+    for(let m=(yr===2025?4:1);m<=12;m++){
+      if(!data[yr][m].workers[name]) data[yr][m].workers[name]={days:[],rate};
+    }
+  });
+  saveData(); closeAddWorkerModal(); render();
+  showToast('Pracovník přidán: '+name);
+}
+function removeWorker(name) {
+  if(!confirm(`Opravdu smazat "${name}" ze všech měsíců?`)) return;
+  if(data._extraWorkers) data._extraWorkers=data._extraWorkers.filter(w=>w!==name);
+  [2025,2026].forEach(yr=>{ if(data[yr]) Object.values(data[yr]).forEach(md=>{if(md&&md.workers) delete md.workers[name];}); });
+  saveData(); render(); showToast('Pracovník odstraněn.');
+}
+
+function showChart(yearFilter) {
+  chartYearFilter = yearFilter || chartYearFilter || 2026;
+  document.getElementById('ybtn2025').className='year-btn';
+  document.getElementById('ybtn2026').className='year-btn';
+  document.getElementById('ybtnChart').className='year-btn active';
+  document.getElementById('monthNav').style.display='none';
+  renderChart();
+}
+
+
+function efficiencyText(diffHours, rate) {
+  diffHours = parseFloat(diffHours)||0;
+  rate = parseFloat(rate)||1075;
+  const money = Math.abs(diffHours * rate);
+  if (diffHours > 0) {
+    return `🟢 Fakturováno je o ${fmtH(diffHours)} h více než evidence. Pokud je to díky rychlejší práci, je to PLUS pro firmu cca ${money.toLocaleString('cs-CZ')} Kč.`;
+  }
+  if (diffHours < 0) {
+    return `🔴 Evidence je o ${fmtH(Math.abs(diffHours))} h vyšší než fakturace. Zkontroluj, jestli něco nechybí vyfakturovat.`;
+  }
+  return `✅ Fakturované hodiny sedí s evidencí.`;
+}
+
+function renderChart() {
+  const selectedYears = chartYearFilter === 'all' ? [2025, 2026] : [chartYearFilter];
+  const MONTH_SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+  const years = [2025, 2026];
+  const yearColors = { 2025: '#4f7fff', 2026: '#00d4aa' };
+  const yearStart = { 2025: 4, 2026: 1 };
+
+  // Collect monthly data per year
+  const months2025 = [], months2026 = [];
+  for (let m=4; m<=12; m++) {
+    const md = getMD(2025,m);
+    const allW = getAllWorkers(2025,m);
+    const totalH = allW.reduce((s,w)=>s+sumHours(md.workers[w]||{days:[]}),0);
+    const mzdy = totalMzdy(2025,m);
+    const elec = getElecTotal(md);
+    const odfak = md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+    const cesty = md.invoices.reduce((s,inv)=>s+parseFloat(inv.doprava_celkem||0),0);
+    months2025.push({ m, label: MONTH_SHORT[m-1], hours: totalH, mzdy, elec, odfak, cesty, zisk: odfak-(mzdy+elec) });
+  }
+  for (let m=1; m<=12; m++) {
+    const md = getMD(2026,m);
+    const allW = getAllWorkers(2026,m);
+    const totalH = allW.reduce((s,w)=>s+sumHours(md.workers[w]||{days:[]}),0);
+    const mzdy = totalMzdy(2026,m);
+    const elec = getElecTotal(md);
+    const odfak = md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+    const cesty = md.invoices.reduce((s,inv)=>s+parseFloat(inv.doprava_celkem||0),0);
+    months2026.push({ m, label: MONTH_SHORT[m-1], hours: totalH, mzdy, elec, odfak, cesty, zisk: odfak-(mzdy+elec) });
+  }
+
+  // Totals
+  const tot25 = months2025.reduce((a,m)=>({odfak:a.odfak+m.odfak,mzdy:a.mzdy+m.mzdy,elec:a.elec+m.elec,zisk:a.zisk+m.zisk,hours:a.hours+m.hours}),{odfak:0,mzdy:0,elec:0,zisk:0,hours:0});
+  const tot26 = months2026.reduce((a,m)=>({odfak:a.odfak+m.odfak,mzdy:a.mzdy+m.mzdy,elec:a.elec+m.elec,zisk:a.zisk+m.zisk,hours:a.hours+m.hours}),{odfak:0,mzdy:0,elec:0,zisk:0,hours:0});
+
+  function fmtK(n) { return n>=1000?(n/1000).toFixed(0)+'k':n.toFixed(0); }
+  function fmtKc(n) { return n.toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč'; }
+
+  // Build bar chart SVG for odfakturováno vs náklady vs zisk
+  function buildBarChart(months, year, w) {
+    const BAR_W = 18, GROUP_W = 72, PAD_L = 52, PAD_B = 36, PAD_T = 20, H = 220;
+    const vals = months.map(m=>[m.odfak, m.mzdy+m.elec, m.zisk]);
+    const maxVal = Math.max(...vals.flat().map(Math.abs), 1);
+    const scale = (H - PAD_T - PAD_B) / maxVal;
+    const zero = H - PAD_B;
+    const totalW = PAD_L + months.length * GROUP_W + 10;
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    // Y grid lines
+    const steps = 4;
+    for (let i=0; i<=steps; i++) {
+      const v = maxVal * i / steps;
+      const y = zero - v * scale;
+      svg += `<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg += `<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    }
+    // Zero line
+    svg += `<line x1="${PAD_L-8}" y1="${zero}" x2="${totalW-10}" y2="${zero}" stroke="var(--muted)" stroke-width="1.5"/>`;
+    // Bars
+    months.forEach((mo, i) => {
+      const x = PAD_L + i * GROUP_W;
+      const barData = [
+        { v: mo.odfak,         color: '#4f7fff', label: 'Příjem' },
+        { v: mo.mzdy+mo.elec,  color: '#ff6b6b', label: 'Náklady' },
+        { v: mo.zisk,          color: mo.zisk>=0?'#00d4aa':'#ff6b6b', label: 'Zisk' },
+      ];
+      barData.forEach((b, bi) => {
+        const bx = x + bi * (BAR_W+2) + 4;
+        const bh = Math.abs(b.v) * scale;
+        const by = b.v >= 0 ? zero - bh : zero;
+        svg += `<rect x="${bx}" y="${by}" width="${BAR_W}" height="${Math.max(bh,1)}" fill="${b.color}" rx="2" opacity="0.85"/>`;
+        if (bh > 14) svg += `<text x="${bx+BAR_W/2}" y="${b.v>=0?by-3:by+bh+10}" text-anchor="middle" class="bar-value" fill="${b.color}" font-size="9">${fmtK(b.v)}</text>`;
+      });
+      svg += `<text x="${x+GROUP_W/2-4}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  // Hours line chart
+  function buildHoursChart(months, year) {
+    const PAD_L=52, PAD_B=36, PAD_T=20, H=160;
+    const vals = months.map(m=>m.hours);
+    const maxV = Math.max(...vals, 1);
+    const totalW = PAD_L + months.length * 72 + 10;
+    const scale = (H-PAD_T-PAD_B)/maxV;
+    const pts = months.map((mo,i)=>{
+      const x = PAD_L + i*72 + 36;
+      const y = H - PAD_B - mo.hours*scale;
+      return `${x},${y}`;
+    }).join(' ');
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    // Grid
+    [0,0.5,1].forEach(f=>{
+      const v=maxV*f; const y=H-PAD_B-v*scale;
+      svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg+=`<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    });
+    svg+=`<polyline points="${pts}" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linejoin="round"/>`;
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*72+36; const y=H-PAD_B-mo.hours*scale;
+      svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#a855f7"/>`;
+      if(mo.hours>0) svg+=`<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="#a855f7" font-size="9">${fmtK(mo.hours)}</text>`;
+      svg+=`<text x="${x}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    return svg;
+  }
+
+  function buildLineChart(months) {
+    const PAD_L=52, PAD_B=36, PAD_T=24, H=200;
+    const lines = [
+      { key:'zisk', label:'Čistý zisk', color:'#00d4aa' },
+    ];
+    const allVals = months.flatMap(m => lines.map(l => m[l.key]||0));
+    const minV = Math.min(...allVals, 0);
+    const maxV = Math.max(...allVals, 1);
+    const range = maxV - minV || 1;
+    const totalW = PAD_L + months.length * 72 + 20;
+    const chartH = H - PAD_T - PAD_B;
+    const toY = v => H - PAD_B - ((v - minV) / range) * chartH;
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    // Grid lines
+    const steps = 4;
+    for (let i=0; i<=steps; i++) {
+      const v = minV + (range * i / steps);
+      const y = toY(v);
+      svg += `<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg += `<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    }
+    // Zero line if needed
+    if (minV < 0) {
+      const y0 = toY(0);
+      svg += `<line x1="${PAD_L-8}" y1="${y0}" x2="${totalW-10}" y2="${y0}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    }
+    // Lines + dots
+    lines.forEach(line => {
+      const pts = months.map((mo,i) => {
+        const x = PAD_L + i*72 + 36;
+        const y = toY(mo[line.key]||0);
+        return `${x},${y}`;
+      }).join(' ');
+      svg += `<polyline points="${pts}" fill="none" stroke="${line.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+      months.forEach((mo,i) => {
+        const x = PAD_L + i*72 + 36;
+        const y = toY(mo[line.key]||0);
+        const v = mo[line.key]||0;
+        svg += `<circle cx="${x}" cy="${y}" r="4" fill="${line.color}" stroke="var(--bg)" stroke-width="1.5"/>`;
+        if (Math.abs(v) > 0) svg += `<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="${line.color}" font-size="9">${fmtK(v)}</text>`;
+      });
+    });
+    // X labels
+    months.forEach((mo,i) => {
+      svg += `<text x="${PAD_L+i*72+36}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  const has25 = months2025.some(m=>m.odfak>0||m.hours>0);
+  const has26 = months2026.some(m=>m.odfak>0||m.hours>0);
+
+  let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text)">📊 Finanční přehled</div>
+    <div style="font-size:0.78rem;color:var(--muted)">Kelvion – Vlásenky 2025–2026</div>
+  </div>`;
+
+  // Summary stats
+  html += `<div class="stats-grid">
+    <div class="stat-card"><div class="stat-card-label">Celkový příjem 2025</div><div class="stat-card-value" style="color:#4f7fff">${fmtKc(tot25.odfak)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový zisk 2025</div><div class="stat-card-value" style="color:${tot25.zisk>=0?'#00d4aa':'#ff6b6b'}">${fmtKc(tot25.zisk)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový příjem 2026</div><div class="stat-card-value" style="color:#4f7fff">${fmtKc(tot26.odfak)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový zisk 2026</div><div class="stat-card-value" style="color:${tot26.zisk>=0?'#00d4aa':'#ff6b6b'}">${fmtKc(tot26.zisk)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkem hodin 2025</div><div class="stat-card-value" style="color:#a855f7">${fmtK(tot25.hours)} h</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkem hodin 2026</div><div class="stat-card-value" style="color:#a855f7">${fmtK(tot26.hours)} h</div></div>
+  </div>`;
+
+  if (has25) {
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Příjmy, náklady a zisk po měsících — 2025 (dub–pro)</div>
+      ${buildBarChart(months2025, 2025)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4f7fff"></div>Příjem (odfakturováno)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Náklady (mzdy + elektřina)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk</div>
+      </div>
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Odpracované hodiny po měsících — 2025</div>
+      ${buildHoursChart(months2025, 2025)}
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Čistý zisk po měsících — 2025</div>
+      ${buildLineChart(months2025)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk = Příjem − (Mzdy + Elektřina)</div>
+      </div>
+    </div>`;
+  }
+
+  if (has26) {
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Příjmy, náklady a zisk po měsících — 2026 (led–pro)</div>
+      ${buildBarChart(months2026, 2026)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4f7fff"></div>Příjem (odfakturováno)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Náklady (mzdy + elektřina)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk</div>
+      </div>
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Odpracované hodiny po měsících — 2026</div>
+      ${buildHoursChart(months2026, 2026)}
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Čistý zisk po měsících — 2026</div>
+      ${buildLineChart(months2026)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk = Příjem − (Mzdy + Elektřina)</div>
+      </div>
+    </div>`;
+  }
+
+  if (!has25 && !has26) {
+    html += `<div style="text-align:center;padding:60px;color:var(--muted)">Zatím žádná data. Doplňte hodiny a fakturaci do měsíců.</div>`;
+  }
+
+  document.getElementById('mainContent').innerHTML = html;
+}
+
+window.addEventListener('beforeunload', function(e){ if(!localStorage.getItem(STORAGE_KEY+'_lastBackup')){ e.preventDefault(); e.returnValue='Nezapomeň si stáhnout zálohu JSON.'; }});
+loadData();
+const lastFilled = findLastFilledMonth();
+currentYear = lastFilled.y;
+currentMonth = lastFilled.m;
+
+document.getElementById('ybtn2025').className = 'year-btn' + (currentYear === 2025 ? ' active' : '');
+document.getElementById('ybtn2026').className = 'year-btn' + (currentYear === 2026 ? ' active' : '');
+document.getElementById('ybtnChart').className = 'year-btn';
+
+buildNav();
+render();
+</script>
+
+<div class="modal-overlay" id="addWorkerModal" onclick="if(event.target===this)closeAddWorkerModal()">
+  <div class="modal">
+    <h3>👷 Přidat pracovníka</h3>
+    <div class="field-group" style="margin-bottom:14px">
+      <label>Jméno a příjmení</label>
+      <input type="text" id="newWorkerName" placeholder="Jan Novák" style="width:100%"
+        onkeydown="if(event.key==='Enter')document.getElementById('newWorkerRate').focus()">
+    </div>
+    <div class="field-group" style="margin-bottom:4px">
+      <label>Hodinová sazba (Kč/h)</label>
+      <input type="number" id="newWorkerRate" value="300" style="width:100%"
+        onkeydown="if(event.key==='Enter')confirmAddWorker()">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeAddWorkerModal()">Zrušit</button>
+      <button class="btn btn-primary" onclick="confirmAddWorker()">Přidat</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
