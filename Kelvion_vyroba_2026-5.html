@@ -1,0 +1,2826 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelvion – Výroba 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--surface:#181c27;--surface2:#1e2334;--border:#2a3050;
+  --accent:#ff6b35;--accent2:#00d4aa;--accent3:#ff6b6b;--accent4:#f7c948;
+  --text:#e8eaf0;--muted:#6b7799;
+  --w1:#ff6b35;--w2:#00d4aa;--w3:#a855f7;--w4:#4f7fff;--w5:#f7c948;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.main-header{background:#0a0d14;border-bottom:2px solid #1a2040;position:sticky;top:0;z-index:200;}
+.main-top{padding:11px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1a2040;flex-wrap:wrap;gap:8px;}
+.main-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:#fff;}
+.main-logo span{color:var(--muted);}
+.global-actions{display:flex;gap:8px;align-items:center;}
+.g-btn{padding:5px 13px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:.78rem;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s;}
+.g-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.g-btn.g-save{background:var(--accent2);color:#0a1a15;border-color:var(--accent2);}
+.main-tabs{display:flex;gap:0;padding:0 16px;overflow-x:auto;}
+.main-tab{padding:12px 28px;border:none;background:transparent;cursor:pointer;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:7px;}
+.main-tab:hover{color:var(--text);}
+.tab-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.t-vl.on{color:#3a8eff;border-bottom-color:#3a8eff;background:rgba(58,142,255,.06);}
+.t-kol.on{color:var(--accent);border-bottom-color:var(--accent);background:rgba(255,107,53,.06);}
+.t-naj.on{color:#00d4aa;border-bottom-color:#00d4aa;background:rgba(0,212,170,.06);}
+.t-dash.on{color:#a855f7;border-bottom-color:#a855f7;background:rgba(168,85,247,.06);}
+.app-wrap{display:none;}.app-wrap.on{display:block;}
+.g-toast{position:fixed;bottom:22px;right:22px;background:var(--accent2);color:#0a1a15;padding:9px 16px;border-radius:8px;font-size:.83rem;font-weight:600;transform:translateY(60px);opacity:0;transition:all .3s;z-index:9999;pointer-events:none;}
+.g-toast.show{transform:translateY(0);opacity:1;}
+</style>
+#app-vl *{ box-sizing: border-box; margin: 0; padding: 0; }
+#app-vl body{ font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+#app-vl header{
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 16px 28px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+#app-vl .logo{ font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+#app-vl .logo span{ color: var(--muted); font-weight: 700; }
+#app-vl .header-right{ display: flex; gap: 10px; align-items: center; }
+#app-vl .save-indicator{ font-size: 0.75rem; color: var(--accent2); font-family: 'DM Mono', monospace; }
+
+#app-vl .month-nav{
+  display: flex; gap: 4px; flex-wrap: wrap;
+  padding: 14px 28px; background: var(--surface); border-bottom: 1px solid var(--border);
+}
+#app-vl .month-btn{
+  padding: 7px 14px; border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 0.82rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.15s;
+}
+#app-vl .month-btn:hover{ border-color: var(--accent); color: var(--accent); }
+#app-vl .month-btn.active{ background: var(--accent); border-color: var(--accent); color: white; }
+#app-vl .month-btn.has-data{ border-color: #2a4080; color: #8aaaf0; }
+#app-vl .month-btn.active.has-data{ background: var(--accent); color: white; }
+
+#app-vl .content{ padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
+
+#app-vl .summary-cards{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+#app-vl .card{ background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; position: relative; overflow: hidden; }
+#app-vl .card::before{ content:''; position:absolute; top:0; left:0; right:0; height:3px; background: var(--accent); }
+#app-vl .card.c2::before{ background: var(--accent2); }
+#app-vl .card.c3::before{ background: var(--accent4); }
+#app-vl .card.c4::before{ background: var(--accent3); }
+#app-vl .card.c5::before{ background: #a855f7; }
+#app-vl .card.c6::before{ background: var(--accent2); }
+#app-vl .card-label{ font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+#app-vl .card-value{ font-size: 1.55rem; font-weight: 700; font-family: 'Syne', sans-serif; color: var(--text); line-height: 1; }
+#app-vl .card-sub{ font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+
+#app-vl .section{ background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+#app-vl .section-head{ padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--surface2); }
+#app-vl .section-title{ font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+#app-vl .section-body{ padding: 20px; }
+
+#app-vl .btn{ padding: 7px 14px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px; }
+#app-vl .btn-primary{ background: var(--accent); color: white; }
+#app-vl .btn-primary:hover{ background: #3d6de0; }
+#app-vl .btn-ghost{ background: transparent; border: 1px solid var(--border); color: var(--muted); }
+#app-vl .btn-ghost:hover{ border-color: var(--accent); color: var(--accent); }
+#app-vl .btn-danger{ background: transparent; border: 1px solid #3a1a1a; color: var(--accent3); }
+#app-vl .btn-danger:hover{ background: #2a1010; }
+#app-vl .btn-success{ background: var(--accent2); color: #0a1a15; }
+#app-vl .btn-success:hover{ filter: brightness(0.9); }
+#app-vl .btn-sm{ padding: 4px 10px; font-size: 0.76rem; }
+
+#app-vl input, #app-vl select{ background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 7px 10px; font-size: 0.85rem; font-family: 'Inter', sans-serif; outline: none; transition: border 0.15s; }
+#app-vl input:focus, #app-vl select:focus{ border-color: var(--accent); }
+#app-vl input[type="number"]{ font-family: 'DM Mono', monospace; }
+#app-vl label{ font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: 0.3px; }
+
+#app-vl .workers-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+#app-vl .worker-card{ background: var(--bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+#app-vl .worker-header{ padding: 14px 16px; display: flex; align-items: center; border-bottom: 1px solid var(--border); }
+#app-vl .worker-color-bar{ width: 4px; height: 36px; border-radius: 2px; margin-right: 12px; flex-shrink: 0; }
+#app-vl .worker-info{ flex: 1; }
+#app-vl .worker-name{ font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+#app-vl .worker-total{ font-family: 'DM Mono', monospace; font-size: 1.3rem; font-weight: 500; }
+#app-vl .worker-meta{ display: flex; gap: 16px; padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+#app-vl .worker-meta-item .lbl{ color: var(--muted); font-size: 0.72rem; }
+#app-vl .worker-meta-item .val{ font-family: 'DM Mono', monospace; font-weight: 500; }
+#app-vl .worker-rate-row{ display: flex; gap: 10px; padding: 12px 16px; align-items: flex-end; border-bottom: 1px solid var(--border); }
+
+/* CALENDAR */
+#app-vl .cal-container{ padding: 14px 16px; border-bottom: 1px solid var(--border); }
+#app-vl .cal-header{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+#app-vl .cal-title{ font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+#app-vl .cal-hours-input{ display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); }
+#app-vl .cal-hours-input input{ width: 60px; padding: 4px 8px; font-size: 0.82rem; }
+#app-vl .cal-grid{ display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+#app-vl .cal-dow-label{ text-align: center; font-size: 0.68rem; font-weight: 700; color: var(--muted); padding: 4px 2px; font-family: 'DM Mono', monospace; }
+#app-vl .cal-dow-label.we{ color: #b07a00; }
+#app-vl .cal-cell{ aspect-ratio: 1; border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 0.75rem; font-weight: 600; border: 1px solid transparent; transition: all 0.12s; position: relative; user-select: none; }
+#app-vl .cal-cell.empty{ cursor: default; background: transparent !important; border-color: transparent !important; }
+#app-vl .cal-cell.normal{ background: var(--surface2); color: var(--text); border-color: var(--border); }
+#app-vl .cal-cell.normal:hover{ border-color: var(--accent); color: var(--accent); transform: scale(1.08); z-index: 2; }
+#app-vl .cal-cell.weekend{ background: #1a1608; color: #b07a00; border-color: #2a2208; }
+#app-vl .cal-cell.weekend:hover{ border-color: #f7c948; transform: scale(1.08); z-index: 2; }
+#app-vl .cal-cell.worked{ border-width: 2px; }
+#app-vl .cal-cell .cal-num{ line-height: 1; }
+#app-vl .cal-cell .cal-h{ font-size: 0.62rem; opacity: 0.85; font-family: 'DM Mono', monospace; margin-top: 1px; }
+
+/* DAYS LIST */
+#app-vl .days-wrap{ padding: 12px 16px; }
+#app-vl .days-list{ max-height: 220px; overflow-y: auto; }
+#app-vl .days-list::-webkit-scrollbar{ width: 4px; }
+#app-vl .days-list::-webkit-scrollbar-thumb{ background: var(--border); border-radius: 2px; }
+#app-vl .day-row{ display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; font-size: 0.83rem; font-family: 'DM Mono', monospace; transition: background 0.1s; }
+#app-vl .day-row:hover{ background: var(--surface2); }
+#app-vl .day-date{ color: var(--muted); min-width: 80px; }
+#app-vl .day-dow{ min-width: 26px; font-size: 0.72rem; font-weight: 700; }
+#app-vl .day-hours-val{ font-weight: 500; flex: 1; display: flex; align-items: center; gap: 4px; }
+#app-vl .day-hours-val input{ width: 60px; padding: 3px 7px; font-size: 0.8rem; }
+#app-vl .day-del{ opacity: 0; cursor: pointer; color: var(--accent3); font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; background: none; border: none; }
+#app-vl .day-row:hover .day-del{ opacity: 1; }
+#app-vl .we-text{ color: #b07a00; }
+
+#app-vl .elec-row{ display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+#app-vl .field-group{ display: flex; flex-direction: column; gap: 4px; }
+
+#app-vl .invoice-card{ background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+#app-vl .invoice-card-head{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+#app-vl .invoice-date-label{ font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--accent4); }
+#app-vl .invoice-total{ font-family: 'DM Mono', monospace; font-size: 1.1rem; color: var(--accent2); }
+#app-vl .invoice-fields{ display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+
+#app-vl .toast{ position: fixed; bottom: 24px; right: 24px; background: var(--accent2); color: #0a1a15; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; transform: translateY(60px); opacity: 0; transition: all 0.3s; z-index: 999; }
+#app-vl .toast.show{ transform: translateY(0); opacity: 1; }
+#app-vl .no-data-msg{ text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
+#app-vl .days-empty{ color: var(--muted); font-size: 0.8rem; padding: 8px 0; font-style: italic; }
+
+@media (max-width: 600px) { .content { padding: 14px; } .month-nav, header { padding: 12px 14px; } .workers-grid { grid-template-columns: 1fr; } }
+#app-vl .chart-wrap{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:20px; }
+#app-vl .chart-title{ font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:18px; color:var(--text); }
+#app-vl .chart-svg{ width:100%; overflow:visible; }
+#app-vl .bar-label{ font-family:'DM Mono',monospace; font-size:11px; fill:var(--muted); }
+#app-vl .bar-value{ font-family:'DM Mono',monospace; font-size:10px; font-weight:600; }
+#app-vl .chart-legend{ display:flex; gap:20px; flex-wrap:wrap; margin-top:14px; font-size:0.78rem; }
+#app-vl .legend-item{ display:flex; align-items:center; gap:6px; color:var(--muted); }
+#app-vl .legend-dot{ width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+#app-vl .stats-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:20px; }
+#app-vl .stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+#app-vl .stat-card-label{ font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; font-family:'DM Mono',monospace; margin-bottom:6px; }
+#app-vl .stat-card-value{ font-size:1.3rem; font-weight:700; font-family:'Syne',sans-serif; }
+
+/* MANAGER TUNING */
+#app-vl .insight-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+#app-vl .insight-card{ background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px; }
+#app-vl .insight-card.good{ border-color:#164837; background:#0d1b18; }
+#app-vl .insight-card.warn{ border-color:#5a3f10; background:#1f190b; }
+#app-vl .insight-card.bad{ border-color:#5a1f1f; background:#211111; }
+#app-vl .insight-title{ font-size:0.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; font-family:'DM Mono',monospace; margin-bottom:8px; }
+#app-vl .insight-value{ font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800; margin-bottom:5px; }
+#app-vl .insight-note{ color:var(--muted); font-size:0.82rem; line-height:1.4; }
+#app-vl .quick-table{ width:100%; border-collapse:collapse; font-size:0.84rem; }
+#app-vl .quick-table th, #app-vl .quick-table td{ padding:8px 10px; border-bottom:1px solid var(--border); text-align:left; }
+#app-vl .quick-table th{ color:var(--muted); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.8px; font-family:'DM Mono',monospace; }
+#app-vl .quick-table td.num{ font-family:'DM Mono',monospace; text-align:right; }
+
+#app-vl .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; }
+#app-vl .modal-overlay.open{ display:flex; }
+#app-vl .modal{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; width:340px; max-width:90vw; }
+#app-vl .modal h3{ font-family:"Syne",sans-serif; margin-bottom:18px; color:var(--text); font-size:1.1rem; }
+#app-vl .modal-btns{ display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+
+
+#app-vl .year-nav{ display:flex; gap:8px; padding:10px 28px; background:var(--surface2); border-bottom:1px solid var(--border); align-items:center; }
+#app-vl .year-label{ font-size:0.72rem; color:var(--muted); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:1px; margin-right:4px; }
+#app-vl .year-btn{ padding:6px 20px; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--muted); cursor:pointer; font-size:0.95rem; font-weight:700; font-family:'Syne',sans-serif; transition:all 0.15s; }
+#app-vl .year-btn:hover{ border-color:var(--accent); color:var(--accent); }
+#app-vl .year-btn.active{ background:var(--accent); border-color:var(--accent); color:white; }
+/* KOL scoped CSS */
+
+
+#app-kol *{box-sizing:border-box;margin:0;padding:0;}
+#app-kol body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+#app-kol header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:8px;}
+#app-kol .logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent);}
+#app-kol .logo span{color:var(--muted);font-weight:700;}
+#app-kol .header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+#app-kol .save-ind{font-size:0.75rem;color:var(--accent2);font-family:'DM Mono',monospace;}
+#app-kol .year-nav{display:flex;gap:8px;padding:10px 28px;background:var(--surface2);border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap;}
+#app-kol .year-label{font-size:0.72rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-right:4px;}
+#app-kol .year-btn{padding:6px 18px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:0.9rem;font-weight:700;font-family:'Syne',sans-serif;transition:all .15s;}
+#app-kol .year-btn:hover{border-color:var(--accent);color:var(--accent);}
+#app-kol .year-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+#app-kol .month-nav{display:flex;gap:4px;flex-wrap:wrap;padding:12px 28px;background:var(--surface);border-bottom:1px solid var(--border);}
+#app-kol .month-btn{padding:6px 13px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s;}
+#app-kol .month-btn:hover{border-color:var(--accent);color:var(--accent);}
+#app-kol .month-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+#app-kol .month-btn.has-data{border-color:#402010;color:#ff9060;}
+#app-kol .content{padding:22px 28px;max-width:1400px;margin:0 auto;}
+/* BACKUP PANEL */
+#app-kol .backup-panel{background:linear-gradient(135deg,rgba(255,107,53,.12),rgba(247,201,72,.08));border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;padding:16px 20px;margin-bottom:20px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+#app-kol .backup-title{font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);margin-bottom:4px;font-size:1rem;}
+#app-kol .backup-warn{color:var(--accent4);font-size:.85rem;font-weight:600;}
+/* CARDS */
+#app-kol .summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+#app-kol .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;}
+#app-kol .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+#app-kol .card.c2::before{background:var(--accent2);}
+#app-kol .card.c3::before{background:var(--accent4);}
+#app-kol .card.c4::before{background:#4f7fff;}
+#app-kol .card.c5::before{background:var(--accent3);}
+#app-kol .card.c6::before{background:#a855f7;}
+#app-kol .card.c7::before{background:var(--accent2);}
+#app-kol .card.c8::before{background:var(--accent4);}
+#app-kol .card.c9::before{background:var(--accent);}
+#app-kol .card-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;}
+#app-kol .card-value{font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--text);line-height:1;}
+#app-kol .card-sub{font-size:.72rem;color:var(--muted);margin-top:5px;}
+/* KONTROLA */
+#app-kol .check-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden;}
+#app-kol .check-head{padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface2);font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;}
+#app-kol .check-body{padding:16px 20px;display:flex;flex-direction:column;gap:8px;}
+#app-kol .check-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;font-size:.85rem;}
+#app-kol .check-ok{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);color:var(--accent2);}
+#app-kol .check-warn{background:rgba(247,201,72,.08);border:1px solid rgba(247,201,72,.25);color:var(--accent4);}
+#app-kol .check-err{background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);color:var(--accent3);}
+/* SECTION */
+#app-kol .section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden;}
+#app-kol .section-head{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
+#app-kol .section-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+#app-kol .section-body{padding:20px;}
+/* BUTTONS */
+#app-kol .btn{padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-size:.82rem;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+#app-kol .btn-primary{background:var(--accent);color:#fff;}
+#app-kol .btn-primary:hover{filter:brightness(.9);}
+#app-kol .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+#app-kol .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+#app-kol .btn-success{background:var(--accent2);color:#0a1a15;font-weight:700;}
+#app-kol .btn-success:hover{filter:brightness(.9);}
+#app-kol .btn-danger{background:transparent;border:1px solid #3a1a1a;color:var(--accent3);}
+#app-kol .btn-sm{padding:4px 10px;font-size:.76rem;}
+#app-kol input, #app-kol select, #app-kol textarea{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 10px;font-size:.85rem;font-family:'Inter',sans-serif;outline:none;transition:border .15s;}
+#app-kol input:focus, #app-kol select:focus, #app-kol textarea:focus{border-color:var(--accent);}
+#app-kol input[type="number"]{font-family:'DM Mono',monospace;}
+#app-kol label{font-size:.78rem;color:var(--muted);display:block;margin-bottom:4px;}
+#app-kol textarea{resize:vertical;width:100%;}
+/* WORKERS */
+#app-kol .workers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+#app-kol .worker-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+#app-kol .worker-header{padding:13px 16px;display:flex;align-items:center;border-bottom:1px solid var(--border);}
+#app-kol .worker-color-bar{width:4px;height:36px;border-radius:2px;margin-right:12px;flex-shrink:0;}
+#app-kol .worker-info{flex:1;}
+#app-kol .worker-name-input{background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;outline:none;width:180px;padding:2px 0;}
+#app-kol .worker-name-input:focus{border-bottom-color:var(--accent);}
+#app-kol .worker-total{font-family:'DM Mono',monospace;font-size:1.2rem;font-weight:500;}
+#app-kol .worker-meta{display:flex;gap:14px;padding:9px 16px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:.8rem;flex-wrap:wrap;}
+#app-kol .worker-meta-item .lbl{color:var(--muted);font-size:.7rem;}
+#app-kol .worker-meta-item .val{font-family:'DM Mono',monospace;font-weight:500;}
+#app-kol .worker-rate-row{display:flex;gap:10px;padding:11px 16px;align-items:flex-end;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+/* CALENDAR */
+#app-kol .cal-container{padding:13px 16px;border-bottom:1px solid var(--border);}
+#app-kol .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+#app-kol .cal-title{font-size:.82rem;color:var(--muted);font-weight:600;}
+#app-kol .cal-hours-input{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted);}
+#app-kol .cal-hours-input input{width:58px;padding:4px 8px;font-size:.82rem;}
+#app-kol .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+#app-kol .cal-dow-label{text-align:center;font-size:.68rem;font-weight:700;color:var(--muted);padding:4px 2px;font-family:'DM Mono',monospace;}
+#app-kol .cal-dow-label.we{color:#b07a00;}
+#app-kol .cal-cell{aspect-ratio:1;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:.75rem;font-weight:600;border:1px solid transparent;transition:all .12s;user-select:none;}
+#app-kol .cal-cell.empty{cursor:default;background:transparent!important;border-color:transparent!important;}
+#app-kol .cal-cell.normal{background:var(--surface2);color:var(--text);border-color:var(--border);}
+#app-kol .cal-cell.normal:hover{border-color:var(--accent);color:var(--accent);transform:scale(1.08);z-index:2;}
+#app-kol .cal-cell.weekend{background:#1a1608;color:#b07a00;border-color:#2a2208;}
+#app-kol .cal-cell.weekend:hover{border-color:#f7c948;transform:scale(1.08);z-index:2;}
+#app-kol .cal-cell.worked{border-width:2px;}
+#app-kol .cal-cell .cal-num{line-height:1;}
+#app-kol .cal-cell .cal-h{font-size:.6rem;opacity:.85;font-family:'DM Mono',monospace;margin-top:1px;}
+/* DAYS */
+#app-kol .days-wrap{padding:11px 16px;}
+#app-kol .days-list{max-height:200px;overflow-y:auto;}
+#app-kol .days-list::-webkit-scrollbar{width:4px;}
+#app-kol .days-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+#app-kol .day-row{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;font-size:.83rem;font-family:'DM Mono',monospace;transition:background .1s;}
+#app-kol .day-row:hover{background:var(--surface2);}
+#app-kol .day-date{color:var(--muted);min-width:78px;}
+#app-kol .day-dow{min-width:24px;font-size:.72rem;font-weight:700;}
+#app-kol .day-hours-val{font-weight:500;flex:1;display:flex;align-items:center;gap:4px;}
+#app-kol .day-hours-val input{width:58px;padding:3px 7px;font-size:.8rem;}
+#app-kol .day-del{opacity:0;cursor:pointer;color:var(--accent3);font-size:.9rem;padding:2px 6px;border-radius:4px;background:none;border:none;}
+#app-kol .day-row:hover .day-del{opacity:1;}
+#app-kol .we-text{color:#b07a00;}
+#app-kol .days-empty{color:var(--muted);font-size:.8rem;padding:8px 0;font-style:italic;}
+/* TABLES */
+#app-kol .ft-table, #app-kol .mt-table, #app-kol .quick-table{width:100%;border-collapse:collapse;font-size:.84rem;}
+#app-kol .ft-table th, #app-kol .mt-table th, #app-kol .quick-table th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;}
+#app-kol .ft-table td, #app-kol .mt-table td, #app-kol .quick-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+#app-kol .ft-table tr:last-child td, #app-kol .mt-table tr:last-child td, #app-kol .quick-table tr:last-child td{border-bottom:none;}
+#app-kol .r{text-align:right;}
+/* MATERIAL */
+#app-kol .sap-ok{color:var(--accent2);font-size:.8rem;margin-left:4px;}
+#app-kol .sap-miss{color:var(--accent3);font-size:.8rem;margin-left:4px;}
+/* ELEC */
+#app-kol .elec-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+#app-kol .field-group{display:flex;flex-direction:column;gap:4px;}
+/* CHARTS */
+#app-kol .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;}
+#app-kol .chart-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;color:var(--text);}
+#app-kol .chart-svg{width:100%;overflow:visible;}
+#app-kol .bar-label{font-family:'DM Mono',monospace;font-size:11px;fill:var(--muted);}
+#app-kol .bar-value{font-family:'DM Mono',monospace;font-size:10px;font-weight:600;}
+#app-kol .chart-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:.78rem;}
+#app-kol .legend-item{display:flex;align-items:center;gap:6px;color:var(--muted);}
+#app-kol .legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+#app-kol .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+#app-kol .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
+#app-kol .stat-card-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:5px;}
+#app-kol .stat-card-value{font-size:1.2rem;font-weight:700;font-family:'Syne',sans-serif;}
+/* TOAST */
+#app-kol .toast{position:fixed;bottom:24px;right:24px;background:var(--accent2);color:#0a1a15;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;transform:translateY(60px);opacity:0;transition:all .3s;z-index:999;}
+#app-kol .toast.show{transform:translateY(0);opacity:1;}
+/* MODAL */
+#app-kol .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;}
+#app-kol .modal-overlay.open{display:flex;}
+#app-kol .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px;width:340px;max-width:90vw;}
+#app-kol .modal h3{font-family:'Syne',sans-serif;margin-bottom:16px;color:var(--text);font-size:1.1rem;}
+#app-kol .modal-btns{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+/* PROC */
+#app-kol .proc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;align-items:center;justify-content:center;}
+#app-kol .proc-overlay.open{display:flex;}
+#app-kol .proc-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:420px;max-width:90vw;text-align:center;}
+#app-kol .proc-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent);margin-bottom:4px;}
+#app-kol .proc-sub{font-size:.78rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px;}
+#app-kol .proc-spin{font-size:2rem;animation:spin 1s linear infinite;margin-bottom:14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#app-kol .proc-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+#app-kol .proc-item-l{color:var(--muted);}
+#app-kol .proc-item-v{font-family:'DM Mono',monospace;color:var(--text);}
+@media(max-width:600px){.content{padding:14px;}.month-nav,header,.year-nav{padding:10px 14px;}.workers-grid{grid-template-columns:1fr;}}
+/* NAJ scoped */
+#app-naj{min-height:60vh;}
+#app-naj .naj-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px;position:relative;overflow:hidden;}
+#app-naj .naj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent2);}
+#app-naj .naj-card.c2::before{background:#a855f7;}
+#app-naj .naj-card.c3::before{background:#f7c948;}
+#app-naj .naj-card.c4::before{background:#ff6b6b;}
+#app-naj .naj-card.c5::before{background:#00d4aa;}
+#app-naj .card-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;font-family:'DM Mono',monospace;}
+#app-naj .card-val{font-size:1.25rem;font-weight:700;font-family:'Syne',sans-serif;}
+#app-naj .card-sub{font-size:.7rem;color:var(--muted);margin-top:4px;}
+#app-naj .check-ok{background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);color:#00d4aa;padding:8px 12px;border-radius:8px;font-size:.84rem;display:flex;align-items:center;gap:8px;}
+#app-naj .check-warn{background:rgba(247,201,72,.08);border:1px solid rgba(247,201,72,.25);color:#f7c948;padding:8px 12px;border-radius:8px;font-size:.84rem;display:flex;align-items:center;gap:8px;}
+#app-naj .check-err{background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.25);color:#ff6b6b;padding:8px 12px;border-radius:8px;font-size:.84rem;display:flex;align-items:center;gap:8px;}
+#app-naj input,#app-naj select,#app-naj textarea{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:.9rem;font-family:'Inter',sans-serif;outline:none;transition:border .15s;width:100%;}
+#app-naj input:focus,#app-naj select:focus{border-color:#00d4aa;}
+#app-naj label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+#app-naj .section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden;}
+#app-naj .sec-head{padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface2);font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+#app-naj .sec-body{padding:18px 20px;}
+
+/* DASH */
+#app-dash{min-height:60vh;padding:22px 28px;max-width:1200px;margin:0 auto;}
+#app-dash .d-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;}
+#app-dash .d-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+#app-dash .d-card.vl::before{background:#3a8eff;}
+#app-dash .d-card.kol::before{background:var(--accent);}
+#app-dash .d-card.naj::before{background:#00d4aa;}
+#app-dash .d-card.tot::before{background:#a855f7;}
+#app-dash .d-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;font-family:'DM Mono',monospace;}
+#app-dash .d-val{font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;}
+#app-dash .d-sub{font-size:.7rem;color:var(--muted);margin-top:4px;}
+.dash-month-nav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 24px;background:var(--surface);border-bottom:1px solid var(--border);}
+.dmb{padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:.8rem;font-weight:600;font-family:'Inter',sans-serif;transition:all .15s;}
+.dmb:hover{border-color:#a855f7;color:#a855f7;}
+.dmb.on{background:#a855f7;border-color:#a855f7;color:#fff;}
+.dmb.has{border-color:#4a3070;color:#9060cc;}
+</style>
+</head>
+<body>
+
+<div class="main-header">
+  <div class="main-top">
+    <div class="main-logo">Kelvion <span>/ Výroba 2026</span></div>
+    <div class="global-actions">
+      <button class="g-btn g-save" onclick="exportAll()">💾 Export vše</button>
+      <button class="g-btn" onclick="importAllClick()">⬆ Import vše</button>
+      <input type="file" id="importAllFile" accept=".json" style="display:none" onchange="importAll(event)">
+    </div>
+  </div>
+  <div class="main-tabs">
+    <button class="main-tab t-vl" id="tab-vl" onclick="switchTab('vl')">
+      <div class="tab-dot" style="background:#3a8eff"></div>Vlásenky
+    </button>
+    <button class="main-tab t-kol" id="tab-kol" onclick="switchTab('kol')">
+      <div class="tab-dot" style="background:var(--accent)"></div>Kolínka
+    </button>
+    <button class="main-tab t-naj" id="tab-naj" onclick="switchTab('naj')">
+      <div class="tab-dot" style="background:#00d4aa"></div>Nájem
+    </button>
+    <button class="main-tab t-dash" id="tab-dash" onclick="switchTab('dash')">
+      <div class="tab-dot" style="background:#a855f7"></div>Dashboard
+    </button>
+  </div>
+</div>
+
+<!-- ===== VLÁSENKY ===== -->
+<div class="app-wrap" id="wrap-vl">
+  <div id="app-vl"><header>
+  <div class="logo">Kelvion <span>/ Vlásenky 2025–2026</span></div>
+  <div class="header-right">
+    <span class="save-indicator" id="vl-saveIndicator"></span>
+    <button class="btn btn-ghost btn-sm" onclick="VL_exportData()">⬇ Export JSON</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCsv()">📄 Export CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="VL_importClick()">⬆ Import JSON</button>
+    <input type="file" id="vl-importFile" accept=".json" style="display:none" onchange="VL_importData(event)">
+  </div>
+</header>
+<div class="year-nav">
+  <span class="year-label">Rok:</span>
+  <button class="year-btn active" id="ybtn2025" onclick="VL_setYear(2025)">2025</button>
+  <button class="year-btn" id="ybtn2026" onclick="VL_setYear(2026)">2026</button>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 8px"></div>
+  <button class="year-btn" id="ybtnChart" onclick="VL_showChart()">📊 Přehled</button>
+</div>
+<div class="month-nav" id="vl-monthNav"></div>
+<div class="content" id="vl-mainContent"></div>
+<div class="toast" id="vl-toast"></div></div>
+</div>
+
+<!-- ===== KOLÍNKA ===== -->
+<div class="app-wrap" id="wrap-kol">
+  <div id="app-kol"><header>
+  <div class="logo">Kelvion <span>/ Kolínka 2026</span></div>
+  <div class="header-right">
+    <span class="save-ind" id="kol-saveIndicator"></span>
+    <button class="btn btn-success" onclick="KOL_exportData()" style="font-size:.8rem;">💾 Záloha JSON</button>
+    <button class="btn btn-ghost btn-sm" onclick="KOL_importClick()">⬆ Import</button>
+    <button class="btn btn-ghost btn-sm" onclick="KOL_exportCsv()">📄 CSV</button>
+    <input type="file" id="kol-importFile" accept=".json" style="display:none" onchange="KOL_importData(event)">
+  </div>
+</header>
+<div class="year-nav">
+  <span class="year-label">Zobrazení:</span>
+  <button class="year-btn active" id="ybtnData" onclick="KOL_showData()">Měsíc</button>
+  <button class="year-btn" id="ybtnChart" onclick="KOL_showChart()">📊 Přehled</button>
+</div>
+<div id="kol-monthNav" class="month-nav"></div>
+<div class="content">
+  <div id="kol-mainContent"></div>
+</div>
+<div id="kol-toast" class="toast"></div>
+<div class="modal-overlay" id="kol-addWorkerModal" onclick="if(event.target===this)closeWorkerModal()">
+  <div class="modal">
+    <h3>👷 Přidat pracovníka</h3>
+    <div class="field-group" style="margin-bottom:12px"><label>Jméno</label>
+      <input type="text" id="kol-newWorkerName" placeholder="Jan Novák" style="width:100%" onkeydown="if(event.key==='Enter')document.getElementById('kol-newWorkerRate').focus()">
+    </div>
+    <div class="field-group"><label>Hodinová sazba (Kč/h)</label>
+      <input type="number" id="kol-newWorkerRate" value="270" style="width:100%" onkeydown="if(event.key==='Enter')confirmAddWorker()">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="KOL_closeWorkerModal()">Zrušit</button>
+      <button class="btn btn-primary" onclick="KOL_confirmAddWorker()">Přidat</button>
+    </div>
+  </div>
+</div>
+<div class="proc-overlay" id="kol-procOverlay">
+  <div class="proc-box" id="kol-procBox"></div>
+</div></div>
+</div>
+
+<!-- ===== NÁJEM ===== -->
+<div class="app-wrap" id="wrap-naj">
+  <div id="app-naj">
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:96px;z-index:90;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#00d4aa;">Kelvion <span style="color:var(--muted);">/ Nájem 2026</span></div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;">
+        <span id="naj-saveInd" style="font-family:'DM Mono',monospace;font-size:.75rem;color:#00d4aa;"></span>
+        <button onclick="NAJ_exportJSON()" class="g-btn g-save">💾 Záloha JSON</button>
+        <button onclick="NAJ_importClick()" class="g-btn">⬆ Import</button>
+        <button onclick="NAJ_exportCSV()" class="g-btn">📄 CSV</button>
+        <button onclick="NAJ_switchView('mesic')" id="naj-btn-mesic" class="g-btn g-save">Měsíc</button>
+        <button onclick="NAJ_switchView('prehled')" id="naj-btn-prehled" class="g-btn">📊 Přehled</button>
+        <input type="file" id="naj-importFile" accept=".json" style="display:none" onchange="NAJ_importData(event)">
+      </div>
+    </div>
+    <div id="naj-monthNav" style="display:flex;gap:4px;flex-wrap:wrap;padding:10px 24px;background:var(--surface);border-bottom:1px solid var(--border);"></div>
+    <div style="padding:20px 24px;max-width:960px;margin:0 auto;" id="naj-content"></div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="app-wrap" id="wrap-dash">
+  <div id="app-dash">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:#a855f7;">📊 Kelvion Dashboard 2026</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="DASH_switchView('mesic')" id="dash-btn-mesic" class="g-btn g-save" style="background:#a855f7;border-color:#a855f7;">Měsíc</button>
+        <button onclick="DASH_switchView('rok')" id="dash-btn-rok" class="g-btn">Rok</button>
+      </div>
+    </div>
+    <div id="dash-content"></div>
+  </div>
+</div>
+
+<div class="g-toast" id="g-toast"></div>
+
+<script>
+// ===== GLOBAL TAB SWITCHING =====
+const LAST_TAB = 'kelvion_last_tab';
+let vlReady=false, kolReady=false, najReady=false, dashReady=false;
+
+function switchTab(tab) {
+  localStorage.setItem(LAST_TAB, tab);
+  ['vl','kol','naj','dash'].forEach(t => {
+    document.getElementById('wrap-'+t).classList.toggle('on', t===tab);
+    const btn = document.getElementById('tab-'+t);
+    btn.classList.toggle('on', t===tab);
+  });
+  if(tab==='vl' && !vlReady){ vlReady=true; VL_init(); }
+  if(tab==='kol' && !kolReady){ kolReady=true; KOL_init(); }
+  if(tab==='naj' && !najReady){ najReady=true; NAJ_init(); }
+  if(tab==='dash' && !dashReady){ dashReady=true; DASH_init(); }
+  // Refresh dash always when opened (data may have changed)
+  if(tab==='dash' && dashReady) { DASH_render(); }
+}
+
+function gToast(msg){ const t=document.getElementById('g-toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
+
+// ===== GLOBAL EXPORT/IMPORT ALL =====
+function exportAll() {
+  const stamp = new Date().toISOString().slice(0,10);
+  const all = {
+    vlasenky: JSON.parse(localStorage.getItem('kelvion_2025_2026')||'{}'),
+    kolinka: JSON.parse(localStorage.getItem('kelvion_kolinka_2026')||'{}'),
+    najem: JSON.parse(localStorage.getItem('kelvion_najem_2026')||'{}'),
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download = 'kelvion_vsechna_data_'+stamp+'.json'; a.click();
+  gToast('Export všech dat hotov!');
+}
+function importAllClick(){ document.getElementById('importAllFile').click(); }
+function importAll(e) {
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try {
+      const all=JSON.parse(ev.target.result);
+      if(all.vlasenky) { localStorage.setItem('kelvion_2025_2026', JSON.stringify(all.vlasenky)); vlReady=false; }
+      if(all.kolinka) { localStorage.setItem('kelvion_kolinka_2026', JSON.stringify(all.kolinka)); kolReady=false; }
+      if(all.najem) { localStorage.setItem('kelvion_najem_2026', JSON.stringify(all.najem)); najReady=false; }
+      gToast('✅ Všechna data obnovena!');
+      switchTab(localStorage.getItem(LAST_TAB)||'vl');
+    } catch(err){ alert('Chyba: '+err.message); }
+  };
+  reader.readAsText(file); e.target.value='';
+}
+function VL_emptyMonth(m) {
+  const workers = {};
+  [...VL_WORKERS, ...(VL_data._extraWorkers||[])].forEach((w,i) => {
+    workers[w] = { days: [], rate: VL_DEFAULT_RATES[Math.min(i, VL_DEFAULT_RATES.length-1)] };
+  });
+  return { workers, electricity:0, elec_price:5.45, elec_kwh:0, invoices:[VL_emptyInvoice(m,'15'), VL_emptyInvoice(m,'30')] };
+}
+function VL_emptyInvoice(m, d) {
+  return { datum:`${d}.${m}.`, pocet_hodin:0, sazba:1075, celkem:0, pocet_doprav:0, castka_dopravy:450, doprava_celkem:0, bonus_hodin:0, bonus_celkem:0, odfakturovano:0 };
+}
+function VL_getMD(y, m) {
+  return (VL_data[y] && VL_data[y][m]) ? VL_data[y][m] : VL_emptyMonth(m);
+}
+function VL_ensureYear(y, startM) {
+  if (!VL_data[y]) VL_data[y] = {};
+  for (let m = startM; m <= 12; m++) {
+    if (!VL_data[y][m]) VL_data[y][m] = VL_emptyMonth(m);
+    const allW = [...VL_WORKERS, ...(VL_data._extraWorkers||[])];
+    allW.forEach((w,i) => {
+      if (!VL_data[y][m].workers[w]) VL_data[y][m].workers[w] = { days:[], rate:VL_DEFAULT_RATES[Math.min(i,VL_DEFAULT_RATES.length-1)] };
+    });
+    if (!VL_data[y][m].invoices) VL_data[y][m].invoices = [VL_emptyInvoice(m,'15'), VL_emptyInvoice(m,'30')];
+    if (VL_data[y][m].elec_price === undefined) VL_data[y][m].elec_price = 5.45;
+    if (VL_data[y][m].elec_kwh === undefined) {
+      const leg = parseFloat(VL_data[y][m].electricity) || 0;
+      const pr = parseFloat(VL_data[y][m].elec_price) || 5.45;
+      VL_data[y][m].elec_kwh = leg > 0 ? Math.round((leg/pr)*100)/100 : 0;
+    }
+    // ensure sazba on invoices
+    (VL_data[y][m].invoices||[]).forEach(inv => { if (inv.sazba === undefined) inv.sazba = 1075; });
+  }
+}
+
+function VL_fmtH(n) { n=parseFloat(n)||0; return n%1===0?n:n.toFixed(1); }
+function VL_parseDate(s) { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function VL_dowOfDate(s) { return VL_parseDate(s).getDay(); }
+function VL_dowName(s) { return VL_DOW_CS[VL_dowOfDate(s)]; }
+function VL_isWeekend(s) { const d=VL_dowOfDate(s); return d===0||d===6; }
+function VL_daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
+function VL_dateStr(y,m,d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function VL_showToast(msg) { const t=document.getElementById('vl-toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function VL_sumHours(w) { return (w&&w.days||[]).reduce((a,d)=>a+parseFloat(d[1]||0),0); }
+function VL_workerCost(w) { return VL_sumHours(w)*(w&&w.rate||0); }
+function VL_totalMzdy(y,m) {
+  const md = VL_getMD(y,m);
+  return VL_getAllWorkers(y,m).reduce((s,w)=>s+VL_workerCost(md.workers[w]),0);
+}
+function VL_getElecTotal(md) {
+  return (parseFloat(md.elec_price)||5.45) * (parseFloat(md.elec_kwh)||0);
+}
+function VL_getAllWorkers(y,m) {
+  const base = [...VL_WORKERS];
+  const extra = VL_data._extraWorkers || [];
+  return [...new Set([...base,...extra])].filter(w => {
+    if (base.includes(w)) return true;
+    return [2025,2026].some(yr => VL_data[yr] && Object.values(VL_data[yr]).some(md => md&&md.workers&&md.workers[w]));
+  });
+}
+
+// ── STORAGE ──
+function VL_loadData() {
+  try {
+    const saved = localStorage.getItem(VL_STORAGE_KEY);
+    if (saved) {
+      VL_data = JSON.parse(saved);
+      // migrate old flat structure (2026-only saves with VL_data[1]..VL_data[12])
+      if (VL_data[1] && !VL_data[2026]) {
+        VL_data[2026] = {};
+        for (let m=1;m<=12;m++) { VL_data[2026][m]=VL_data[m]; delete VL_data[m]; }
+      }
+    } else {
+      VL_data = { 2026: JSON.parse(JSON.stringify(VL_INIT_2026)) };
+    }
+  } catch(e) { VL_data = { 2026: JSON.parse(JSON.stringify(VL_INIT_2026)) }; }
+  VL_ensureYear(2025, 4);
+  VL_ensureYear(2026, 1);
+}
+function VL_saveData() {
+  localStorage.setItem(VL_STORAGE_KEY, JSON.stringify(VL_data));
+  const el=document.getElementById('vl-saveIndicator');
+  el.textContent='✓ Uloženo'; setTimeout(()=>{el.textContent='';},2000);
+}
+function VL_exportData() {
+  const blob=new Blob([JSON.stringify(VL_data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='kelvion_2025_2026_backup.json'; a.click();
+}
+function VL_importClick() { document.getElementById('vl-importFile').click(); }
+function VL_importData(e) {
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{try{VL_data=JSON.parse(ev.target.result);VL_saveData();VL_buildNav();VL_render();VL_showToast('Importováno!');}catch(err){alert('Chyba: '+err.message);}};
+  reader.readAsText(file);
+}
+
+// ── YEAR / NAV ──
+function VL_setYear(y) {
+  VL_currentYear=y;
+  VL_currentMonth=(y===2025)?4:1;
+  document.getElementById('ybtn2025').className='year-btn'+(y===2025?' active':'');
+  document.getElementById('ybtn2026').className='year-btn'+(y===2026?' active':'');
+  document.getElementById('ybtnChart').className='year-btn';
+  document.getElementById('vl-monthNav').style.display='';
+  VL_buildNav(); VL_render();
+}
+function VL_buildNav() {
+  const nav=document.getElementById('vl-monthNav'); nav.innerHTML='';
+  const startM = VL_currentYear===2025 ? 4 : 1;
+  for (let m=startM; m<=12; m++) {
+    const md=VL_getMD(VL_currentYear,m);
+    const allW=VL_getAllWorkers(VL_currentYear,m);
+    const hasData=allW.some(w=>md.workers[w]&&md.workers[w].days.length>0)||md.elec_kwh>0;
+    const btn=document.createElement('button');
+    btn.className='month-btn'+(m===VL_currentMonth?' active':'')+(hasData?' has-data':'');
+    btn.textContent=VL_SHORT[m-1]; btn.title=VL_MONTH_NAMES[m-1];
+    btn.onclick=()=>{VL_currentMonth=m;VL_buildNav();VL_render();};
+    nav.appendChild(btn);
+  }
+}
+
+// ── CALENDAR ──
+function VL_renderCalendar(y, m, wname, wi) {
+  const dim=VL_daysInMonth(y,m);
+  const firstDow=VL_parseDate(VL_dateStr(y,m,1)).getDay();
+  const offset=(firstDow+6)%7;
+  const workedMap={};
+  VL_getMD(y,m).workers[wname].days.forEach(([ds,h])=>{workedMap[ds]=h;});
+  const colorRaw=['#4f7fff','#00d4aa','#a855f7','#ff6b6b'][wi%4];
+  let html=`<div class="cal-container">
+    <div class="cal-header">
+      <span class="cal-title">📅 Klikněte na den pro přidání/odebrání</span>
+      <div class="cal-hours-input"><label style="margin:0">Hod:</label>
+        <input type="number" id="calHours_${wi}" value="9" step="0.5" min="0.5" max="24">
+      </div>
+    </div>
+    <div class="cal-grid">`;
+  ['Po','Út','St','Čt','Pá','So','Ne'].forEach((d,i)=>{
+    html+=`<div class="cal-dow-label${i>=5?' we':''}">${d}</div>`;
+  });
+  for(let i=0;i<offset;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=VL_dateStr(y,m,d);
+    const dow=VL_parseDate(ds).getDay();
+    const we=dow===0||dow===6;
+    const worked=workedMap[ds]!==undefined;
+    const cls='cal-cell '+(we?'weekend':'normal')+(worked?' worked':'');
+    const sty=worked?`border-color:${colorRaw};color:${colorRaw};background:${colorRaw}18`:'';
+    html+=`<div class="${cls}" style="${sty}" onclick="VL_toggleDay(${y},${m},'${wname}',${wi},'${ds}')" title="${ds} (${VL_DOW_CS[dow]})">
+      <span class="cal-num">${d}</span>
+      ${worked?`<span class="cal-h">${VL_fmtH(workedMap[ds])}h</span>`:''}
+    </div>`;
+  }
+  html+=`</div></div>`;
+  return html;
+}
+
+// ── WORKER CARD ──
+function VL_renderWorkerCard(y, m, name, wi) {
+  const md=VL_getMD(y,m);
+  const w=md.workers[name]||{days:[],rate:VL_DEFAULT_RATES[Math.min(wi,VL_DEFAULT_RATES.length-1)]};
+  const total=VL_sumHours(w); const cost=VL_workerCost(w);
+  const color=VL_WORKER_COLORS[wi%4];
+  const colorRaw=['#4f7fff','#00d4aa','#a855f7','#ff6b6b'][wi%4];
+  const isExtra=!VL_WORKERS.includes(name);
+  const sorted=[...w.days].sort((a,b)=>a[0].localeCompare(b[0]));
+
+  let html=`<div class="worker-card">
+    <div class="worker-header">
+      <div class="worker-color-bar" style="background:${color}"></div>
+      <div class="worker-info"><div class="worker-name">${name}</div></div>
+      <div class="worker-total" style="color:${color}">${VL_fmtH(total)} h</div>
+      ${isExtra?`<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="VL_removeWorker('${name}')" title="Odebrat">✕</button>`:''}
+    </div>
+    <div class="worker-meta">
+      <div class="worker-meta-item"><div class="lbl">Dní</div><div class="val">${w.days.length}</div></div>
+      <div class="worker-meta-item"><div class="lbl">Sazba</div><div class="val">${w.rate} Kč/h</div></div>
+      <div class="worker-meta-item"><div class="lbl">Náklad</div><div class="val">${cost?cost.toLocaleString('cs-CZ')+' Kč':'—'}</div></div>
+    </div>
+    <div class="worker-rate-row">
+      <div class="field-group"><label>Hodinová sazba (Kč/h)</label>
+        <input type="number" value="${w.rate}" style="width:120px" oninput="setRate(${y},${m},'${name}',this.value)">
+      </div>
+    </div>`;
+
+  html+=VL_renderCalendar(y,m,name,wi);
+
+  html+=`<div class="days-wrap"><div class="days-list">`;
+  if(sorted.length===0){
+    html+=`<div class="days-empty">Žádné dny. Klikněte v kalendáři výše.</div>`;
+  } else {
+    sorted.forEach(([ds,hours],idx)=>{
+      const dow=VL_dowName(ds); const we=VL_isWeekend(ds);
+      const dp=ds.slice(8)+'.'+ds.slice(5,7)+'.';
+      html+=`<div class="day-row">
+        <span class="day-dow ${we?'we-text':''}">${dow}</span>
+        <span class="day-date ${we?'we-text':''}">${dp}</span>
+        <span class="day-hours-val">
+          <input type="number" value="${hours}" step="0.5" min="0.5" max="24"
+            VL_data-wi="${wi}" VL_data-idx="${idx}"
+            onchange="updateHours(${y},${m},'${name}','${ds}',this.value)"
+            onkeydown="hoursKeyDown(event,${y},${m},'${name}','${ds}',${wi},${idx})"> h
+        </span>
+        <button class="day-del" onclick="delDay(${y},${m},'${name}','${ds}')" title="Smazat">✕</button>
+      </div>`;
+    });
+  }
+  html+=`</div></div></div>`;
+  return html;
+}
+
+// ── INVOICE CARD ──
+function VL_renderInvoiceCard(inv, y, m, ii) {
+  const odfak=parseFloat(inv.odfakturovano||0);
+  const sazba=inv.sazba!==undefined?inv.sazba:1075;
+  return `<div class="invoice-card">
+    <div class="invoice-card-head">
+      <span class="invoice-date-label">Faktura ${inv.datum}</span>
+      <span class="invoice-total" id="inv_total_${y}_${m}_${ii}">${odfak?odfak.toLocaleString('cs-CZ')+' Kč':'—'}</span>
+      <button class="btn btn-danger btn-sm" onclick="delInvoice(${y},${m},${ii})">Smazat</button>
+    </div>
+    <div class="invoice-fields">
+      <div class="field-group"><label>Datum fakturace</label>
+        <input type="text" value="${inv.datum}" style="width:100%" onblur="setInvField(${y},${m},${ii},'datum',this.value)"></div>
+      <div class="field-group"><label>Počet hodin</label>
+        <input type="number" step="0.5" value="${inv.pocet_hodin||''}" style="width:100%"
+          id="inv_h_${y}_${m}_${ii}" onblur="setInvHodiny(${y},${m},${ii},this.value)"></div>
+      <div class="field-group"><label>Sazba (Kč/h)</label>
+        <input type="number" step="1" value="${sazba}" style="width:100%"
+          id="inv_sazba_${y}_${m}_${ii}" onblur="setInvSazba(${y},${m},${ii},this.value)"></div>
+      <div class="field-group"><label>Celkem hodin (Kč)</label>
+        <input type="number" step="0.01" value="${inv.celkem||''}" style="width:100%;background:var(--surface2)"
+          id="inv_celkem_${y}_${m}_${ii}" readonly title="Počet hodin × Sazba"></div>
+      <div class="field-group"><label>Počet doprav</label>
+        <input type="number" value="${inv.pocet_doprav||''}" style="width:100%"
+          onblur="setInvDoprava(${y},${m},${ii},'pocet_doprav',this.value)"></div>
+      <div class="field-group"><label>Částka doprava (Kč/jízda)</label>
+        <input type="number" value="${inv.castka_dopravy||''}" style="width:100%"
+          onblur="setInvDoprava(${y},${m},${ii},'castka_dopravy',this.value)"></div>
+      <div class="field-group"><label>Doprava celkem (Kč)</label>
+        <input type="number" step="0.01" value="${inv.doprava_celkem||''}" style="width:100%;background:var(--surface2)"
+          id="inv_doprava_celkem_${y}_${m}_${ii}" readonly title="Počet doprav × Částka doprava"></div>
+      <div class="field-group"><label>Bonus hodin</label>
+        <input type="number" step="0.5" value="${inv.bonus_hodin||''}" style="width:100%"
+          onblur="setInvBonusHodiny(${y},${m},${ii},this.value)"></div>
+      <div class="field-group"><label>Bonus celkem (Kč)</label>
+        <input type="number" step="0.01" value="${inv.bonus_celkem||''}" style="width:100%;background:var(--surface2)"
+          id="inv_bonus_celkem_${y}_${m}_${ii}" readonly title="Bonus hodin × Sazba"></div>
+      <div class="field-group"><label>⭐ Odfakturováno celkem (Kč)</label>
+        <input type="number" step="0.01" value="${inv.odfakturovano||''}" style="width:100%;border-color:var(--accent4)"
+          id="inv_odfak_${y}_${m}_${ii}" onblur="setInvField(${y},${m},${ii},'odfakturovano',this.value)"></div>
+    </div>
+  </div>`;
+}
+
+
+// ── MANAGER HELPERS ──
+function VL_money(n, digits=0) { return (parseFloat(n)||0).toLocaleString('cs-CZ',{maximumFractionDigits:digits})+' Kč'; }
+function VL_monthNumbers(y,m) {
+  const md=VL_getMD(y,m);
+  const allW=VL_getAllWorkers(y,m);
+  const totalH=allW.reduce((s,w)=>s+VL_sumHours(md.workers[w]||{days:[]}),0);
+  const wage=VL_totalMzdy(y,m);
+  const elec=VL_getElecTotal(md);
+  const invoiced=md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const invoicedHours=md.invoices.reduce((s,inv)=>s+parseFloat(inv.pocet_hodin||0)+parseFloat(inv.bonus_hodin||0),0);
+  const transport=md.invoices.reduce((s,inv)=>s+parseFloat(inv.doprava_celkem||0),0);
+  const cost=wage+elec;
+  const profit=invoiced-cost;
+  return {md, allW, totalH, wage, elec, invoiced, invoicedHours, transport, cost, profit,
+    revenuePerHour: totalH?invoiced/totalH:0,
+    costPerHour: totalH?cost/totalH:0,
+    profitPerHour: totalH?profit/totalH:0,
+    margin: invoiced?profit/invoiced*100:0,
+    hourDiff: invoicedHours-totalH
+  };
+}
+function VL_renderManagerCheck(y,m) {
+  const n=VL_monthNumbers(y,m);
+  const cards=[];
+  const marginClass=n.invoiced===0?'warn':(n.margin>=30?'good':(n.margin>=15?'warn':'bad'));
+  cards.push(`<div class="insight-card ${marginClass}"><div class="insight-title">Marže</div><div class="insight-value" style="color:${n.margin>=30?'var(--accent2)':n.margin>=15?'var(--accent4)':'var(--accent3)'}">${n.invoiced?n.margin.toFixed(1)+' %':'—'}</div><div class="insight-note">Cíl bych držel aspoň kolem 25–30 %. Níže už je potřeba řešit sazbu, bonusy nebo náklady.</div></div>`);
+  cards.push(`<div class="insight-card"><div class="insight-title">Příjem / hod.</div><div class="insight-value" style="color:var(--accent)">${n.totalH?VL_money(n.revenuePerHour,0)+'/h':'—'}</div><div class="insight-note">Kolik zakázka přinesla na jednu skutečně odpracovanou hodinu.</div></div>`);
+  cards.push(`<div class="insight-card"><div class="insight-title">Náklad / hod.</div><div class="insight-value" style="color:var(--accent4)">${n.totalH?VL_money(n.costPerHour,0)+'/h':'—'}</div><div class="insight-note">Mzdy + elektřina děleno odpracovanými hodinami.</div></div>`);
+  cards.push(`<div class="insight-card ${Math.abs(n.hourDiff)>8?'warn':'good'}"><div class="insight-title">Kontrola hodin</div><div class="insight-value" style="color:${Math.abs(n.hourDiff)>8?'var(--accent4)':'var(--accent2)'}">${n.hourDiff>=0?'+':''}${VL_fmtH(n.hourDiff)} h</div><div class="insight-note">Rozdíl mezi fakturovanými hodinami včetně bonusu a evidovanými pracovními hodinami.</div></div>`);
+  const workerRows=n.allW.map(w=>{const ww=n.md.workers[w]||{days:[],rate:0};return {name:w,h:VL_sumHours(ww),cost:VL_workerCost(ww)}}).filter(x=>x.h>0).sort((a,b)=>b.h-a.h);
+  let table=`<table class="quick-table"><thead><tr><th>Pracovník</th><th class="num">Hodiny</th><th class="num">Náklad</th><th class="num">Podíl</th></tr></thead><tbody>`;
+  if(workerRows.length===0) table+=`<tr><td colspan="4" style="color:var(--muted)">Zatím žádné hodiny v tomto měsíci.</td></tr>`;
+  workerRows.forEach(r=>{ table+=`<tr><td>${r.name}</td><td class="num">${VL_fmtH(r.h)} h</td><td class="num">${VL_money(r.cost)}</td><td class="num">${n.totalH?(r.h/n.totalH*100).toFixed(0):0} %</td></tr>`; });
+  table+=`</tbody></table>`;
+  const warnings=[];
+  if(n.invoiced===0 && n.totalH>0) warnings.push('Jsou zadané odpracované hodiny, ale žádná fakturace.');
+  if(n.elec===0 && n.totalH>0) warnings.push('Chybí elektřina – zisk může být nadhodnocený.');
+  if(n.profit<0) warnings.push('Měsíc je ve ztrátě. Zkontroluj sazbu, fakturované hodiny a elektřinu.');
+  if(Math.abs(n.hourDiff)>8) warnings.push('Fakturované hodiny se liší od evidence o více než 8 hodin.');
+  const warnHtml=warnings.length?warnings.map(w=>`<div class="insight-card warn"><div class="insight-note">⚠️ ${w}</div></div>`).join(''):`<div class="insight-card good"><div class="insight-note">✅ Základní kontrola nevypadá špatně. Zkontroluj už jen, zda sedí sazba a dopravy.</div></div>`;
+  return `<div class="section"><div class="section-head"><div class="section-title">🧠 Manažerská kontrola měsíce</div></div><div class="section-body"><div class="insight-grid">${cards.join('')}</div><div style="height:14px"></div><div class="insight-grid">${warnHtml}</div><div style="height:18px"></div>${table}</div></div>`;
+}
+function exportCsv() {
+  const rows=[['Rok','Měsíc','Hodiny evidence','Hodiny fakturace vč. bonusu','Mzdy Kč','Elektřina Kč','Náklady Kč','Odfakturováno Kč','Zisk Kč','Marže %','Příjem Kč/h','Náklad Kč/h','Zisk Kč/h']];
+  [[2025,4,12],[2026,1,12]].forEach(([y,start,end])=>{
+    for(let m=start;m<=end;m++){
+      const n=VL_monthNumbers(y,m);
+      rows.push([y,VL_MONTH_NAMES[m-1],n.totalH,n.invoicedHours,n.wage,n.elec,n.cost,n.invoiced,n.profit,n.margin,n.revenuePerHour,n.costPerHour,n.profitPerHour]);
+    }
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kelvion_vlasenky_prehled.csv'; a.click();
+}
+
+// ── MAIN RENDER ──
+function VL_render() {
+  const y=VL_currentYear; const m=VL_currentMonth; const md=VL_getMD(y,m);
+  const allW=VL_getAllWorkers(y,m);
+  const totalH=allW.reduce((s,w)=>s+VL_sumHours(md.workers[w]||{days:[]}),0);
+  const totalCost=VL_totalMzdy(y,m);
+  const totalOdfak=md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const elecT=VL_getElecTotal(md);
+  const cistyZisk=totalOdfak-(totalCost+elecT);
+  const zPos=cistyZisk>=0;
+
+  let html=`<div class="summary-cards">
+    <div class="card"><div class="card-label">Celkem hodin</div><div class="card-value" id="sc_h">${VL_fmtH(totalH)}</div><div class="card-sub">odpracovaných hodin</div></div>
+    <div class="card c2"><div class="card-label">Mzdový náklad</div><div class="card-value" id="sc_c">${totalCost?totalCost.toLocaleString('cs-CZ'):'0'} Kč</div><div class="card-sub">součet za pracovníky</div></div>
+    <div class="card c3"><div class="card-label">Elektřina</div><div class="card-value" id="sc_e">${elecT?elecT.toLocaleString('cs-CZ',{maximumFractionDigits:2}):'0'} Kč</div><div class="card-sub">hala Kelvion</div></div>
+    <div class="card c4"><div class="card-label">Odfakturováno</div><div class="card-value" id="sc_i">${totalOdfak?totalOdfak.toLocaleString('cs-CZ'):'0'} Kč</div><div class="card-sub">celková fakturace</div></div>
+    <div class="card c6" style="border-left-color:${zPos?'var(--accent2)':'var(--accent3)'}"><div class="card-label">Čistý zisk</div><div class="card-value" id="sc_zisk" style="color:${zPos?'var(--accent2)':'var(--accent3)'}">${cistyZisk.toLocaleString('cs-CZ',{maximumFractionDigits:2})} Kč</div><div class="card-sub">Příjem − (mzdy + elektřina)</div></div>
+    <div class="card c5"><div class="card-label">Zisk / hod.</div><div class="card-value" id="sc_profit_hour" style="color:${zPos?'var(--accent2)':'var(--accent3)'}">${totalH?(cistyZisk/totalH).toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč':'—'}</div><div class="card-sub">zisk na 1 odpracovanou hodinu</div></div>
+  </div>`;
+
+  html+=VL_renderManagerCheck(y,m);
+
+  html+=`<div class="section">
+    <div class="section-head">
+      <div class="section-title">👷 Pracovníci – ${VL_MONTH_NAMES[m-1]} ${y}</div>
+      <button class="btn btn-primary btn-sm" onclick="showAddWorkerModal()">+ Přidat pracovníka</button>
+    </div>
+    <div class="section-body"><div class="workers-grid">`;
+  allW.forEach((name,wi)=>{ html+=VL_renderWorkerCard(y,m,name,wi); });
+  html+=`</div></div></div>`;
+
+  const elecKwh=md.elec_kwh||0; const elecPrice=md.elec_price!==undefined?md.elec_price:5.45;
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">⚡ Elektřina hala Kelvion</div></div>
+    <div class="section-body">
+      <div class="elec-row" style="align-items:center;gap:18px;flex-wrap:wrap">
+        <div class="field-group"><label>Cena za kWh (Kč)</label>
+          <input type="number" step="0.01" value="${elecPrice}" style="width:110px"
+            onchange="setElecField(${y},${m},'elec_price',this.value)" onblur="setElecField(${y},${m},'elec_price',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">×</div>
+        <div class="field-group"><label>Počet kWh</label>
+          <input type="number" step="1" value="${elecKwh||''}" placeholder="0" style="width:140px"
+            onchange="setElecField(${y},${m},'elec_kwh',this.value)" onblur="setElecField(${y},${m},'elec_kwh',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">=</div>
+        <div style="align-self:flex-end;padding-bottom:6px">
+          <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-family:'DM Mono',monospace">Náklad za elektřinu</div>
+          <div id="elec_result_${y}_${m}" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent4)">${elecT?elecT.toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč':'— Kč'}</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:0.85rem">
+        Celkový náklad za měsíc (mzdy + elektřina): <b id="elec_total_${y}_${m}" style="color:var(--accent2)">${(totalCost+elecT).toLocaleString('cs-CZ',{maximumFractionDigits:2})} Kč</b>
+      </div>
+    </div>
+  </div>`;
+
+  html+=`<div class="section">
+    <div class="section-head">
+      <div class="section-title">🧾 Fakturace</div>
+      <button class="btn btn-ghost btn-sm" onclick="VL_addInvoice(${y},${m})">+ Přidat fakturu</button>
+    </div>
+    <div class="section-body">`;
+  md.invoices.forEach((inv,ii)=>{ html+=VL_renderInvoiceCard(inv,y,m,ii); });
+  if(!md.invoices.length) html+='<div class="no-VL_data-msg">Žádné faktury.</div>';
+  html+=`</div></div>`;
+
+  document.getElementById('vl-mainContent').innerHTML=html;
+}
+
+// ── ACTIONS ──
+function VL_toggleDay(y,m,name,wi,ds) {
+  const days=VL_data[y][m].workers[name].days;
+  const idx=days.findIndex(d=>d[0]===ds);
+  if(idx>=0){ days.splice(idx,1); VL_saveData(); VL_render(); VL_showToast(`Odstraněno: ${ds.slice(8)}.${ds.slice(5,7)}.`); }
+  else {
+    const hoursEl=document.getElementById('calHours_'+wi);
+    const hours=parseFloat(hoursEl?hoursEl.value:9)||9;
+    days.push([ds,hours]); VL_saveData(); VL_render();
+    VL_showToast(`Přidáno: ${ds.slice(8)}.${ds.slice(5,7)}. – ${hours}h`);
+  }
+}
+function delDay(y,m,name,ds) {
+  const days=VL_data[y][m].workers[name].days;
+  const idx=days.findIndex(d=>d[0]===ds);
+  if(idx>=0){days.splice(idx,1);VL_saveData();VL_render();}
+}
+function updateHours(y,m,name,ds,val) {
+  const hours=parseFloat(val); if(isNaN(hours)) return;
+  const days=VL_data[y][m].workers[name].days;
+  const idx=days.findIndex(d=>d[0]===ds);
+  if(idx>=0){days[idx][1]=hours;VL_saveData();updateSummaryCards();}
+}
+function hoursKeyDown(e,y,m,name,ds,wi,idx) {
+  if(e.key!=='Enter') return; e.preventDefault();
+  const hours=parseFloat(e.target.value);
+  if(!isNaN(hours)){const days=VL_data[y][m].workers[name].days;const i=days.findIndex(d=>d[0]===ds);if(i>=0){days[i][1]=hours;VL_saveData();updateSummaryCards();}}
+  const all=Array.from(document.querySelectorAll(`input[VL_data-wi="${wi}"]`));
+  const next=all[all.indexOf(e.target)+1];
+  if(next){next.focus();next.select();}
+}
+function setRate(y,m,name,val) { VL_data[y][m].workers[name].rate=parseFloat(val)||0; VL_saveData(); updateSummaryCards(); }
+
+function setElecField(y,m,field,val) {
+  VL_data[y][m][field]=parseFloat(val)||0;
+  VL_saveData();
+  const total=VL_getElecTotal(VL_data[y][m]);
+  const el=document.getElementById(`elec_result_${y}_${m}`); if(el) el.textContent=total?total.toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč':'— Kč';
+  const el2=document.getElementById(`elec_total_${y}_${m}`); if(el2) el2.textContent=(VL_totalMzdy(y,m)+total).toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč';
+  updateSummaryCards();
+}
+
+function setInvField(y,m,ii,field,val) {
+  VL_data[y][m].invoices[ii][field]=isNaN(parseFloat(val))?val:parseFloat(val);
+  VL_saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvDoprava(y,m,ii,field,val) {
+  const inv=VL_data[y][m].invoices[ii];
+  inv[field]=parseFloat(val)||0;
+  inv.doprava_celkem=(parseFloat(inv.pocet_doprav)||0)*(parseFloat(inv.castka_dopravy)||0);
+  const el=document.getElementById(`inv_doprava_celkem_${y}_${m}_${ii}`); if(el) el.value=inv.doprava_celkem||'';
+  inv.odfakturovano=(parseFloat(inv.celkem)||0)+inv.doprava_celkem+(parseFloat(inv.bonus_celkem)||0);
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  VL_saveData(); refreshInvDisplay(y,m,ii);
+}
+
+function setInvCalc(y,m,ii,field,val) {
+  VL_data[y][m].invoices[ii][field]=parseFloat(val)||0;
+  const inv=VL_data[y][m].invoices[ii];
+  inv.odfakturovano=(parseFloat(inv.celkem)||0)+(parseFloat(inv.doprava_celkem)||0)+(parseFloat(inv.bonus_celkem)||0);
+  const el=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(el) el.value=inv.odfakturovano||'';
+  VL_saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvHodiny(y,m,ii,val) {
+  const inv=VL_data[y][m].invoices[ii];
+  inv.pocet_hodin=parseFloat(val)||0;
+  const sazba=inv.sazba!==undefined?inv.sazba:1075;
+  inv.celkem=inv.pocet_hodin*sazba;
+  const cel=document.getElementById(`inv_celkem_${y}_${m}_${ii}`); if(cel) cel.value=inv.celkem||'';
+  inv.odfakturovano=(inv.celkem||0)+(parseFloat(inv.doprava_celkem)||0)+(parseFloat(inv.bonus_celkem)||0);
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  VL_saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvBonusHodiny(y,m,ii,val) {
+  const inv=VL_data[y][m].invoices[ii];
+  inv.bonus_hodin=parseFloat(val)||0;
+  const sazba=inv.sazba!==undefined?inv.sazba:1075;
+  inv.bonus_celkem=inv.bonus_hodin*sazba;
+  const bon=document.getElementById(`inv_bonus_celkem_${y}_${m}_${ii}`); if(bon) bon.value=inv.bonus_celkem||'';
+  inv.odfakturovano=(parseFloat(inv.celkem)||0)+(parseFloat(inv.doprava_celkem)||0)+inv.bonus_celkem;
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  VL_saveData(); refreshInvDisplay(y,m,ii);
+}
+function setInvSazba(y,m,ii,val) {
+  const inv=VL_data[y][m].invoices[ii];
+  inv.sazba=parseFloat(val)||1075;
+  inv.celkem=(inv.pocet_hodin||0)*inv.sazba;
+  inv.bonus_celkem=(inv.bonus_hodin||0)*inv.sazba;
+  const cel=document.getElementById(`inv_celkem_${y}_${m}_${ii}`); if(cel) cel.value=inv.celkem||'';
+  const bon=document.getElementById(`inv_bonus_celkem_${y}_${m}_${ii}`); if(bon) bon.value=inv.bonus_celkem||'';
+  inv.odfakturovano=(inv.celkem||0)+(parseFloat(inv.doprava_celkem)||0)+inv.bonus_celkem;
+  const odfak=document.getElementById(`inv_odfak_${y}_${m}_${ii}`); if(odfak) odfak.value=inv.odfakturovano||'';
+  VL_saveData(); refreshInvDisplay(y,m,ii);
+}
+function refreshInvDisplay(y,m,ii) {
+  const inv=VL_data[y][m].invoices[ii];
+  const odfak=parseFloat(inv.odfakturovano||0);
+  const el=document.getElementById(`inv_total_${y}_${m}_${ii}`); if(el) el.textContent=odfak?odfak.toLocaleString('cs-CZ')+' Kč':'—';
+  const totalOdfak=VL_data[y][m].invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const sc=document.getElementById('sc_i'); if(sc) sc.textContent=(totalOdfak?totalOdfak.toLocaleString('cs-CZ'):'0')+' Kč';
+  const totalCost=VL_totalMzdy(y,m); const elecT=VL_getElecTotal(VL_getMD(y,m));
+  const zisk=totalOdfak-(totalCost+elecT);
+  const zEl=document.getElementById('sc_zisk');
+  if(zEl){zEl.textContent=zisk.toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč';zEl.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const ph=document.getElementById('sc_profit_hour'); if(ph){ph.textContent=totalH?(zisk/totalH).toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč':'—';ph.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const zCard=zEl&&zEl.closest('.card'); if(zCard) zCard.style.borderLeftColor=zisk>=0?'var(--accent2)':'var(--accent3)';
+}
+function VL_addInvoice(y,m) { VL_data[y][m].invoices.push(VL_emptyInvoice(m, VL_data[y][m].invoices.length+1)); VL_saveData(); VL_render(); }
+function delInvoice(y,m,ii) { if(!confirm('Smazat fakturu?'))return; VL_data[y][m].invoices.splice(ii,1); VL_saveData(); VL_render(); }
+
+function updateSummaryCards() {
+  const y=VL_currentYear; const m=VL_currentMonth; const md=VL_getMD(y,m);
+  const allW=VL_getAllWorkers(y,m);
+  const totalH=allW.reduce((s,w)=>s+VL_sumHours(md.workers[w]||{days:[]}),0);
+  const totalCost=VL_totalMzdy(y,m);
+  const totalOdfak=md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+  const elecT=VL_getElecTotal(md);
+  const h=document.getElementById('sc_h'); if(h) h.textContent=VL_fmtH(totalH);
+  const c=document.getElementById('sc_c'); if(c) c.textContent=(totalCost?totalCost.toLocaleString('cs-CZ'):'0')+' Kč';
+  const e=document.getElementById('sc_e'); if(e) e.textContent=(elecT?elecT.toLocaleString('cs-CZ',{maximumFractionDigits:2}):'0')+' Kč';
+  const i=document.getElementById('sc_i'); if(i) i.textContent=(totalOdfak?totalOdfak.toLocaleString('cs-CZ'):'0')+' Kč';
+  const zisk=totalOdfak-(totalCost+elecT);
+  const zEl=document.getElementById('sc_zisk');
+  if(zEl){zEl.textContent=zisk.toLocaleString('cs-CZ',{maximumFractionDigits:2})+' Kč';zEl.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const ph=document.getElementById('sc_profit_hour'); if(ph){ph.textContent=totalH?(zisk/totalH).toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč':'—';ph.style.color=zisk>=0?'var(--accent2)':'var(--accent3)';}
+  const zCard=zEl&&zEl.closest('.card'); if(zCard) zCard.style.borderLeftColor=zisk>=0?'var(--accent2)':'var(--accent3)';
+}
+
+// ── VL_WORKERS ──
+function VL_getAllWorkers(y,m) {
+  const base=[...VL_WORKERS]; const extra=VL_data._extraWorkers||[];
+  return [...new Set([...base,...extra])].filter(w=>{
+    if(base.includes(w)) return true;
+    return [2025,2026].some(yr=>VL_data[yr]&&Object.values(VL_data[yr]).some(md=>md&&md.workers&&md.workers[w]));
+  });
+}
+function showAddWorkerModal() {
+  document.getElementById('vl-addWorkerModal').classList.add('open');
+  document.getElementById('vl-newWorkerName').value='';
+  document.getElementById('vl-newWorkerRate').value='300';
+  document.getElementById('vl-newWorkerName').focus();
+}
+function closeAddWorkerModal() { document.getElementById('vl-addWorkerModal').classList.remove('open'); }
+function confirmAddWorker() {
+  const name=document.getElementById('vl-newWorkerName').value.trim();
+  const rate=parseFloat(document.getElementById('vl-newWorkerRate').value)||300;
+  if(!name){document.getElementById('vl-newWorkerName').focus();return;}
+  if(VL_getAllWorkers(VL_currentYear,VL_currentMonth).includes(name)){VL_showToast('Pracovník již existuje!');closeAddWorkerModal();return;}
+  if(!VL_data._extraWorkers) VL_data._extraWorkers=[];
+  if(!VL_data._extraWorkers.includes(name)) VL_data._extraWorkers.push(name);
+  [2025,2026].forEach(yr=>{
+    VL_ensureYear(yr, yr===2025?4:1);
+    for(let m=(yr===2025?4:1);m<=12;m++){
+      if(!VL_data[yr][m].workers[name]) VL_data[yr][m].workers[name]={days:[],rate};
+    }
+  });
+  VL_saveData(); closeAddWorkerModal(); VL_render();
+  VL_showToast('Pracovník přidán: '+name);
+}
+function VL_removeWorker(name) {
+  if(!confirm(`Opravdu smazat "${name}" ze všech měsíců?`)) return;
+  if(VL_data._extraWorkers) VL_data._extraWorkers=VL_data._extraWorkers.filter(w=>w!==name);
+  [2025,2026].forEach(yr=>{ if(VL_data[yr]) Object.values(VL_data[yr]).forEach(md=>{if(md&&md.workers) delete md.workers[name];}); });
+  VL_saveData(); VL_render(); VL_showToast('Pracovník odstraněn.');
+}
+
+function VL_showChart() {
+  document.getElementById('ybtn2025').className='year-btn';
+  document.getElementById('ybtn2026').className='year-btn';
+  document.getElementById('ybtnChart').className='year-btn active';
+  document.getElementById('vl-monthNav').style.display='none';
+  VL_renderChart();
+}
+
+function VL_renderChart() {
+  const MONTH_SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+  const years = [2025, 2026];
+  const yearColors = { 2025: '#4f7fff', 2026: '#00d4aa' };
+  const yearStart = { 2025: 4, 2026: 1 };
+
+  // Collect monthly VL_data per year
+  const months2025 = [], months2026 = [];
+  for (let m=4; m<=12; m++) {
+    const md = VL_getMD(2025,m);
+    const allW = VL_getAllWorkers(2025,m);
+    const totalH = allW.reduce((s,w)=>s+VL_sumHours(md.workers[w]||{days:[]}),0);
+    const mzdy = VL_totalMzdy(2025,m);
+    const elec = VL_getElecTotal(md);
+    const odfak = md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+    const cesty = md.invoices.reduce((s,inv)=>s+parseFloat(inv.doprava_celkem||0),0);
+    months2025.push({ m, label: MONTH_SHORT[m-1], hours: totalH, mzdy, elec, odfak, cesty, zisk: odfak-(mzdy+elec) });
+  }
+  for (let m=1; m<=12; m++) {
+    const md = VL_getMD(2026,m);
+    const allW = VL_getAllWorkers(2026,m);
+    const totalH = allW.reduce((s,w)=>s+VL_sumHours(md.workers[w]||{days:[]}),0);
+    const mzdy = VL_totalMzdy(2026,m);
+    const elec = VL_getElecTotal(md);
+    const odfak = md.invoices.reduce((s,inv)=>s+parseFloat(inv.odfakturovano||0),0);
+    const cesty = md.invoices.reduce((s,inv)=>s+parseFloat(inv.doprava_celkem||0),0);
+    months2026.push({ m, label: MONTH_SHORT[m-1], hours: totalH, mzdy, elec, odfak, cesty, zisk: odfak-(mzdy+elec) });
+  }
+
+  // Totals
+  const tot25 = months2025.reduce((a,m)=>({odfak:a.odfak+m.odfak,mzdy:a.mzdy+m.mzdy,elec:a.elec+m.elec,zisk:a.zisk+m.zisk,hours:a.hours+m.hours}),{odfak:0,mzdy:0,elec:0,zisk:0,hours:0});
+  const tot26 = months2026.reduce((a,m)=>({odfak:a.odfak+m.odfak,mzdy:a.mzdy+m.mzdy,elec:a.elec+m.elec,zisk:a.zisk+m.zisk,hours:a.hours+m.hours}),{odfak:0,mzdy:0,elec:0,zisk:0,hours:0});
+
+  function fmtK(n) { return n>=1000?(n/1000).toFixed(0)+'k':n.toFixed(0); }
+  function fmtKc(n) { return n.toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kč'; }
+
+  // Build bar chart SVG for odfakturováno vs náklady vs zisk
+  function VL_buildBarChart(months, year, w) {
+    const BAR_W = 18, GROUP_W = 72, PAD_L = 52, PAD_B = 36, PAD_T = 20, H = 220;
+    const vals = months.map(m=>[m.odfak, m.mzdy+m.elec, m.zisk]);
+    const maxVal = Math.max(...vals.flat().map(Math.abs), 1);
+    const scale = (H - PAD_T - PAD_B) / maxVal;
+    const zero = H - PAD_B;
+    const totalW = PAD_L + months.length * GROUP_W + 10;
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    // Y grid lines
+    const steps = 4;
+    for (let i=0; i<=steps; i++) {
+      const v = maxVal * i / steps;
+      const y = zero - v * scale;
+      svg += `<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg += `<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    }
+    // Zero line
+    svg += `<line x1="${PAD_L-8}" y1="${zero}" x2="${totalW-10}" y2="${zero}" stroke="var(--muted)" stroke-width="1.5"/>`;
+    // Bars
+    months.forEach((mo, i) => {
+      const x = PAD_L + i * GROUP_W;
+      const barData = [
+        { v: mo.odfak,         color: '#4f7fff', label: 'Příjem' },
+        { v: mo.mzdy+mo.elec,  color: '#ff6b6b', label: 'Náklady' },
+        { v: mo.zisk,          color: mo.zisk>=0?'#00d4aa':'#ff6b6b', label: 'Zisk' },
+      ];
+      barData.forEach((b, bi) => {
+        const bx = x + bi * (BAR_W+2) + 4;
+        const bh = Math.abs(b.v) * scale;
+        const by = b.v >= 0 ? zero - bh : zero;
+        svg += `<rect x="${bx}" y="${by}" width="${BAR_W}" height="${Math.max(bh,1)}" fill="${b.color}" rx="2" opacity="0.85"/>`;
+        if (bh > 14) svg += `<text x="${bx+BAR_W/2}" y="${b.v>=0?by-3:by+bh+10}" text-anchor="middle" class="bar-value" fill="${b.color}" font-size="9">${fmtK(b.v)}</text>`;
+      });
+      svg += `<text x="${x+GROUP_W/2-4}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  // Hours line chart
+  function VL_buildHoursChart(months, year) {
+    const PAD_L=52, PAD_B=36, PAD_T=20, H=160;
+    const vals = months.map(m=>m.hours);
+    const maxV = Math.max(...vals, 1);
+    const totalW = PAD_L + months.length * 72 + 10;
+    const scale = (H-PAD_T-PAD_B)/maxV;
+    const pts = months.map((mo,i)=>{
+      const x = PAD_L + i*72 + 36;
+      const y = H - PAD_B - mo.hours*scale;
+      return `${x},${y}`;
+    }).join(' ');
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    // Grid
+    [0,0.5,1].forEach(f=>{
+      const v=maxV*f; const y=H-PAD_B-v*scale;
+      svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg+=`<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    });
+    svg+=`<polyline points="${pts}" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linejoin="round"/>`;
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*72+36; const y=H-PAD_B-mo.hours*scale;
+      svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#a855f7"/>`;
+      if(mo.hours>0) svg+=`<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="#a855f7" font-size="9">${fmtK(mo.hours)}</text>`;
+      svg+=`<text x="${x}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    return svg;
+  }
+
+  function VL_buildLineChart(months) {
+    const PAD_L=52, PAD_B=36, PAD_T=24, H=200;
+    const lines = [
+      { key:'zisk', label:'Čistý zisk', color:'#00d4aa' },
+    ];
+    const allVals = months.flatMap(m => lines.map(l => m[l.key]||0));
+    const minV = Math.min(...allVals, 0);
+    const maxV = Math.max(...allVals, 1);
+    const range = maxV - minV || 1;
+    const totalW = PAD_L + months.length * 72 + 20;
+    const chartH = H - PAD_T - PAD_B;
+    const toY = v => H - PAD_B - ((v - minV) / range) * chartH;
+    let svg = `<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    // Grid lines
+    const steps = 4;
+    for (let i=0; i<=steps; i++) {
+      const v = minV + (range * i / steps);
+      const y = toY(v);
+      svg += `<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg += `<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    }
+    // Zero line if needed
+    if (minV < 0) {
+      const y0 = toY(0);
+      svg += `<line x1="${PAD_L-8}" y1="${y0}" x2="${totalW-10}" y2="${y0}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    }
+    // Lines + dots
+    lines.forEach(line => {
+      const pts = months.map((mo,i) => {
+        const x = PAD_L + i*72 + 36;
+        const y = toY(mo[line.key]||0);
+        return `${x},${y}`;
+      }).join(' ');
+      svg += `<polyline points="${pts}" fill="none" stroke="${line.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+      months.forEach((mo,i) => {
+        const x = PAD_L + i*72 + 36;
+        const y = toY(mo[line.key]||0);
+        const v = mo[line.key]||0;
+        svg += `<circle cx="${x}" cy="${y}" r="4" fill="${line.color}" stroke="var(--bg)" stroke-width="1.5"/>`;
+        if (Math.abs(v) > 0) svg += `<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="${line.color}" font-size="9">${fmtK(v)}</text>`;
+      });
+    });
+    // X labels
+    months.forEach((mo,i) => {
+      svg += `<text x="${PAD_L+i*72+36}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
+  const has25 = months2025.some(m=>m.odfak>0||m.hours>0);
+  const has26 = months2026.some(m=>m.odfak>0||m.hours>0);
+
+  let html = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text)">📊 Finanční přehled</div>
+    <div style="font-size:0.78rem;color:var(--muted)">Kelvion – Vlásenky 2025–2026</div>
+  </div>`;
+
+  // Summary stats
+  html += `<div class="stats-grid">
+    <div class="stat-card"><div class="stat-card-label">Celkový příjem 2025</div><div class="stat-card-value" style="color:#4f7fff">${fmtKc(tot25.odfak)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový zisk 2025</div><div class="stat-card-value" style="color:${tot25.zisk>=0?'#00d4aa':'#ff6b6b'}">${fmtKc(tot25.zisk)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový příjem 2026</div><div class="stat-card-value" style="color:#4f7fff">${fmtKc(tot26.odfak)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový zisk 2026</div><div class="stat-card-value" style="color:${tot26.zisk>=0?'#00d4aa':'#ff6b6b'}">${fmtKc(tot26.zisk)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkem hodin 2025</div><div class="stat-card-value" style="color:#a855f7">${fmtK(tot25.hours)} h</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkem hodin 2026</div><div class="stat-card-value" style="color:#a855f7">${fmtK(tot26.hours)} h</div></div>
+  </div>`;
+
+  if (has25) {
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Příjmy, náklady a zisk po měsících — 2025 (dub–pro)</div>
+      ${VL_buildBarChart(months2025, 2025)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4f7fff"></div>Příjem (odfakturováno)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Náklady (mzdy + elektřina)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk</div>
+      </div>
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Odpracované hodiny po měsících — 2025</div>
+      ${VL_buildHoursChart(months2025, 2025)}
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Čistý zisk po měsících — 2025</div>
+      ${VL_buildLineChart(months2025)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk = Příjem − (Mzdy + Elektřina)</div>
+      </div>
+    </div>`;
+  }
+
+  if (has26) {
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Příjmy, náklady a zisk po měsících — 2026 (led–pro)</div>
+      ${VL_buildBarChart(months2026, 2026)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4f7fff"></div>Příjem (odfakturováno)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Náklady (mzdy + elektřina)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk</div>
+      </div>
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Odpracované hodiny po měsících — 2026</div>
+      ${VL_buildHoursChart(months2026, 2026)}
+    </div>`;
+    html += `<div class="chart-wrap">
+      <div class="chart-title">Čistý zisk po měsících — 2026</div>
+      ${VL_buildLineChart(months2026)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk = Příjem − (Mzdy + Elektřina)</div>
+      </div>
+    </div>`;
+  }
+
+  if (!has25 && !has26) {
+    html += `<div style="text-align:center;padding:60px;color:var(--muted)">Zatím žádná VL_data. Doplňte hodiny a fakturaci do měsíců.</div>`;
+  }
+
+  document.getElementById('vl-mainContent').innerHTML = html;
+}
+function VL_init(){ VL_loadData(); VL_buildNav(); VL_render(); }const KOL_CENIK = {
+  "100304440": {mat:0.573832,kol:1.26},
+  "100304441": {mat:0.736303,kol:1.8},
+  "100304442": {mat:0.96791,kol:1.79},
+  "100304443": {mat:1.35853,kol:2.58},
+  "100304445": {mat:0.712105,kol:1.91},
+  "100304447": {mat:0.664354,kol:1.44},
+  "100304448": {mat:0.831277,kol:1.48},
+  "100304450": {mat:0.570877,kol:1.03},
+  "100304451": {mat:0.664354,kol:1.15},
+  "100304452": {mat:0.6076,kol:1.27},
+  "100304453": {mat:1.074984,kol:1.92},
+  "100304454": {mat:0.851307,kol:1.52},
+  "100304455": {mat:1.021569,kol:1.4},
+  "100304456": {mat:1.335384,kol:2.19},
+  "100304457": {mat:1.175138,kol:2.25},
+  "100304489": {mat:1.438694,kol:2.25},
+  "100304490": {mat:1.812096,kol:2.6},
+  "100304496": {mat:0.503196,kol:0.92},
+  "100304497": {mat:0.503196,kol:1.32},
+  "100304498": {mat:0.788794,kol:1.64},
+  "100304499": {mat:0.791061,kol:1.53},
+  "100304500": {mat:0.922527,kol:1.56},
+  "100304501": {mat:1.344123,kol:2.25},
+  "100304502": {mat:0.59,kol:2.08},
+  "100304503": {mat:0.256038,kol:0.63},
+  "100304504": {mat:0.256038,kol:0.99},
+  "100304505": {mat:0.305449,kol:0.96},
+  "100304506": {mat:0.411757,kol:1.1},
+  "100304507": {mat:0.398282,kol:1.34},
+  "100304508": {mat:0.485125,kol:0.95},
+  "100304509": {mat:0.712715,kol:1.2},
+  "100305222": {mat:0.200308,kol:0.46},
+  "100305223": {mat:0.200308,kol:0.59},
+  "100305224": {mat:0.387261,kol:0.88},
+  "100305226": {mat:0.400615,kol:0.9},
+  "100305230": {mat:0.307138,kol:0.7},
+  "100305231": {mat:0.3906,kol:0.88},
+  "100305232": {mat:0.293784,kol:0.73},
+  "100305233": {mat:0.63,kol:1.79},
+  "100305234": {mat:0.677707,kol:1.25},
+  "100305235": {mat:0.172841,kol:0.4},
+  "100305236": {mat:0.190125,kol:0.54},
+  "100305238": {mat:0.345682,kol:0.79},
+  "100305240": {mat:0.089838,kol:0.43},
+  "100305241": {mat:0.14979,kol:0.83},
+  "100305242": {mat:0.196146,kol:1.07},
+  "100305243": {mat:0.164703,kol:1.4},
+  "100305244": {mat:0.404271,kol:2.27},
+  "100305245": {mat:0.164703,kol:1.55},
+  "100305246": {mat:0.293471,kol:2.33},
+  "100305248": {mat:0.164703,kol:1.55},
+  "100305249": {mat:0.494109,kol:1.6},
+  "100305250": {mat:0.119784,kol:1.54},
+  "100305256": {mat:0.124666,kol:0.35},
+  "100305257": {mat:0.169999,kol:0.35},
+  "100305258": {mat:0.355864,kol:1.17},
+  "100305259": {mat:0.237998,kol:0.49},
+  "100305260": {mat:0.364931,kol:1.1},
+  "100305261": {mat:0.396664,kol:1.24},
+  "100305262": {mat:0.475996,kol:1.89},
+  "100305263": {mat:0.353597,kol:1.25},
+  "100305264": {mat:0.602929,kol:0.99},
+  "100305265": {mat:0.362664,kol:1.3},
+  "100305266": {mat:0.215332,kol:1.66},
+  "100305267": {mat:0.353597,kol:1.12},
+  "100305268": {mat:0.353597,kol:1.11},
+  "100305273": {mat:0.317331,kol:0.46},
+  "100305274": {mat:0.396664,kol:1.88},
+  "100305275": {mat:0.430663,kol:1.37},
+  "100305276": {mat:0.45333,kol:1.29},
+  "100305278": {mat:0.582529,kol:1.26},
+  "100305279": {mat:0.89306,kol:1.98},
+  "100305280": {mat:0.609729,kol:1.74},
+  "100305281": {mat:0.430663,kol:1.06},
+  "100305282": {mat:0.41253,kol:1.71},
+  "100305283": {mat:0.645995,kol:1.75},
+  "100305288": {mat:1.899955,kol:3.11},
+  "100308827": {mat:0.282755,kol:0.59},
+  "100308828": {mat:0.282755,kol:0.73},
+  "100308919": {mat:0.099212,kol:0.45},
+  "100309369": {mat:0.649882,kol:1.51},
+  "100309370": {mat:0.736303,kol:1.51},
+  "100309371": {mat:0.81581,kol:1.55},
+  "100309372": {mat:1.175319,kol:2.05},
+  "100309374": {mat:1.140751,kol:1.83},
+  "100309375": {mat:1.50026,kol:2.4},
+  "100309377": {mat:1.400012,kol:2.18},
+  "100309387": {mat:0.226898,kol:1.12},
+  "100309388": {mat:0.265202,kol:1.14},
+  "100309389": {mat:0.23884,kol:1.35},
+  "100309391": {mat:0.542023,kol:1.38},
+  "100309392": {mat:0.430663,kol:0.88},
+  "100309395": {mat:0.788794,kol:1.44},
+  "100309848": {mat:0.256038,kol:0.67},
+  "100338272": {mat:1.208124,kol:1.85},
+  "100338283": {mat:1.625188,kol:2.5},
+  "100361539": {mat:0.320787,kol:0.32},
+  "100364748": {mat:0.684566,kol:13.77},
+  "100364761": {mat:0.398503,kol:1.2},
+  "100364762": {mat:0.545668,kol:1.22},
+  "100364844": {mat:0.353858,kol:3.7},
+  "100364962": {mat:0.807907,kol:1.44},
+  "100448092": {mat:0.282755,kol:0.8},
+  "100457031": {mat:1.761187,kol:2.71},
+  "100457033": {mat:2.178251,kol:3.9},
+  "100533865": {mat:0.546178,kol:1.33},
+  "100559193": {mat:0.777099,kol:0.99},
+  "100560335": {mat:1.23523,kol:2.71},
+  "100579800": {mat:0.570877,kol:1.22},
+  "100579805": {mat:0.667692,kol:1.53},
+  "100587841": {mat:0.219141,kol:1.52},
+  "100587843": {mat:0.297305,kol:1.14},
+  "100587845": {mat:0.34895,kol:1.39},
+  "100595636": {mat:0.3657,kol:2.1},
+  "100598436": {mat:0.606849,kol:3.27},
+  "100599598": {mat:0,kol:3.02},
+  "100610257": {mat:0.213307,kol:1.56},
+  "100614046": {mat:0.553936,kol:4.14},
+  "100616679": {mat:0,kol:3.87},
+  "100616681": {mat:0,kol:4.87},
+  "100621293": {mat:0,kol:10.06},
+  "100621294": {mat:0,kol:2.64},
+  "100652325": {mat:0.277795,kol:1.82},
+  "100654366": {mat:0.646425,kol:1.25},
+  "100654367": {mat:0.376793,kol:1.08},
+  "100654369": {mat:0.349139,kol:0.94},
+  "100654371": {mat:0.210866,kol:0.63},
+  "100654372": {mat:0.3,kol:0.7},
+  "100654405": {mat:0.411362,kol:1.42},
+  "100654407": {mat:0.936798,kol:1.31},
+  "100654409": {mat:0.349139,kol:1.51},
+  "100655206": {mat:1.832815,kol:2.9},
+  "100663565": {mat:0.276368,kol:1.17},
+  "100665096": {mat:0.103289,kol:1.21},
+  "100669019": {mat:0.570877,kol:1.27},
+  "100673656": {mat:1.021569,kol:1.49},
+  "100696622": {mat:0.268632,kol:0.99},
+  "100707395": {mat:1.053305,kol:1.26},
+  "100709289": {mat:1.362092,kol:3.87},
+  "100717143": {mat:0.469605,kol:1.37},
+  "100720089": {mat:0.189878,kol:1.12},
+  "100722317": {mat:0.221932,kol:1.16},
+  "100722326": {mat:0.213762,kol:1.34},
+  "100722337": {mat:0.242423,kol:1.47},
+  "100722338": {mat:0.283347,kol:1.51},
+  "100722339": {mat:0.266307,kol:1.57},
+  "100722340": {mat:0.31,kol:2.12},
+  "100722341": {mat:0.294967,kol:1.68},
+  "100722342": {mat:0.344763,kol:1.71},
+  "100723400": {mat:1.101692,kol:1.68},
+  "100729135": {mat:0.758975,kol:3.44},
+  "100730323": {mat:0.836394,kol:1.92},
+  "100730325": {mat:0.881727,kol:2.01},
+  "100737613": {mat:0.203014,kol:1.17},
+  "100742447": {mat:0.67079,kol:1.49},
+  "100742448": {mat:0.862445,kol:1.67},
+  "100888979": {mat:0.072,kol:0.4},
+  "100910896": {mat:0.18,kol:1.23},
+};
+function KOL_emptyMonth(){
+  return {workers:[
+    {id:KOL_uid(),name:'Pracovník 1',sazba:270,premie:0,days:[]},
+    {id:KOL_uid(),name:'Pracovník 2',sazba:270,premie:0,days:[]},
+    {id:KOL_uid(),name:'Pracovník 3',sazba:270,premie:0,days:[]},
+    {id:KOL_uid(),name:'Pracovník 4',sazba:270,premie:0,days:[]},
+    {id:KOL_uid(),name:'Pracovník 5',sazba:270,premie:0,days:[]},
+    {id:KOL_uid(),name:'Pracovník 6',sazba:270,premie:0,days:[]}
+  ],elCena:5.45,elKwh:0,lastKurz:24.5,faktury:[],material:[],poznamka:''};
+}
+function KOL_getMonth(y,m){
+  if(KOL_data[y]&&KOL_data[y][m]) return KOL_data[y][m];
+  return KOL_emptyMonth();
+}
+function KOL_ensureYear(y,startM){
+  if(!KOL_data[y])KOL_data[y]={};
+  for(let m=startM;m<=12;m++){
+    if(!KOL_data[y][m]) KOL_data[y][m]=KOL_emptyMonth();
+    while(KOL_data[y][m].workers.length<6){
+      const i=KOL_data[y][m].workers.length+1;
+      KOL_data[y][m].workers.push({id:KOL_uid(),name:'Pracovník '+i,sazba:270,premie:0,days:[]});
+    }
+    // ensure premie field
+    KOL_data[y][m].workers.forEach(w=>{if(w.premie===undefined)w.premie=0;});
+    if(KOL_data[y][m].poznamka===undefined) KOL_data[y][m].poznamka='';
+  }
+}
+
+// ── STORAGE ──
+function KOL_loadData(){
+  try{
+    const saved=localStorage.getItem(KOL_STORAGE_KEY);
+    KOL_data=saved?JSON.parse(saved):{};
+  }catch(e){KOL_data={};}
+  KOL_ensureYear(2026,3);
+}
+function KOL_saveData(){
+  localStorage.setItem(KOL_STORAGE_KEY,JSON.stringify(KOL_data));
+  const el=document.getElementById('kol-saveIndicator');
+  el.textContent='✓ Uloženo';setTimeout(()=>{el.textContent='';},2000);
+}
+function KOL_exportData(){
+  const now=new Date();
+  const stamp=now.toISOString().slice(0,10);
+  const blob=new Blob([JSON.stringify(KOL_data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='kelvion_kolinka_2026_backup_'+stamp+'.json';a.click();
+  localStorage.setItem(KOL_STORAGE_KEY+'_lastBackup',now.toISOString());
+  KOL_showToast('Záloha uložena: kelvion_kolinka_2026_backup_'+stamp+'.json');
+}
+function KOL_importClick(){document.getElementById('kol-importFile').click();}
+function KOL_importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{try{KOL_data=JSON.parse(ev.target.result);KOL_ensureYear(2026,3);KOL_saveData();KOL_buildNav();KOL_render();KOL_showToast('Importováno!');}catch(err){alert('Chyba: '+err.message);}};
+  reader.readAsText(file);
+}
+function KOL_exportCsv(){
+  const rows=[['Rok','Měsíc','Hodiny','Mzdový náklad','Prémie','Elektřina','Fakturace','Výdělek mat.','Čistý zisk','Marže %']];
+  for(let m=3;m<=12;m++){
+    const t=KOL_calcTotals(2026,m);
+    const marze=t.fakturace>0?(t.zisk/t.fakturace*100).toFixed(1):0;
+    rows.push([2026,KOL_MONTH_NAMES[m-1],t.totalH,t.totalMzdy,t.totalPremie,t.elec,t.fakturace,t.matVydel,t.zisk,marze]);
+  }
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='kelvion_kolinka_2026.csv';a.click();
+}
+function KOL_showToast(msg){const t=document.getElementById('kol-toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ── HELPERS ──
+function KOL_fmt(n){return Math.round(n||0).toLocaleString('cs-CZ')+' Kč';}
+function KOL_fmtD(n){return(+n||0).toLocaleString('cs-CZ',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function KOL_fmtH(n){n=parseFloat(n)||0;return n%1===0?n:n.toFixed(1);}
+function KOL_parseDate(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function KOL_dateStr(y,m,d){return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+function KOL_daysInMonth(y,m){return new Date(y,m,0).getDate();}
+function KOL_dowOfDate(s){return KOL_parseDate(s).getDay();}
+function KOL_dowName(s){return KOL_DOW_CS[KOL_dowOfDate(s)];}
+function KOL_isWeekend(s){const d=KOL_dowOfDate(s);return d===0||d===6;}
+function KOL_getMatEur(cislo){const e=KOL_CENIK[String(cislo).trim()];return e?e.mat:0;}
+function KOL_getKolEur(cislo){const e=KOL_CENIK[String(cislo).trim()];return e?e.kol:0;}
+function KOL_inCenik(cislo){return !!KOL_CENIK[String(cislo).trim()];}
+
+function KOL_calcTotals(y,m){
+  const md=KOL_getMonth(y,m);
+  let totalH=0,totalMzdy=0,totalPremie=0;
+  (md.workers||[]).forEach(w=>{
+    const h=(w.days||[]).reduce((s,d)=>s+(parseFloat(d)||0),0);
+    const p=parseFloat(w.premie)||0;
+    totalH+=h;
+    totalMzdy+=h*(parseFloat(w.sazba)||0)+p;
+    totalPremie+=p;
+  });
+  const elec=(md.elCena||5.45)*(md.elKwh||0);
+  const fakturace=(md.faktury||[]).reduce((s,f)=>s+(parseFloat(f.castka)||0),0);
+  const kurz=md.lastKurz||24.5;
+  let mTr=0,mNa=0;
+  (md.material||[]).forEach(mat=>{
+    mTr+=(parseFloat(mat.mnozstvi)||0)*(parseFloat(mat.cenaKs)||0);
+    mNa+=(parseFloat(mat.mnozstvi)||0)*KOL_getMatEur(mat.cislo)*kurz;
+  });
+  const matVydel=mTr-mNa;
+  const naklady=totalMzdy+elec;
+  const zisk=fakturace-naklady;
+  const marze=fakturace>0?zisk/fakturace*100:0;
+  const prijemH=totalH>0?fakturace/totalH:0;
+  const nakladH=totalH>0?naklady/totalH:0;
+  const ziskH=totalH>0?zisk/totalH:0;
+  return{totalH,totalMzdy,totalPremie,elec,fakturace,mTr,mNa,matVydel,naklady,zisk,marze,prijemH,nakladH,ziskH};
+}
+
+// ── FIND LAST MONTH ──
+function KOL_findLastMonth(){
+  let lastY=2026,lastM=3;
+  for(let m=3;m<=12;m++){
+    if(!KOL_data[2026]||!KOL_data[2026][m]) continue;
+    const md=KOL_data[2026][m];
+    const hasH=md.workers&&md.workers.some(w=>w.days&&w.days.some(d=>parseFloat(d)>0));
+    const hasF=md.faktury&&md.faktury.some(f=>parseFloat(f.castka)>0);
+    const hasM=md.material&&md.material.length>0;
+    if(hasH||hasF||hasM){lastY=2026;lastM=m;}
+  }
+  return{y:lastY,m:lastM};
+}
+
+// ── NAV ──
+function KOL_buildNav(){
+  const nav=document.getElementById('kol-monthNav');nav.innerHTML='';
+  for(let m=3;m<=12;m++){
+    if(!KOL_data[2026]||!KOL_data[2026][m]){const btn=document.createElement('button');btn.className='month-btn'+(m===KOL_currentMonth?' active':'');btn.textContent=KOL_SHORT[m-1];btn.onclick=(()=>{const mm=m;return ()=>{KOL_currentMonth=mm;KOL_buildNav();KOL_render();};})();nav.appendChild(btn);continue;}
+    const md=KOL_data[2026][m];
+    const hasData=md.workers.some(w=>w.days.some(d=>parseFloat(d)>0))||md.faktury.length>0||md.material.length>0;
+    const btn=document.createElement('button');
+    btn.className='month-btn'+(m===KOL_currentMonth?' active':'')+(hasData?' has-data':'');
+    btn.textContent=KOL_SHORT[m-1];btn.title=KOL_MONTH_NAMES[m-1];
+    btn.onclick=(()=>{const mm=m;return ()=>{KOL_currentMonth=mm;KOL_buildNav();KOL_render();};})();
+    nav.appendChild(btn);
+  }
+}
+
+// ── CALENDAR ──
+function KOL_renderCalendar(y,m,wid,wi){
+  const dim=KOL_daysInMonth(y,m);
+  const firstDow=KOL_parseDate(KOL_dateStr(y,m,1)).getDay();
+  const offset=(firstDow+6)%7;
+  const md=KOL_getMonth(y,m);
+  const w=md.workers.find(x=>x.id===wid)||{days:[]};
+  const colorRaw=KOL_WCOLORS_RAW[wi%KOL_WCOLORS_RAW.length];
+  let html=`<div class="cal-container">
+    <div class="cal-header">
+      <span class="cal-title">📅 Klikněte na den</span>
+      <div class="cal-hours-input"><label style="margin:0">Hod:</label>
+        <input type="number" id="calH_${wi}" value="9" step="0.5" min="0.5" max="24">
+      </div>
+    </div>
+    <div class="cal-grid">`;
+  ['Po','Út','St','Čt','Pá','So','Ne'].forEach((d,i)=>{html+=`<div class="cal-dow-label${i>=5?' we':''}">${d}</div>`;});
+  for(let i=0;i<offset;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=KOL_dateStr(y,m,d);
+    const dow=KOL_parseDate(ds).getDay();
+    const we=dow===0||dow===6;
+    const idx=d-1;
+    const hours=w.days[idx];
+    const worked=hours!==undefined&&hours!==''&&parseFloat(hours)>0;
+    const cls='cal-cell '+(we?'weekend':'normal')+(worked?' worked':'');
+    const sty=worked?`border-color:${colorRaw};color:${colorRaw};background:${colorRaw}18`:'';
+    html+=`<div class="${cls}" style="${sty}" onclick="KOL_toggleDay('${y}','${m}','${wid}',${wi},${idx})" title="${ds}">
+      <span class="cal-num">${d}</span>
+      ${worked?`<span class="cal-h">${KOL_fmtH(hours)}h</span>`:''}
+    </div>`;
+  }
+  html+=`</div></div>`;
+  return html;
+}
+
+// ── WORKER CARD ──
+function KOL_renderWorkerCard(y,m,w,wi){
+  const md=KOL_getMonth(y,m);
+  const h=(w.days||[]).reduce((s,d)=>s+(parseFloat(d)||0),0);
+  const premie=parseFloat(w.premie)||0;
+  const cost=h*(w.sazba||0)+premie;
+  const color=KOL_WCOLORS[wi%KOL_WCOLORS.length];
+  const dim=KOL_daysInMonth(y,m);
+  let daysList='';
+  for(let d=1;d<=dim;d++){
+    const idx=d-1;
+    const hours=w.days[idx];
+    if(hours===undefined||hours===''||parseFloat(hours)<=0) continue;
+    const ds=KOL_dateStr(y,m,d);
+    const dow=KOL_dowName(ds);
+    const we=KOL_isWeekend(ds);
+    daysList+=`<div class="day-row">
+      <span class="day-dow ${we?'we-text':''}">${dow}</span>
+      <span class="day-date ${we?'we-text':''}">${d}.${m}.</span>
+      <span class="day-hours-val">
+        <input type="number" value="${parseFloat(hours)}" step="0.5" min="0.5" max="24" KOL_data-wi="${wi}"
+          onchange="KOL_updateDayHours('${y}','${m}','${w.id}',${idx},this.value)"
+          onkeydown="KOL_dayKeyDown(event,'${y}','${m}','${w.id}',${idx},${wi})"> h
+      </span>
+      <button class="day-del" onclick="KOL_removeDay('${y}','${m}','${w.id}',${idx})">✕</button>
+    </div>`;
+  }
+  return `<div class="worker-card">
+    <div class="worker-header">
+      <div class="worker-color-bar" style="background:${color}"></div>
+      <div class="worker-info">
+        <input class="worker-name-input" value="${w.name}" onblur="KOL_updateWorkerField('${y}','${m}','${w.id}','name',this.value)">
+      </div>
+      <div class="worker-total" style="color:${color}">${KOL_fmtH(h)} h</div>
+    </div>
+    <div class="worker-meta">
+      <div class="worker-meta-item"><div class="lbl">Dní</div><div class="val">${w.days.filter(d=>parseFloat(d)>0).length}</div></div>
+      <div class="worker-meta-item"><div class="lbl">Sazba</div><div class="val">${w.sazba} Kč/h</div></div>
+      <div class="worker-meta-item"><div class="lbl">Prémie</div><div class="val" style="color:var(--accent4)">${premie?KOL_fmt(premie):'—'}</div></div>
+      <div class="worker-meta-item"><div class="lbl">Náklad</div><div class="val" style="color:var(--accent2)">${cost?KOL_fmt(cost):'—'}</div></div>
+    </div>
+    <div class="worker-rate-row">
+      <div class="field-group"><label>Hodinová sazba (Kč/h)</label>
+        <input type="number" value="${w.sazba}" style="width:110px" onblur="KOL_updateWorkerField('${y}','${m}','${w.id}','sazba',this.value)">
+      </div>
+      <div class="field-group"><label>Prémie (Kč)</label>
+        <input type="number" value="${premie||''}" placeholder="0" style="width:110px"
+          onblur="KOL_updateWorkerField('${y}','${m}','${w.id}','premie',this.value)">
+      </div>
+    </div>
+    ${KOL_renderCalendar(y,m,w.id,wi)}
+    <div class="days-wrap"><div class="days-list">
+      ${daysList||'<div class="days-empty">Žádné dny. Klikněte v kalendáři.</div>'}
+    </div></div>
+  </div>`;
+}
+
+// ── KONTROLA MĚSÍCE ──
+function KOL_renderKontrola(y,m){
+  const md=KOL_getMonth(y,m);
+  const t=KOL_calcTotals(y,m);
+  const items=[];
+  // Hodiny
+  if(t.totalH===0) items.push({cls:'check-err',icon:'🔴',text:'Nejsou zadané žádné hodiny pracovníků.'});
+  else items.push({cls:'check-ok',icon:'✅',text:`Celkem ${KOL_fmtH(t.totalH)} h odpracováno.`});
+  // Elektřina
+  if(!md.elKwh||md.elKwh===0) items.push({cls:'check-warn',icon:'🟡',text:'Nejsou vyplněné kWh elektřiny — zisk může být nadhodnocený.'});
+  else items.push({cls:'check-ok',icon:'✅',text:`Elektřina: ${md.elKwh} kWh = ${KOL_fmt(t.elec)}.`});
+  // Faktury
+  if(md.faktury.length===0) items.push({cls:'check-warn',icon:'🟡',text:'Nejsou zadané žádné faktury.'});
+  else {
+    const bezCisla=md.faktury.filter(f=>!f.cislo||f.cislo.trim()==='');
+    const nulove=md.faktury.filter(f=>!parseFloat(f.castka));
+    if(bezCisla.length) items.push({cls:'check-warn',icon:'🟡',text:`${bezCisla.length} faktura/y nemá číslo faktury.`});
+    else items.push({cls:'check-ok',icon:'✅',text:`Všechny faktury mají číslo. Celkem ${KOL_fmt(t.fakturace)}.`});
+    if(nulove.length) items.push({cls:'check-err',icon:'🔴',text:`${nulove.length} faktura/y má částku 0 Kč.`});
+  }
+  // Materiál
+  if(md.material.length>0){
+    const bezSap=md.material.filter(mat=>!mat.cislo||mat.cislo.trim()==='');
+    const mimoCenik=md.material.filter(mat=>mat.cislo&&!KOL_inCenik(mat.cislo));
+    const zapVydel=md.material.some(mat=>{
+      const vydel=(parseFloat(mat.mnozstvi)||0)*(parseFloat(mat.cenaKs)||0)-(parseFloat(mat.mnozstvi)||0)*KOL_getMatEur(mat.cislo)*(md.lastKurz||24.5);
+      return vydel<0;
+    });
+    if(bezSap.length) items.push({cls:'check-warn',icon:'🟡',text:`${bezSap.length} položka materiálu nemá SAP číslo.`});
+    if(mimoCenik.length) items.push({cls:'check-warn',icon:'🟡',text:`${mimoCenik.length} SAP číslo/a nejsou v ceníku.`});
+    if(zapVydel) items.push({cls:'check-err',icon:'🔴',text:'Některé materiálové položky mají záporný výdělek.'});
+    if(!bezSap.length&&!mimoCenik.length&&!zapVydel) items.push({cls:'check-ok',icon:'✅',text:`Materiál v pořádku. Výdělek: ${KOL_fmt(t.matVydel)}.`});
+  }
+  // Marže
+  if(t.fakturace>0){
+    if(t.marze<0) items.push({cls:'check-err',icon:'🔴',text:`Měsíc je ve ztrátě! Marže ${t.marze.toFixed(1)} %.`});
+    else if(t.marze<15) items.push({cls:'check-warn',icon:'🟡',text:`Nízká marže: ${t.marze.toFixed(1)} %. Cíl je min. 20 %.`});
+    else items.push({cls:'check-ok',icon:'✅',text:`Marže ${t.marze.toFixed(1)} % — v pořádku.`});
+  }
+  return `<div class="check-section">
+    <div class="check-head">🔍 Kontrola měsíce — ${KOL_MONTH_NAMES[m-1]} ${y}</div>
+    <div class="check-body">
+      ${items.map(i=>`<div class="check-item ${i.cls}"><span>${i.icon}</span><span>${i.text}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── FAKTURY ──
+function KOL_renderFaktury(y,m){
+  const md=KOL_getMonth(y,m);
+  const rows=(md.faktury||[]).map((f,i)=>`<tr>
+    <td><input type="text" value="${f.datum||''}" placeholder="dd.mm." style="width:80px" onblur="KOL_updF('${y}','${m}',${i},'datum',this.value)"></td>
+    <td><input type="text" value="${f.cislo||''}" placeholder="číslo" style="width:110px" onblur="KOL_updF('${y}','${m}',${i},'cislo',this.value)"></td>
+    <td><input type="number" value="${f.castka||''}" step="0.01" style="width:110px;text-align:right;color:var(--accent2)" onblur="KOL_updF('${y}','${m}',${i},'castka',this.value)"></td>
+    <td><input type="text" value="${f.poznamka||''}" placeholder="poznámka..." style="width:150px" onblur="KOL_updF('${y}','${m}',${i},'poznamka',this.value)"></td>
+    <td style="width:32px"><button class="btn btn-danger btn-sm" onclick="KOL_delF('${y}','${m}',${i})">✕</button></td>
+  </tr>`).join('');
+  const total=(md.faktury||[]).reduce((s,f)=>s+(parseFloat(f.castka)||0),0);
+  return `<table class="ft-table">
+    <thead><tr><th>Datum</th><th>Číslo faktury</th><th class="r">Kč bez DPH</th><th>Poznámka</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="5" style="color:var(--muted);font-size:.85rem">Žádné faktury. Přidej pomocí tlačítka nebo nahraj PDF.</td></tr>'}</tbody>
+  </table>
+  <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="KOL_addF('${y}','${m}')">+ Přidat ručně</button>
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+    <span style="font-size:.78rem;color:var(--muted)">Celkem fakturováno</span>
+    <span style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent2)">${KOL_fmt(total)}</span>
+  </div>`;
+}
+
+// ── MATERIÁL ──
+function KOL_renderMaterial(y,m){
+  const md=KOL_getMonth(y,m);
+  const kurz=md.lastKurz||24.5;
+  const rows=(md.material||[]).map((mat,i)=>{
+    const mnoz=parseFloat(mat.mnozstvi)||0;
+    const cenaKs=parseFloat(mat.cenaKs)||0;
+    const cenaCel=mnoz*cenaKs;
+    const matEur=KOL_getMatEur(mat.cislo);
+    const matCzk=matEur*kurz;
+    const matCelCzk=mnoz*matCzk;
+    const vydel=cenaCel-matCelCzk;
+    const marze=cenaCel>0?(vydel/cenaCel*100):0;
+    const sapOk=mat.cislo&&KOL_inCenik(mat.cislo);
+    const sapTag=mat.cislo?(sapOk?'<span class="sap-ok">✓</span>':'<span class="sap-miss">⚠</span>'):'';
+    return `<tr>
+      <td><input type="text" value="${mat.cislo||''}" placeholder="SAP číslo" style="width:110px" onchange="KOL_updM('${y}','${m}',${i},'cislo',this.value)">${sapTag}</td>
+      <td><input type="number" value="${mat.mnozstvi||''}" placeholder="0" step="1" style="width:62px" onblur="KOL_updM('${y}','${m}',${i},'mnozstvi',this.value)"></td>
+      <td><input type="number" value="${mat.cenaKs||''}" placeholder="0.00" step="0.01" style="width:82px;color:${sapOk?'var(--accent)':'var(--text)'}" onblur="KOL_updM('${y}','${m}',${i},'cenaKs',this.value)"></td>
+      <td class="r" style="color:var(--accent4)">${KOL_fmtD(cenaCel)}</td>
+      <td class="r" style="color:var(--muted);font-size:.8rem">${matEur>0?KOL_fmtD(matEur)+' €':'–'}</td>
+      <td class="r" style="color:var(--accent3)">${matEur>0?KOL_fmtD(matCelCzk):'–'}</td>
+      <td class="r" style="color:${vydel<0?'var(--accent3)':'var(--accent2)'};font-weight:600">${KOL_fmtD(vydel)}</td>
+      <td class="r" style="color:${marze<0?'var(--accent3)':marze<20?'var(--accent4)':'var(--accent2)'};">${matEur>0?marze.toFixed(1)+' %':'–'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="KOL_delM('${y}','${m}',${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+  let mTr=0,mNa=0;
+  (md.material||[]).forEach(mat=>{
+    mTr+=(parseFloat(mat.mnozstvi)||0)*(parseFloat(mat.cenaKs)||0);
+    mNa+=(parseFloat(mat.mnozstvi)||0)*KOL_getMatEur(mat.cislo)*kurz;
+  });
+  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+    <div class="field-group"><label>Kurz EUR/Kč</label>
+      <input type="number" value="${kurz}" step="0.01" style="width:100px" onblur="KOL_updKurz('${y}','${m}',this.value)">
+    </div>
+    <button class="btn btn-ghost btn-sm" style="align-self:flex-end" onclick="document.getElementById('pdfInput').click()">📄 Nahrát fakturu (AI)</button>
+    <input type="file" id="pdfInput" accept="application/pdf,image/*" style="display:none" onchange="KOL_handlePdf(this,'${y}','${m}')">
+  </div>
+  <div style="overflow-x:auto">
+  <table class="mt-table">
+    <thead><tr><th>SAP číslo</th><th>Množ.</th><th>Cena/ks Kč</th><th class="r">Tržba</th><th class="r">Mat. EUR/ks</th><th class="r">Náklad Kč</th><th class="r">Výdělek</th><th class="r">Marže</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="9" style="color:var(--muted);font-size:.85rem">Žádný materiál.</td></tr>'}</tbody>
+  </table>
+  </div>
+  <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="KOL_addM('${y}','${m}')">+ Přidat položku</button>
+  <div style="display:flex;gap:24px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap">
+    <div style="text-align:right"><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px">Tržby</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent4)">${KOL_fmt(mTr)}</div></div>
+    <div style="text-align:right"><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px">Náklad mat.</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent3)">${KOL_fmt(mNa)}</div></div>
+    <div style="text-align:right"><div style="font-size:.72rem;color:var(--muted);margin-bottom:3px">Výdělek</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent2)">${KOL_fmt(mTr-mNa)}</div></div>
+  </div>`;
+}
+
+// ── MAIN RENDER ──
+function KOL_render(){
+  if(KOL_viewMode==='chart'){KOL_renderChart();return;}
+  const y=KOL_currentYear;const m=KOL_currentMonth;
+  const md=KOL_getMonth(y,m);
+  const t=KOL_calcTotals(y,m);
+  const zPos=t.zisk>=0;
+  const marze=t.marze;
+  const margeColor=marze>=25?'var(--accent2)':marze>=15?'var(--accent4)':'var(--accent3)';
+
+  // Backup panel
+  const lastBkpRaw=localStorage.getItem(KOL_STORAGE_KEY+'_lastBackup');
+  const lastBkp=lastBkpRaw?new Date(lastBkpRaw):null;
+  const daysSince=lastBkp?Math.floor((Date.now()-lastBkp.getTime())/86400000):null;
+  const bkpMsg=!lastBkp?'<span class="backup-warn">⚠ Zatím žádná záloha!</span>':
+    daysSince>14?`<span class="backup-warn">⚠ Poslední záloha před ${daysSince} dny — doporučeno zálohovat.</span>`:
+    `Poslední záloha: ${lastBkp.toLocaleDateString('cs-CZ')} — v pořádku.`;
+
+  let html=`<div class="backup-panel">
+    <div>
+      <div class="backup-title">💾 Záloha dat</div>
+      <div style="font-size:.85rem;color:var(--text)">${bkpMsg}</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Data jsou uložena v prohlížeči. Po každé větší úpravě udělej Export JSON.</div>
+    </div>
+    <button class="btn btn-success" onclick="KOL_exportData()">💾 Uložit JSON zálohu</button>
+  </div>`;
+
+  // Summary cards
+  html+=`<div class="summary-cards">
+    <div class="card"><div class="card-label">Celkem hodin</div><div class="card-value" id="sc_h">${KOL_fmtH(t.totalH)}</div><div class="card-sub">odpracovaných</div></div>
+    <div class="card c2"><div class="card-label">Mzdový náklad</div><div class="card-value" id="sc_m">${KOL_fmt(t.totalMzdy)}</div><div class="card-sub">vč. prémií ${KOL_fmt(t.totalPremie)}</div></div>
+    <div class="card c3"><div class="card-label">Elektřina</div><div class="card-value" id="sc_e">${KOL_fmt(t.elec)}</div><div class="card-sub">${md.elKwh||0} kWh</div></div>
+    <div class="card c4"><div class="card-label">Fakturace</div><div class="card-value" id="sc_f">${KOL_fmt(t.fakturace)}</div><div class="card-sub">příjem bez DPH</div></div>
+    <div class="card c5"><div class="card-label">Výdělek mat.</div><div class="card-value" id="sc_mv" style="color:${t.matVydel>=0?'var(--accent2)':'var(--accent3)'}">${KOL_fmt(t.matVydel)}</div><div class="card-sub">tržby − náklad</div></div>
+    <div class="card c6" style="border-left-color:${zPos?'var(--accent2)':'var(--accent3)'}"><div class="card-label">Čistý zisk</div><div class="card-value" id="sc_z" style="color:${zPos?'var(--accent2)':'var(--accent3)'}">${KOL_fmt(t.zisk)}</div><div class="card-sub">fakturace − náklady</div></div>
+    <div class="card c7"><div class="card-label">Marže</div><div class="card-value" id="sc_marze" style="color:${margeColor}">${t.fakturace?marze.toFixed(1)+' %':'—'}</div><div class="card-sub">cíl min. 20 %</div></div>
+    <div class="card c8"><div class="card-label">Příjem / hod.</div><div class="card-value" style="color:var(--accent4)">${t.totalH?Math.round(t.prijemH).toLocaleString('cs-CZ')+' Kč':'—'}</div><div class="card-sub">na odprac. hodinu</div></div>
+    <div class="card c9"><div class="card-label">Zisk / hod.</div><div class="card-value" style="color:${zPos?'var(--accent2)':'var(--accent3)'}">${t.totalH?Math.round(t.ziskH).toLocaleString('cs-CZ')+' Kč':'—'}</div><div class="card-sub">čistý zisk na hod.</div></div>
+  </div>`;
+
+  // Kontrola
+  html+=KOL_renderKontrola(y,m);
+
+  // Workers
+  html+=`<div class="section">
+    <div class="section-head">
+      <div class="section-title">👷 Pracovníci – ${KOL_MONTH_NAMES[m-1]} ${y}</div>
+      <button class="btn btn-primary btn-sm" onclick="KOL_showWorkerModal()">+ Přidat pracovníka</button>
+    </div>
+    <div class="section-body">
+      <div class="workers-grid">${md.workers.map((w,wi)=>KOL_renderWorkerCard(y,m,w,wi)).join('')}</div>
+    </div>
+  </div>`;
+
+  // Elektřina
+  const elec=(md.elCena||5.45)*(md.elKwh||0);
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">⚡ Elektřina hala Kelvion</div></div>
+    <div class="section-body">
+      <div class="elec-row">
+        <div class="field-group"><label>Cena za kWh (Kč)</label>
+          <input type="number" step="0.01" value="${md.elCena||5.45}" style="width:110px" onchange="KOL_updElec('${y}','${m}','elCena',this.value)" onblur="KOL_updElec('${y}','${m}','elCena',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">×</div>
+        <div class="field-group"><label>Počet kWh</label>
+          <input type="number" step="1" value="${md.elKwh||''}" placeholder="0" style="width:130px" onchange="KOL_updElec('${y}','${m}','elKwh',this.value)" onblur="KOL_updElec('${y}','${m}','elKwh',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">=</div>
+        <div style="align-self:flex-end;padding-bottom:6px">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px">Náklad</div>
+          <div id="elec_result" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent4)">${elec?KOL_fmt(elec):'— Kč'}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Faktury
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">🧾 Faktury</div></div>
+    <div class="section-body" id="faktury_section">${KOL_renderFaktury(y,m)}</div>
+  </div>`;
+
+  // Materiál
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">📦 Materiál</div></div>
+    <div class="section-body" id="material_section">${KOL_renderMaterial(y,m)}</div>
+  </div>`;
+
+  // Poznámka
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">📝 Poznámka k měsíci</div></div>
+    <div class="section-body">
+      <textarea id="poznamka_input" rows="3" placeholder="Problémy, reklamace, mimořádné prémie, změna ceny, cokoliv k zapamatování..."
+        onblur="KOL_savePoznamka('${y}','${m}',this.value)">${md.poznamka||''}</textarea>
+    </div>
+  </div>`;
+
+  document.getElementById('kol-mainContent').innerHTML=html;
+}
+
+// ── ACTIONS ──
+function KOL_toggleDay(y,m,wid,wi,idx){
+  const md=KOL_getMonth(y,m);
+  const w=md.workers.find(x=>x.id===wid);if(!w)return;
+  if(!w.days) w.days=[];
+  const cur=w.days[idx];
+  if(cur!==undefined&&cur!==''&&parseFloat(cur)>0){
+    w.days[idx]='';KOL_saveData();KOL_render();KOL_showToast(`Odstraněno: ${idx+1}.${m}.`);
+  } else {
+    const el=document.getElementById('calH_'+wi);
+    const hours=parseFloat(el?el.value:9)||9;
+    w.days[idx]=hours;KOL_saveData();KOL_render();KOL_showToast(`Přidáno: ${idx+1}.${m}. – ${hours}h`);
+  }
+}
+function KOL_removeDay(y,m,wid,idx){
+  const w=KOL_getMonth(y,m).workers.find(x=>x.id===wid);if(w){w.days[idx]='';KOL_saveData();KOL_render();}
+}
+function KOL_updateDayHours(y,m,wid,idx,val){
+  const h=parseFloat(val);if(isNaN(h))return;
+  const w=KOL_getMonth(y,m).workers.find(x=>x.id===wid);if(w){w.days[idx]=h;KOL_saveData();KOL_updateSummaryCards();}
+}
+function KOL_dayKeyDown(e,y,m,wid,idx,wi){
+  if(e.key!=='Enter')return;e.preventDefault();
+  KOL_updateDayHours(y,m,wid,idx,e.target.value);
+  const all=Array.from(document.querySelectorAll(`input[KOL_data-wi="${wi}"]`));
+  const next=all[all.indexOf(e.target)+1];
+  if(next){next.focus();next.select();}
+}
+function KOL_updateWorkerField(y,m,wid,field,val){
+  const md=KOL_getMonth(y,m);
+  const w=md.workers.find(x=>x.id===wid);if(!w)return;
+  w[field]=field==='name'?val:parseFloat(val)||0;
+  KOL_saveData();KOL_updateSummaryCards();
+}
+function KOL_showWorkerModal(){document.getElementById('kol-addWorkerModal').classList.add('open');document.getElementById('kol-newWorkerName').value='';document.getElementById('kol-newWorkerRate').value='270';document.getElementById('kol-newWorkerName').focus();}
+function KOL_closeWorkerModal(){document.getElementById('kol-addWorkerModal').classList.remove('open');}
+function KOL_confirmAddWorker(){
+  const name=document.getElementById('kol-newWorkerName').value.trim();
+  const sazba=parseFloat(document.getElementById('kol-newWorkerRate').value)||270;
+  if(!name){document.getElementById('kol-newWorkerName').focus();return;}
+  KOL_getMonth(KOL_currentYear,KOL_currentMonth).workers.push({id:KOL_uid(),name,sazba,premie:0,days:[]});
+  KOL_saveData();KOL_closeWorkerModal();KOL_render();KOL_showToast('Přidán: '+name);
+}
+function KOL_updElec(y,m,field,val){
+  const md=KOL_getMonth(y,m);md[field]=parseFloat(val)||0;KOL_saveData();
+  const elec=(md.elCena||5.45)*(md.elKwh||0);
+  const el=document.getElementById('elec_result');if(el)el.textContent=elec?KOL_fmt(elec):'— Kč';
+  KOL_updateSummaryCards();
+}
+function KOL_addF(y,m){KOL_getMonth(y,m).faktury.push({datum:'',cislo:'',castka:0,poznamka:''});KOL_saveData();document.getElementById('faktury_section').innerHTML=KOL_renderFaktury(y,m);KOL_updateSummaryCards();}
+function KOL_delF(y,m,i){KOL_getMonth(y,m).faktury.splice(i,1);KOL_saveData();document.getElementById('faktury_section').innerHTML=KOL_renderFaktury(y,m);KOL_updateSummaryCards();}
+function KOL_updF(y,m,i,k,val){const md=KOL_getMonth(y,m);md.faktury[i][k]=k==='castka'?parseFloat(val)||0:val;KOL_saveData();document.getElementById('faktury_section').innerHTML=KOL_renderFaktury(y,m);KOL_updateSummaryCards();}
+function KOL_addM(y,m){KOL_getMonth(y,m).material.push({cislo:'',mnozstvi:'',cenaKs:''});KOL_saveData();document.getElementById('material_section').innerHTML=KOL_renderMaterial(y,m);KOL_updateSummaryCards();}
+function KOL_delM(y,m,i){KOL_getMonth(y,m).material.splice(i,1);KOL_saveData();document.getElementById('material_section').innerHTML=KOL_renderMaterial(y,m);KOL_updateSummaryCards();}
+function KOL_updM(y,m,i,k,val){
+  const md=KOL_getMonth(y,m);
+  md.material[i][k]=['mnozstvi','cenaKs'].includes(k)?parseFloat(val)||0:val;
+  if(k==='cislo'){const kolEur=KOL_getKolEur(val);if(kolEur>0)md.material[i].cenaKs=Math.round(kolEur*(md.lastKurz||24.5)*100)/100;}
+  KOL_saveData();document.getElementById('material_section').innerHTML=KOL_renderMaterial(y,m);KOL_updateSummaryCards();
+}
+function KOL_updKurz(y,m,val){KOL_getMonth(y,m).lastKurz=parseFloat(val)||24.5;KOL_saveData();document.getElementById('material_section').innerHTML=KOL_renderMaterial(y,m);KOL_updateSummaryCards();}
+function KOL_savePoznamka(y,m,val){KOL_getMonth(y,m).poznamka=val;KOL_saveData();}
+
+function KOL_updateSummaryCards(){
+  const y=KOL_currentYear;const m=KOL_currentMonth;
+  const md=KOL_getMonth(y,m);
+  const t=KOL_calcTotals(y,m);
+  const zPos=t.zisk>=0;
+  const marze=t.marze;
+  const margeColor=marze>=25?'var(--accent2)':marze>=15?'var(--accent4)':'var(--accent3)';
+  const u=(id,val,col)=>{const el=document.getElementById(id);if(el){el.textContent=val;if(col)el.style.color=col;}};
+  u('sc_h',KOL_fmtH(t.totalH));
+  u('sc_m',KOL_fmt(t.totalMzdy));
+  u('sc_e',KOL_fmt(t.elec));
+  u('sc_f',KOL_fmt(t.fakturace));
+  u('sc_mv',KOL_fmt(t.matVydel),t.matVydel>=0?'var(--accent2)':'var(--accent3)');
+  u('sc_z',KOL_fmt(t.zisk),zPos?'var(--accent2)':'var(--accent3)');
+  u('sc_marze',t.fakturace?marze.toFixed(1)+' %':'—',margeColor);
+}
+
+// ── VIEW SWITCH ──
+function KOL_showData(){
+  KOL_viewMode='data';
+  document.getElementById('ybtnData').className='year-btn active';
+  document.getElementById('ybtnChart').className='year-btn';
+  document.getElementById('kol-monthNav').style.display='';
+  KOL_buildNav();KOL_render();
+}
+function KOL_showChart(){
+  KOL_viewMode='chart';
+  document.getElementById('ybtnChart').className='year-btn active';
+  document.getElementById('ybtnData').className='year-btn';
+  document.getElementById('kol-monthNav').style.display='none';
+  KOL_renderChart();
+}
+
+// ── CHART ──
+function KOL_renderChart(){
+  const MONTH_SHORT=['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+  const months=[];
+  for(let m=3;m<=12;m++){
+    const t=KOL_calcTotals(2026,m);
+    months.push({m,label:MONTH_SHORT[m-1],...t});
+  }
+  const tot=months.reduce((a,mo)=>({
+    fakturace:a.fakturace+mo.fakturace,zisk:a.zisk+mo.zisk,
+    totalH:a.totalH+mo.totalH,totalMzdy:a.totalMzdy+mo.totalMzdy,
+    elec:a.elec+mo.elec,matVydel:a.matVydel+mo.matVydel
+  }),{fakturace:0,zisk:0,totalH:0,totalMzdy:0,elec:0,matVydel:0});
+  const fmtK=n=>Math.abs(n)>=1000?(n/1000).toFixed(0)+'k':Math.round(n).toString();
+  const fmtKc=n=>Math.round(n).toLocaleString('cs-CZ')+' Kč';
+
+  function KOL_buildBarChart(months){
+    const BAR_W=15,GROUP_W=62,PAD_L=52,PAD_B=36,PAD_T=20,H=240;
+    const vals=months.flatMap(m=>[m.fakturace,m.totalMzdy+m.elec,Math.abs(m.zisk)]);
+    const maxVal=Math.max(...vals,1);
+    const minVal=Math.min(...months.map(m=>m.zisk),0);
+    const range=maxVal-minVal||1;
+    const totalW=PAD_L+months.length*GROUP_W+10;
+    const toY=v=>H-PAD_B-((v-minVal)/range)*(H-PAD_T-PAD_B);
+    let svg=`<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    for(let i=0;i<=4;i++){const v=minVal+range*i/4;const y=toY(v);svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/><text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;}
+    if(minVal<0){const y0=toY(0);svg+=`<line x1="${PAD_L-8}" y1="${y0}" x2="${totalW-10}" y2="${y0}" stroke="var(--muted)" stroke-width="1.5"/>`;}
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*GROUP_W;
+      const bars=[{v:mo.fakturace,c:'#4f7fff'},{v:mo.totalMzdy+mo.elec,c:'#ff6b6b'},{v:mo.zisk,c:mo.zisk>=0?'#00d4aa':'#ff3333'}];
+      bars.forEach((b,bi)=>{const bx=x+bi*(BAR_W+2)+4;const y0=toY(0);const bh=Math.abs(b.v)/range*(H-PAD_T-PAD_B);const by=b.v>=0?toY(b.v):y0;svg+=`<rect x="${bx}" y="${by}" width="${BAR_W}" height="${Math.max(bh,1)}" fill="${b.c}" rx="2" opacity=".85"/>`;if(bh>12)svg+=`<text x="${bx+BAR_W/2}" y="${b.v>=0?by-3:by+bh+10}" text-anchor="middle" class="bar-value" fill="${b.c}">${fmtK(b.v)}</text>`;});
+      svg+=`<text x="${x+GROUP_W/2-4}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg+='</svg>';return svg;
+  }
+  function KOL_buildLineChart(months,key,color){
+    const PAD_L=52,PAD_B=36,PAD_T=24,H=180;
+    const vals=months.map(m=>m[key]);
+    const minV=Math.min(...vals,0);const maxV=Math.max(...vals,1);const range=maxV-minV||1;
+    const totalW=PAD_L+months.length*62+10;
+    const toY=v=>H-PAD_B-((v-minV)/range)*(H-PAD_T-PAD_B);
+    let svg=`<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    for(let i=0;i<=3;i++){const v=minV+range*i/3;const y=toY(v);svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/><text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;}
+    if(minV<0)svg+=`<line x1="${PAD_L-8}" y1="${toY(0)}" x2="${totalW-10}" y2="${toY(0)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    const pts=months.map((mo,i)=>`${PAD_L+i*62+30},${toY(mo[key])}`).join(' ');
+    svg+=`<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    months.forEach((mo,i)=>{const x=PAD_L+i*62+30;const y=toY(mo[key]);svg+=`<circle cx="${x}" cy="${y}" r="4" fill="${color}" stroke="var(--bg)" stroke-width="1.5"/>`;if(Math.abs(mo[key])>0)svg+=`<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="${color}">${fmtK(mo[key])}</text>`;svg+=`<text x="${x}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;});
+    svg+='</svg>';return svg;
+  }
+
+  const hasData=months.some(m=>m.fakturace>0||m.totalH>0);
+  let html=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+    <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800">📊 Finanční přehled 2026</div>
+    <div style="font-size:.78rem;color:var(--muted)">Kelvion – Kolínka (březen–prosinec)</div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-card-label">Celková fakturace</div><div class="stat-card-value" style="color:#4f7fff">${fmtKc(tot.fakturace)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový zisk</div><div class="stat-card-value" style="color:${tot.zisk>=0?'#00d4aa':'#ff6b6b'}">${fmtKc(tot.zisk)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Výdělek materiál</div><div class="stat-card-value" style="color:#f7c948">${fmtKc(tot.matVydel)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkem hodin</div><div class="stat-card-value" style="color:#a855f7">${fmtK(tot.totalH)} h</div></div>
+    <div class="stat-card"><div class="stat-card-label">Mzdové náklady</div><div class="stat-card-value" style="color:#ff6b6b">${fmtKc(tot.totalMzdy)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Elektřina celkem</div><div class="stat-card-value" style="color:#f7c948">${fmtKc(tot.elec)}</div></div>
+  </div>`;
+  if(hasData){
+    html+=`<div class="chart-wrap"><div class="chart-title">Fakturace, náklady a zisk po měsících — 2026</div>${KOL_buildBarChart(months)}<div class="chart-legend"><div class="legend-item"><div class="legend-dot" style="background:#4f7fff"></div>Fakturace</div><div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Náklady (mzdy + el.)</div><div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk</div></div></div>`;
+    html+=`<div class="chart-wrap"><div class="chart-title">Čistý zisk po měsících</div>${KOL_buildLineChart(months,'zisk','#00d4aa')}</div>`;
+    html+=`<div class="chart-wrap"><div class="chart-title">Odpracované hodiny po měsících</div>${KOL_buildLineChart(months,'totalH','#a855f7')}</div>`;
+    html+=`<div class="chart-wrap"><div class="chart-title">Výdělek z materiálu po měsících</div>${KOL_buildLineChart(months,'matVydel','#f7c948')}</div>`;
+  } else {
+    html+=`<div style="text-align:center;padding:60px;color:var(--muted)">Zatím žádná KOL_data.</div>`;
+  }
+  document.getElementById('kol-mainContent').innerHTML=html;
+}
+
+// ── AI PDF ──
+function KOL_toB64(file){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=()=>r(rd.result.split(',')[1]);rd.onerror=()=>j(new Error('Nelze načíst'));rd.readAsDataURL(file);});}
+function KOL_showProc(txt,spin=true){const box=document.getElementById('kol-procBox');box.innerHTML=`<div class="proc-title">ZPRACOVÁNÍ</div><div class="proc-sub">FAKTURA PDF</div>${spin?'<div class="proc-spin">⚙</div>':''}<div style="font-size:.85rem;color:var(--muted)">${txt}</div>`;document.getElementById('kol-procOverlay').classList.add('open');}
+function KOL_hideProc(){document.getElementById('kol-procOverlay').classList.remove('open');}
+function KOL_showProcSuccess(p,md){
+  const kurz=md.lastKurz||24.5;
+  const items=(p.polozky||[]).map(i=>{const matEur=KOL_getMatEur(String(i.cislo));const tag=matEur>0?`<span style="color:var(--accent2);font-size:.72rem"> ✓ ${matEur.toFixed(4)} EUR</span>`:`<span style="color:var(--muted);font-size:.72rem"> (neznámé)</span>`;return `<div class="proc-item"><span class="proc-item-l">${i.cislo} · ${i.mnozstvi} ks</span><span class="proc-item-v">${(i.cena_ks_czk||0).toLocaleString('cs-CZ')} Kč/ks${tag}</span></div>`;}).join('');
+  document.getElementById('kol-procBox').innerHTML=`<div class="proc-title" style="color:var(--accent2)">✓ HOTOVO</div><div class="proc-sub" style="margin-bottom:14px">FAKTURA PŘIDÁNA</div><div class="proc-item"><span class="proc-item-l">Datum</span><span class="proc-item-v">${p.datum||'–'}</span></div><div class="proc-item"><span class="proc-item-l">Číslo faktury</span><span class="proc-item-v">${p.cislo_faktury||'–'}</span></div><div class="proc-item"><span class="proc-item-l">Částka bez DPH</span><span class="proc-item-v">${(p.castka_czk_bez_dph||0).toLocaleString('cs-CZ')} Kč</span></div><div class="proc-item"><span class="proc-item-l">Kurz EUR/Kč</span><span class="proc-item-v">${kurz}</span></div>${items?'<div style="margin-top:10px;font-size:.72rem;color:var(--muted);margin-bottom:6px;letter-spacing:1px">MATERIÁL</div>'+items:''}<button class="btn btn-primary" style="margin-top:18px;width:100%" onclick="KOL_hideProc()">Zavřít</button>`;
+}
+async function KOL_handlePdf(input,y,m){
+  const file=input.files[0];if(!file)return;input.value='';
+  KOL_showProc('Čtu fakturu pomocí AI...');
+  try{
+    const b64=await KOL_toB64(file);
+    const isImg=file.type.startsWith('image/');
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:[
+      isImg?{type:'image',source:{type:'base64',media_type:file.type,KOL_data:b64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',KOL_data:b64}},
+      {type:'text',text:`Z faktury vytáhni KOL_data, vrať POUZE čistý JSON bez markdown:\n{"datum":"DD.MM.YYYY","cislo_faktury":"číslo","castka_czk_bez_dph":číslo,"kurz":číslo,"polozky":[{"cislo":"SAP číslo","mnozstvi":číslo,"cena_eur":číslo,"cena_ks_czk":číslo}]}\nVrať POUZE JSON, nic jiného.`}
+    ]}]};
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    const txt=d.content?.find(b=>b.type==='text')?.text||'';
+    const p=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const md=KOL_getMonth(y,m);
+    md.faktury.push({datum:p.datum||'',cislo:p.cislo_faktury||'',castka:p.castka_czk_bez_dph||0,poznamka:''});
+    if(p.kurz) md.lastKurz=p.kurz;
+    (p.polozky||[]).forEach(item=>md.material.push({cislo:item.cislo||'',mnozstvi:item.mnozstvi||0,cenaKs:item.cena_ks_czk||0}));
+    KOL_saveData();
+    document.getElementById('faktury_section').innerHTML=KOL_renderFaktury(y,m);
+    document.getElementById('material_section').innerHTML=KOL_renderMaterial(y,m);
+    KOL_updateSummaryCards();
+    KOL_showProcSuccess(p,md);
+  }catch(e){KOL_hideProc();alert('Chyba při zpracování: '+e.message);}
+}
+
+// ── INIT ──
+function KOL_init(){
+  KOL_loadData();
+  const last=KOL_findLastMonth();
+  KOL_currentYear=last.y; KOL_currentMonth=last.m;
+  KOL_buildNav(); KOL_render();
+}// ===== NÁJEM APP =====
+const NAJ_SK = 'kelvion_najem_2026';
+const NAJ_MONTHS = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const NAJ_SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+const NAJ_SAZBA_DEFAULT = 40;
+const NAJ_STAN_DEFAULT = 13500;
+const NAJ_DPH = 0.21;
+
+let NAJ_data = {};
+let NAJ_currentMonth = 1;
+let NAJ_view = 'mesic';
+
+function NAJ_emptyMonth(m) {
+  return {
+    m2: 0,
+    sazba: NAJ_SAZBA_DEFAULT,
+    stan: NAJ_STAN_DEFAULT,
+    datumFaktury: '',
+    cisloFaktury: '',
+    poznamka: ''
+  };
+}
+
+function NAJ_getMonth(m) {
+  if (!NAJ_data[m]) NAJ_data[m] = NAJ_emptyMonth(m);
+  return NAJ_data[m];
+}
+
+function NAJ_loadData() {
+  try {
+    const s = localStorage.getItem(NAJ_SK);
+    NAJ_data = s ? JSON.parse(s) : {};
+  } catch(e) { NAJ_data = {}; }
+}
+
+function NAJ_saveData() {
+  localStorage.setItem(NAJ_SK, JSON.stringify(NAJ_data));
+  const el = document.getElementById('naj-saveInd');
+  if(el) { el.textContent = '✓ Uloženo'; setTimeout(() => el.textContent='', 2000); }
+}
+
+function NAJ_exportJSON() {
+  const stamp = new Date().toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify(NAJ_data,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'kelvion_najem_2026_backup_' + stamp + '.json'; a.click();
+  gToast('Záloha nájmu uložena!');
+}
+
+function NAJ_importClick() { document.getElementById('naj-importFile').click(); }
+
+function NAJ_importData(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try { NAJ_data = JSON.parse(ev.target.result); NAJ_saveData(); NAJ_buildNav(); NAJ_render(); gToast('Nájem importován!'); }
+    catch(err) { alert('Chyba: ' + err.message); }
+  };
+  reader.readAsText(file); e.target.value='';
+}
+
+function NAJ_exportCSV() {
+  const rows = [['Měsíc','m²','Sazba Kč/m²','Plocha bez DPH','Stan bez DPH','Celkem bez DPH','DPH 21%','Celkem s DPH','Datum faktury','Číslo faktury','Poznámka']];
+  for(let m=1; m<=12; m++) {
+    const md = NAJ_getMonth(m);
+    const t = NAJ_calc(md);
+    rows.push([NAJ_MONTHS[m-1], md.m2, md.sazba, t.plocha, md.stan, t.celkemBezDph, t.dph, t.celkemSDph, md.datumFaktury, md.cisloFaktury, md.poznamka]);
+  }
+  const csv = rows.map(r=>r.map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(';')).join('\n');
+  const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='kelvion_najem_2026.csv'; a.click();
+}
+
+function NAJ_calc(md) {
+  const plocha = (parseFloat(md.m2)||0) * (parseFloat(md.sazba)||NAJ_SAZBA_DEFAULT);
+  const stan = (md.stan!==undefined&&md.stan!==null&&md.stan!=='') ? parseFloat(md.stan)||0 : NAJ_STAN_DEFAULT;
+  const celkemBezDph = plocha + stan;
+  const dph = Math.round(celkemBezDph * NAJ_DPH * 100) / 100;
+  const celkemSDph = celkemBezDph + dph;
+  return { plocha, stan, celkemBezDph, dph, celkemSDph };
+}
+
+function NAJ_fmt(n) { return Math.round(n||0).toLocaleString('cs-CZ') + ' Kč'; }
+function NAJ_fmtD(n) { return (parseFloat(n)||0).toLocaleString('cs-CZ',{minimumFractionDigits:0,maximumFractionDigits:2}) + ' Kč'; }
+
+function NAJ_buildNav() {
+  const nav = document.getElementById('naj-monthNav'); if(!nav) return;
+  nav.innerHTML = '';
+  for(let m=1; m<=12; m++) {
+    const md = NAJ_data[m];
+    const hasData = md && (parseFloat(md.m2)>0 || md.cisloFaktury);
+    const btn = document.createElement('button');
+    btn.style.cssText = 'padding:6px 13px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600;font-family:Inter,sans-serif;transition:all .15s;margin:0 1px;';
+    if(m === NAJ_currentMonth) {
+      btn.style.background='#00d4aa'; btn.style.borderColor='#00d4aa'; btn.style.color='#0a1a15'; btn.style.border='1px solid #00d4aa';
+    } else if(hasData) {
+      btn.style.background='transparent'; btn.style.border='1px solid #004a3a'; btn.style.color='#00a07a';
+    } else {
+      btn.style.background='transparent'; btn.style.border='1px solid var(--border)'; btn.style.color='var(--muted)';
+    }
+    btn.textContent = NAJ_SHORT[m-1];
+    btn.onclick = (()=>{const mm=m;return()=>{NAJ_currentMonth=mm;NAJ_buildNav();NAJ_render();}})();
+    nav.appendChild(btn);
+  }
+}
+
+function NAJ_switchView(v) {
+  NAJ_view = v;
+  document.getElementById('naj-btn-mesic').style.background = v==='mesic'?'var(--accent)':'transparent';
+  document.getElementById('naj-btn-mesic').style.color = v==='mesic'?'#fff':'var(--muted)';
+  document.getElementById('naj-btn-mesic').style.border = v==='mesic'?'none':'1px solid var(--border)';
+  document.getElementById('naj-btn-prehled').style.background = v==='prehled'?'var(--accent)':'transparent';
+  document.getElementById('naj-btn-prehled').style.color = v==='prehled'?'#fff':'var(--muted)';
+  document.getElementById('naj-btn-prehled').style.border = v==='prehled'?'none':'1px solid var(--border)';
+  document.getElementById('naj-monthNav').style.display = v==='mesic'?'flex':'none';
+  NAJ_render();
+}
+
+function NAJ_render() {
+  if(NAJ_view==='prehled') { NAJ_renderPrehled(); return; }
+  const m = NAJ_currentMonth;
+  const md = NAJ_getMonth(m);
+  const t = NAJ_calc(md);
+  const el = document.getElementById('naj-content'); if(!el) return;
+
+  // Kontroly
+  const checks = [];
+  if(!md.m2||parseFloat(md.m2)===0) checks.push({cls:'err',txt:'Není vyplněna venkovní plocha (m²).'});
+  else checks.push({cls:'ok',txt:`Venkovní plocha: ${md.m2} m² × ${md.sazba} Kč = ${NAJ_fmt(t.plocha)}`});
+  if(!md.datumFaktury) checks.push({cls:'warn',txt:'Chybí datum faktury.'});
+  else checks.push({cls:'ok',txt:`Datum faktury: ${md.datumFaktury}`});
+  if(!md.cisloFaktury) checks.push({cls:'err',txt:'Chybí číslo faktury.'});
+  else checks.push({cls:'ok',txt:`Číslo faktury: ${md.cisloFaktury}`});
+  if(t.celkemBezDph===0) checks.push({cls:'err',txt:'Celková částka je 0 Kč.'});
+
+  const checkColor = {ok:'rgba(0,212,170,.08)',warn:'rgba(247,201,72,.08)',err:'rgba(255,107,107,.08)'};
+  const checkBorder = {ok:'rgba(0,212,170,.2)',warn:'rgba(247,201,72,.25)',err:'rgba(255,107,107,.25)'};
+  const checkIcon = {ok:'✅',warn:'🟡',err:'🔴'};
+  const checkText = {ok:'#00d4aa',warn:'#f7c948',err:'#ff6b6b'};
+
+  el.innerHTML = `
+  <!-- KARTY -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3a8eff;"></div>
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Plocha bez DPH</div>
+      <div style="font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;">${NAJ_fmt(t.plocha)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">${md.m2||0} m² × ${md.sazba} Kč</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#a855f7;"></div>
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Pronájem stanu</div>
+      <div style="font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;">${NAJ_fmt(md.stan)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">fixní měsíčně</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#f7c948;"></div>
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Celkem bez DPH</div>
+      <div style="font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;">${NAJ_fmt(t.celkemBezDph)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">základ daně</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#ff6b6b;"></div>
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">DPH 21 %</div>
+      <div style="font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;color:#ff6b6b;">${NAJ_fmt(t.dph)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">daň</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#00d4aa;"></div>
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Celkem s DPH</div>
+      <div style="font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;color:#00d4aa;">${NAJ_fmt(t.celkemSDph)}</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">k úhradě</div>
+    </div>
+  </div>
+
+  <!-- KONTROLA -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden;">
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface2);font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;">🔍 Kontrola — ${NAJ_MONTHS[m-1]}</div>
+    <div style="padding:14px 20px;display:flex;flex-direction:column;gap:8px;">
+      ${checks.map(ch=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;font-size:.85rem;background:${checkColor[ch.cls]};border:1px solid ${checkBorder[ch.cls]};color:${checkText[ch.cls]};">${checkIcon[ch.cls]} ${ch.txt}</div>`).join('')}
+    </div>
+  </div>
+
+  <!-- FORMULÁŘ -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden;">
+    <div style="padding:13px 20px;border-bottom:1px solid var(--border);background:var(--surface2);font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;">📋 Zadání — ${NAJ_MONTHS[m-1]}</div>
+    <div style="padding:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;">
+            <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#3a8eff;margin-bottom:14px;">🏗 Venkovní plocha</div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">Počet m²</label>
+              <input type="number" value="${md.m2||''}" placeholder="0" step="0.5" min="0"
+                style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:1.1rem;font-family:'DM Mono',monospace;outline:none;"
+                oninput="NAJ_save('m2',this.value,${m})" onblur="NAJ_saveAndRender('m2',this.value,${m})">
+            </div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">Sazba (Kč/m²)</label>
+              <input type="number" value="${md.sazba||NAJ_SAZBA_DEFAULT}" step="1" min="1"
+                style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:1rem;font-family:'DM Mono',monospace;outline:none;"
+                oninput="NAJ_save('sazba',this.value,${m})" onblur="NAJ_saveAndRender('sazba',this.value,${m})">
+            </div>
+            <div style="background:rgba(58,142,255,.08);border:1px solid rgba(58,142,255,.2);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.78rem;color:var(--muted);">Plocha bez DPH</span>
+              <span style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:#3a8eff;">${NAJ_fmt(t.plocha)}</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;">
+            <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#a855f7;margin-bottom:14px;">🏕 Pronájem stanu</div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">Částka (Kč/měsíc)</label>
+              <input type="number" value="${md.stan!==undefined&&md.stan!==null?md.stan:NAJ_STAN_DEFAULT}" step="100" min="0"
+                style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:1.1rem;font-family:'DM Mono',monospace;outline:none;"
+                oninput="NAJ_save('stan',this.value,${m})" onblur="NAJ_saveAndRender('stan',this.value,${m})">
+              <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">Výchozí: 13 500 Kč — upravte pokud se cena změní</div>
+            </div>
+            <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:.78rem;color:var(--muted);">Stan bez DPH</span>
+              <span style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:#a855f7;">${NAJ_fmt(md.stan)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAKTURA -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px;">
+        <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#f7c948;margin-bottom:14px;">🧾 Faktura</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:12px;">
+          <div>
+            <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">Datum faktury</label>
+            <input type="text" value="${md.datumFaktury||''}" placeholder="dd.mm.yyyy"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:.9rem;outline:none;"
+              onblur="NAJ_saveStr('datumFaktury',this.value,${m})">
+          </div>
+          <div>
+            <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">Číslo faktury</label>
+            <input type="text" value="${md.cisloFaktury||''}" placeholder="2026-xxx"
+              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:.9rem;outline:none;"
+              onblur="NAJ_saveStr('cisloFaktury',this.value,${m})">
+          </div>
+          <div>
+            <label style="font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;">Poznámka</label>
+            <input type="text" value="${md.poznamka||''}" placeholder="Poznámka k faktuře..."
+              style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 12px;font-size:.9rem;outline:none;"
+              onblur="NAJ_saveStr('poznamka',this.value,${m})">
+          </div>
+        </div>
+      </div>
+
+      <!-- REKAPITULACE -->
+      <div style="background:rgba(0,212,170,.05);border:1px solid rgba(0,212,170,.2);border-radius:10px;padding:18px;">
+        <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#00d4aa;margin-bottom:14px;">💰 Rekapitulace — ${NAJ_MONTHS[m-1]}</div>
+        <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px 0;color:var(--muted);">Venkovní plocha (${md.m2||0} m² × ${md.sazba} Kč)</td>
+            <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:600;">${NAJ_fmt(t.plocha)}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px 0;color:var(--muted);">Pronájem stanu</td>
+            <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:600;">${NAJ_fmt(md.stan)}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px 0;font-weight:600;">Celkem bez DPH</td>
+            <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;font-size:1rem;">${NAJ_fmt(t.celkemBezDph)}</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:8px 0;color:#ff6b6b;">DPH 21 %</td>
+            <td style="text-align:right;font-family:'DM Mono',monospace;color:#ff6b6b;">${NAJ_fmt(t.dph)}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:#00d4aa;">CELKEM S DPH</td>
+            <td style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:#00d4aa;">${NAJ_fmt(t.celkemSDph)}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+function NAJ_save(field, val, m) {
+  const md = NAJ_getMonth(m);
+  // Ukládej jako číslo ale dovol prázdný string a nulu
+  const parsed = val===''||val===null ? 0 : parseFloat(val);
+  md[field] = isNaN(parsed) ? 0 : parsed;
+  NAJ_saveData();
+}
+function NAJ_saveAndRender(field, val, m) {
+  NAJ_save(field, val, m);
+  NAJ_render();
+}
+
+function NAJ_saveStr(field, val, m) {
+  const md = NAJ_getMonth(m);
+  md[field] = val;
+  NAJ_saveData();
+}
+
+function NAJ_renderPrehled() {
+  const el = document.getElementById('naj-content'); if(!el) return;
+  const months = [];
+  let rocniPlochaBez=0, rocniStanBez=0, rocniCelkemBez=0, rocniDph=0, rocniCelkemS=0;
+  for(let m=1; m<=12; m++) {
+    const md = NAJ_getMonth(m);
+    const t = NAJ_calc(md);
+    months.push({m, label:NAJ_SHORT[m-1], name:NAJ_MONTHS[m-1], md, t});
+    rocniPlochaBez += t.plocha;
+    rocniStanBez += md.stan||0;
+    rocniCelkemBez += t.celkemBezDph;
+    rocniDph += t.dph;
+    rocniCelkemS += t.celkemSDph;
+  }
+
+  const fmtK = n => Math.abs(n)>=1000?(n/1000).toFixed(0)+'k':Math.round(n).toString();
+
+  // SVG bar chart
+  const hasData = months.some(m=>m.t.celkemBezDph>0);
+  let chartHtml = '';
+  if(hasData) {
+    const maxV = Math.max(...months.map(m=>m.t.celkemSDph),1);
+    const H=200,PAD_L=50,PAD_B=36,PAD_T=20,BAR_W=18,GROUP_W=62;
+    const totalW = PAD_L + months.length*GROUP_W + 10;
+    const toY = v => H-PAD_B-(v/maxV)*(H-PAD_T-PAD_B);
+    let svg = `<svg viewBox="0 0 ${totalW} ${H}" style="width:100%;height:${H}px;overflow:visible;">`;
+    [0,0.5,1].forEach(f=>{const v=maxV*f;const y=toY(v);svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/><text x="${PAD_L-10}" y="${y+4}" text-anchor="end" style="font-family:DM Mono,monospace;font-size:11px;fill:var(--muted);">${fmtK(v)}</text>`;});
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*GROUP_W;
+      const bars=[{v:mo.t.plocha,c:'#3a8eff'},{v:mo.md.stan||0,c:'#a855f7'},{v:mo.t.celkemSDph,c:'#00d4aa'}];
+      bars.forEach((b,bi)=>{const bx=x+bi*(BAR_W+2)+2;const bh=(b.v/maxV)*(H-PAD_T-PAD_B);const by=toY(b.v);svg+=`<rect x="${bx}" y="${by}" width="${BAR_W}" height="${Math.max(bh,1)}" fill="${b.c}" rx="2" opacity=".8"/>`;if(bh>14)svg+=`<text x="${bx+BAR_W/2}" y="${by-3}" text-anchor="middle" style="font-family:DM Mono,monospace;font-size:9px;fill:${b.c};">${fmtK(b.v)}</text>`;});
+      svg+=`<text x="${x+GROUP_W/2-4}" y="${H-4}" text-anchor="middle" style="font-family:DM Mono,monospace;font-size:11px;fill:var(--muted);">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    chartHtml=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;">
+      <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:16px;">Nájem po měsících — 2026</div>
+      <div style="overflow-x:auto;">${svg}</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:.78rem;">
+        <div style="display:flex;align-items:center;gap:6px;color:var(--muted);"><div style="width:10px;height:10px;border-radius:2px;background:#3a8eff;"></div>Plocha</div>
+        <div style="display:flex;align-items:center;gap:6px;color:var(--muted);"><div style="width:10px;height:10px;border-radius:2px;background:#a855f7;"></div>Stan</div>
+        <div style="display:flex;align-items:center;gap:6px;color:var(--muted);"><div style="width:10px;height:10px;border-radius:2px;background:#00d4aa;"></div>Celkem s DPH</div>
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML = `
+  <!-- ROČNÍ KARTY -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3a8eff;"></div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Plocha (bez DPH)</div><div style="font-size:1.2rem;font-weight:700;font-family:'Syne',sans-serif;">${NAJ_fmt(rocniPlochaBez)}</div><div style="font-size:.72rem;color:var(--muted);margin-top:4px;">roční součet</div></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:#a855f7;"></div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Stan (bez DPH)</div><div style="font-size:1.2rem;font-weight:700;font-family:'Syne',sans-serif;">${NAJ_fmt(rocniStanBez)}</div><div style="font-size:.72rem;color:var(--muted);margin-top:4px;">roční součet</div></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:#f7c948;"></div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Celkem bez DPH</div><div style="font-size:1.2rem;font-weight:700;font-family:'Syne',sans-serif;">${NAJ_fmt(rocniCelkemBez)}</div><div style="font-size:.72rem;color:var(--muted);margin-top:4px;">základ daně</div></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:#ff6b6b;"></div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">DPH celkem</div><div style="font-size:1.2rem;font-weight:700;font-family:'Syne',sans-serif;color:#ff6b6b;">${NAJ_fmt(rocniDph)}</div><div style="font-size:.72rem;color:var(--muted);margin-top:4px;">roční DPH</div></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:#00d4aa;"></div><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;">Celkem s DPH</div><div style="font-size:1.2rem;font-weight:700;font-family:'Syne',sans-serif;color:#00d4aa;">${NAJ_fmt(rocniCelkemS)}</div><div style="font-size:.72rem;color:var(--muted);margin-top:4px;">roční fakturace</div></div>
+  </div>
+
+  ${chartHtml}
+
+  <!-- TABULKA VŠECH MĚSÍCŮ -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+    <div style="padding:13px 20px;border-bottom:1px solid var(--border);background:var(--surface2);font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;">Přehled po měsících</div>
+    <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:.83rem;">
+      <thead><tr style="border-bottom:1px solid var(--border);">
+        <th style="text-align:left;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Měsíc</th>
+        <th style="text-align:right;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">m²</th>
+        <th style="text-align:right;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Plocha</th>
+        <th style="text-align:right;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Stan</th>
+        <th style="text-align:right;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Bez DPH</th>
+        <th style="text-align:right;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">S DPH</th>
+        <th style="text-align:left;padding:10px 12px;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Faktura</th>
+      </tr></thead>
+      <tbody>
+        ${months.map(mo=>`<tr style="border-bottom:1px solid var(--border);cursor:pointer;" onclick="NAJ_switchView('mesic');NAJ_currentMonth=${mo.m};NAJ_buildNav();NAJ_render();" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <td style="padding:10px 12px;font-weight:600;">${mo.name}</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'DM Mono',monospace;">${mo.md.m2||'—'}</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'DM Mono',monospace;color:#3a8eff;">${mo.t.plocha>0?NAJ_fmt(mo.t.plocha):'—'}</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'DM Mono',monospace;color:#a855f7;">${NAJ_fmt(mo.md.stan)}</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'DM Mono',monospace;font-weight:600;">${mo.t.celkemBezDph>0?NAJ_fmt(mo.t.celkemBezDph):'—'}</td>
+          <td style="padding:10px 12px;text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:#00d4aa;">${mo.t.celkemSDph>0?NAJ_fmt(mo.t.celkemSDph):'—'}</td>
+          <td style="padding:10px 12px;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--muted);">${mo.md.cisloFaktury||'<span style="color:#ff6b6b;">chybí</span>'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+  </div>`;
+}
+
+function NAJ_init() {
+  NAJ_loadData();
+  // Otevři aktuální měsíc
+  const now = new Date();
+  NAJ_currentMonth = now.getMonth()+1;
+  // Najdi poslední měsíc s daty
+  for(let m=12; m>=1; m--) {
+    const md = NAJ_data[m];
+    if(md && (parseFloat(md.m2)>0 || md.cisloFaktury)) { NAJ_currentMonth=m; break; }
+  }
+  NAJ_buildNav();
+  NAJ_render();
+}
+// ===== DASHBOARD =====
+const DASH_MONTHS = ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const DASH_SHORT = ['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+let DASH_currentMonth = new Date().getMonth()+1;
+let DASH_view = 'mesic';
+
+function DASH_switchView(v) {
+  DASH_view = v;
+  const bm = document.getElementById('dash-btn-mesic');
+  const br = document.getElementById('dash-btn-rok');
+  if(bm){ bm.className='g-btn'+(v==='mesic'?' g-save':''); if(v==='mesic'){bm.style.background='#a855f7';bm.style.borderColor='#a855f7';}else{bm.style.background='';bm.style.borderColor='';} }
+  if(br){ br.className='g-btn'+(v==='rok'?' g-save':''); if(v==='rok'){br.style.background='#a855f7';br.style.borderColor='#a855f7';}else{br.style.background='';br.style.borderColor='';} }
+  DASH_render();
+}
+
+function DASH_getVLMonth(m) {
+  try {
+    const d = JSON.parse(localStorage.getItem('kelvion_2025_2026')||'{}');
+    // VL data je d[year][month] kde year=2025 nebo 2026
+    const md2026 = d['2026'] && d['2026'][m] ? d['2026'][m] : null;
+    const md2025 = d['2025'] && d['2025'][m] ? d['2025'][m] : null;
+    const md = md2026 || md2025;
+    if(!md) return {fakturace:0, naklady:0, zisk:0};
+    // VL struktura: workers{name:{days:[[date,hours]], rate}}, electricity, invoices
+    let mzdy = 0;
+    const workers = md.workers || {};
+    Object.values(workers).forEach(w => {
+      const h = (w.days||[]).reduce((s,d)=>s+(parseFloat(d[1])||0),0);
+      mzdy += h*(w.rate||0);
+    });
+    const elec = parseFloat(md.electricity)||0;
+    const fakturace = (md.invoices||[]).reduce((s,inv)=>s+(parseFloat(inv.odfakturovano)||0),0);
+    const naklady = mzdy + elec;
+    return { fakturace, naklady, zisk: fakturace-naklady, mzdy, elec };
+  } catch(e) { return {fakturace:0,naklady:0,zisk:0,mzdy:0,elec:0}; }
+}
+
+function DASH_getKOLMonth(m) {
+  try {
+    const d = JSON.parse(localStorage.getItem('kelvion_kolinka_2026')||'{}');
+    const md = d['2026'] && d['2026'][m] ? d['2026'][m] : null;
+    if(!md) return {fakturace:0,naklady:0,zisk:0};
+    let mzdy=0;
+    (md.workers||[]).forEach(w=>{
+      const h=(w.days||[]).reduce((s,d)=>s+(parseFloat(d)||0),0);
+      mzdy+=h*(parseFloat(w.sazba)||0)+(parseFloat(w.premie)||0);
+    });
+    const elec=(md.elCena||5.45)*(md.elKwh||0);
+    const fakturace=(md.faktury||[]).reduce((s,f)=>s+(parseFloat(f.castka)||0),0);
+    const naklady=mzdy+elec;
+    return {fakturace,naklady,zisk:fakturace-naklady,mzdy,elec};
+  } catch(e){ return {fakturace:0,naklady:0,zisk:0}; }
+}
+
+function DASH_getNAJMonth(m) {
+  try {
+    const d = JSON.parse(localStorage.getItem('kelvion_najem_2026')||'{}');
+    const md = d[m];
+    if(!md) return {bezDph:0,sDph:0,dph:0};
+    const plocha=(parseFloat(md.m2)||0)*(parseFloat(md.sazba)||40);
+    const stan=parseFloat(md.stan)||13500;
+    const bezDph=plocha+stan;
+    const dph=Math.round(bezDph*0.21*100)/100;
+    return {bezDph, sDph:bezDph+dph, dph, plocha, stan};
+  } catch(e){ return {bezDph:0,sDph:0,dph:0}; }
+}
+
+function DASH_fmt(n){ return Math.round(n||0).toLocaleString('cs-CZ')+' Kč'; }
+function DASH_fmtK(n){ return Math.abs(n)>=1000?(n/1000).toFixed(0)+'k':Math.round(n).toString(); }
+
+function DASH_buildMonthNav() {
+  const el = document.querySelector('.dash-month-nav'); if(!el) return;
+  el.innerHTML = '';
+  for(let m=1;m<=12;m++){
+    const vl=DASH_getVLMonth(m), kol=DASH_getKOLMonth(m), naj=DASH_getNAJMonth(m);
+    const hasData = vl.fakturace>0||kol.fakturace>0||naj.bezDph>0;
+    const btn=document.createElement('button');
+    btn.className='dmb'+(m===DASH_currentMonth?' on':hasData?' has':'');
+    btn.textContent=DASH_SHORT[m-1];
+    btn.onclick=(()=>{const mm=m;return()=>{DASH_currentMonth=mm;DASH_buildMonthNav();DASH_render();};})();
+    el.appendChild(btn);
+  }
+}
+
+function DASH_render() {
+  const el = document.getElementById('dash-content'); if(!el) return;
+  if(DASH_view==='rok'){ DASH_renderRok(); return; }
+  
+  const m = DASH_currentMonth;
+  const vl = DASH_getVLMonth(m);
+  const kol = DASH_getKOLMonth(m);
+  const naj = DASH_getNAJMonth(m);
+  
+  const totFak = vl.fakturace + kol.fakturace + naj.bezDph;
+  const totNak = (vl.naklady||0) + (kol.naklady||0);
+  const totZisk = vl.zisk + kol.zisk;
+  const marze = totFak>0 ? (totZisk/totFak*100) : 0;
+  const margeColor = marze>=25?'#00d4aa':marze>=15?'#f7c948':'#ff6b6b';
+
+  el.innerHTML = `
+  <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#a855f7;margin-bottom:16px;">
+    ${DASH_MONTHS[m-1]} 2026
+  </div>
+
+  <!-- CELKOVÉ KARTY -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px;">
+    <div class="d-card vl"><div class="d-lbl">Vlásenky fakturace</div><div class="d-val" style="color:#3a8eff">${DASH_fmt(vl.fakturace)}</div><div class="d-sub">zisk: ${DASH_fmt(vl.zisk)}</div></div>
+    <div class="d-card kol"><div class="d-lbl">Kolínka fakturace</div><div class="d-val" style="color:var(--accent)">${DASH_fmt(kol.fakturace)}</div><div class="d-sub">zisk: ${DASH_fmt(kol.zisk)}</div></div>
+    <div class="d-card naj"><div class="d-lbl">Nájem bez DPH</div><div class="d-val" style="color:#00d4aa">${DASH_fmt(naj.bezDph)}</div><div class="d-sub">s DPH: ${DASH_fmt(naj.sDph)}</div></div>
+    <div class="d-card tot"><div class="d-lbl">Celkem fakturace</div><div class="d-val" style="color:#a855f7">${DASH_fmt(totFak)}</div><div class="d-sub">vl. + kol. + nájem</div></div>
+    <div class="d-card tot" style="border-left:3px solid #ff6b6b;"><div class="d-lbl">Celkové náklady</div><div class="d-val" style="color:#ff6b6b">${DASH_fmt(totNak)}</div><div class="d-sub">mzdy + el. (bez nájmu)</div></div>
+    <div class="d-card tot" style="border-left:3px solid ${margeColor};"><div class="d-lbl">Celkový zisk</div><div class="d-val" style="color:${totZisk>=0?'#00d4aa':'#ff6b6b'}">${DASH_fmt(totZisk)}</div><div class="d-sub">marže: ${totFak>0?marze.toFixed(1)+' %':'—'}</div></div>
+  </div>
+
+  <!-- DETAIL PO ZÁLOŽKÁCH -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid #3a8eff;border-radius:10px;padding:18px;">
+      <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#3a8eff;margin-bottom:14px;">🔵 Vlásenky</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Fakturace</span><span style="font-family:'DM Mono',monospace;color:#3a8eff">${DASH_fmt(vl.fakturace)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Mzdy</span><span style="font-family:'DM Mono',monospace">${DASH_fmt(vl.mzdy||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Elektřina</span><span style="font-family:'DM Mono',monospace">${DASH_fmt(vl.elec||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.9rem;padding:8px 0;font-weight:700;"><span>Zisk</span><span style="font-family:'DM Mono',monospace;color:${vl.zisk>=0?'#00d4aa':'#ff6b6b'}">${DASH_fmt(vl.zisk)}</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:18px;">
+      <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--accent);margin-bottom:14px;">🟠 Kolínka</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Fakturace</span><span style="font-family:'DM Mono',monospace;color:var(--accent)">${DASH_fmt(kol.fakturace)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Mzdy</span><span style="font-family:'DM Mono',monospace">${DASH_fmt(kol.mzdy||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Elektřina</span><span style="font-family:'DM Mono',monospace">${DASH_fmt(kol.elec||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.9rem;padding:8px 0;font-weight:700;"><span>Zisk</span><span style="font-family:'DM Mono',monospace;color:${kol.zisk>=0?'#00d4aa':'#ff6b6b'}">${DASH_fmt(kol.zisk)}</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid #00d4aa;border-radius:10px;padding:18px;">
+      <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:#00d4aa;margin-bottom:14px;">🟢 Nájem</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Plocha bez DPH</span><span style="font-family:'DM Mono',monospace">${DASH_fmt(naj.plocha||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">Stan bez DPH</span><span style="font-family:'DM Mono',monospace">${DASH_fmt(naj.stan||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:6px 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted)">DPH 21 %</span><span style="font-family:'DM Mono',monospace;color:#ff6b6b">${DASH_fmt(naj.dph||0)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.9rem;padding:8px 0;font-weight:700;"><span>Celkem s DPH</span><span style="font-family:'DM Mono',monospace;color:#00d4aa">${DASH_fmt(naj.sDph)}</span></div>
+      </div>
+    </div>
+  </div>
+
+  ${totFak===0&&totNak===0?'<div style="text-align:center;padding:40px;color:var(--muted);font-size:.9rem;">Pro tento měsíc nejsou žádná data. Zadejte data ve Vlásenky, Kolínka nebo Nájem.</div>':''}
+  `;
+}
+
+function DASH_renderRok() {
+  const el = document.getElementById('dash-content'); if(!el) return;
+  const months = [];
+  let totVlFak=0,totKolFak=0,totNajBez=0,totZisk=0;
+  for(let m=1;m<=12;m++){
+    const vl=DASH_getVLMonth(m), kol=DASH_getKOLMonth(m), naj=DASH_getNAJMonth(m);
+    const celkemFak=vl.fakturace+kol.fakturace+naj.bezDph;
+    const celkemZisk=vl.zisk+kol.zisk;
+    months.push({m,label:DASH_SHORT[m-1],vl,kol,naj,celkemFak,celkemZisk});
+    totVlFak+=vl.fakturace; totKolFak+=kol.fakturace; totNajBez+=naj.bezDph; totZisk+=celkemZisk;
+  }
+
+  // Bar chart
+  const hasData=months.some(m=>m.celkemFak>0);
+  let chartHtml='';
+  if(hasData){
+    const maxV=Math.max(...months.map(m=>m.celkemFak),1);
+    const H=200,PAD_L=52,PAD_B=34,PAD_T=20,BAR_W=16,GROUP_W=66;
+    const totalW=PAD_L+months.length*GROUP_W+10;
+    const toY=v=>H-PAD_B-(v/maxV)*(H-PAD_T-PAD_B);
+    let svg=`<svg viewBox="0 0 ${totalW} ${H}" style="width:100%;height:${H}px;overflow:visible;">`;
+    [0,0.5,1].forEach(f=>{const v=maxV*f;const y=toY(v);svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/><text x="${PAD_L-10}" y="${y+4}" text-anchor="end" style="font-family:'DM Mono',monospace;font-size:11px;fill:var(--muted)">${DASH_fmtK(v)}</text>`;});
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*GROUP_W;
+      const bars=[{v:mo.vl.fakturace,c:'#3a8eff'},{v:mo.kol.fakturace,c:'#ff6b35'},{v:mo.naj.bezDph,c:'#00d4aa'},{v:Math.max(mo.celkemZisk,0),c:'#a855f7'}];
+      bars.forEach((b,bi)=>{const bx=x+bi*(BAR_W+1)+2;const bh=(b.v/maxV)*(H-PAD_T-PAD_B);const by=toY(b.v);if(bh>1)svg+=`<rect x="${bx}" y="${by}" width="${BAR_W}" height="${Math.max(bh,1)}" fill="${b.c}" rx="2" opacity=".82"/>`;});
+      svg+=`<text x="${x+GROUP_W/2-4}" y="${H-4}" text-anchor="middle" style="font-family:'DM Mono',monospace;font-size:11px;fill:var(--muted)">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    chartHtml=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
+      <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:14px;">Fakturace po měsících — 2026</div>
+      <div style="overflow-x:auto;">${svg}</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:.76rem;">
+        <div style="display:flex;align-items:center;gap:5px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:#3a8eff"></div>Vlásenky</div>
+        <div style="display:flex;align-items:center;gap:5px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:#ff6b35"></div>Kolínka</div>
+        <div style="display:flex;align-items:center;gap:5px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:#00d4aa"></div>Nájem</div>
+        <div style="display:flex;align-items:center;gap:5px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:2px;background:#a855f7"></div>Zisk</div>
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML = `
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;">
+    <div class="d-card vl"><div class="d-lbl">Vlásenky rok</div><div class="d-val" style="color:#3a8eff">${DASH_fmt(totVlFak)}</div></div>
+    <div class="d-card kol"><div class="d-lbl">Kolínka rok</div><div class="d-val" style="color:var(--accent)">${DASH_fmt(totKolFak)}</div></div>
+    <div class="d-card naj"><div class="d-lbl">Nájem rok</div><div class="d-val" style="color:#00d4aa">${DASH_fmt(totNajBez)}</div></div>
+    <div class="d-card tot"><div class="d-lbl">Celkem fakturace</div><div class="d-val" style="color:#a855f7">${DASH_fmt(totVlFak+totKolFak+totNajBez)}</div></div>
+    <div class="d-card tot" style="border-left:3px solid ${totZisk>=0?'#00d4aa':'#ff6b6b'};"><div class="d-lbl">Celkový zisk</div><div class="d-val" style="color:${totZisk>=0?'#00d4aa':'#ff6b6b'}">${DASH_fmt(totZisk)}</div></div>
+  </div>
+  ${chartHtml}
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+    <div style="padding:12px 18px;background:var(--surface2);font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;">Přehled po měsících</div>
+    <div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+      <thead><tr style="border-bottom:1px solid var(--border);">
+        <th style="text-align:left;padding:9px 12px;color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Měsíc</th>
+        <th style="text-align:right;padding:9px 12px;color:#3a8eff;font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Vlásenky</th>
+        <th style="text-align:right;padding:9px 12px;color:var(--accent);font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Kolínka</th>
+        <th style="text-align:right;padding:9px 12px;color:#00d4aa;font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Nájem</th>
+        <th style="text-align:right;padding:9px 12px;color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Celkem</th>
+        <th style="text-align:right;padding:9px 12px;color:#a855f7;font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;font-family:'DM Mono',monospace;">Zisk</th>
+      </tr></thead>
+      <tbody>
+        ${months.map(mo=>`<tr style="border-bottom:1px solid var(--border);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+          <td style="padding:9px 12px;font-weight:600;">${mo.label}</td>
+          <td style="padding:9px 12px;text-align:right;font-family:'DM Mono',monospace;color:#3a8eff">${mo.vl.fakturace>0?DASH_fmt(mo.vl.fakturace):'—'}</td>
+          <td style="padding:9px 12px;text-align:right;font-family:'DM Mono',monospace;color:var(--accent)">${mo.kol.fakturace>0?DASH_fmt(mo.kol.fakturace):'—'}</td>
+          <td style="padding:9px 12px;text-align:right;font-family:'DM Mono',monospace;color:#00d4aa">${mo.naj.bezDph>0?DASH_fmt(mo.naj.bezDph):'—'}</td>
+          <td style="padding:9px 12px;text-align:right;font-family:'DM Mono',monospace;font-weight:600">${mo.celkemFak>0?DASH_fmt(mo.celkemFak):'—'}</td>
+          <td style="padding:9px 12px;text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:${mo.celkemZisk>=0?'#00d4aa':'#ff6b6b'}">${mo.celkemFak>0?DASH_fmt(mo.celkemZisk):'—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>`;
+}
+
+function DASH_init() {
+  // Přidej month nav před dash-content
+  const dashEl = document.getElementById('app-dash');
+  if(dashEl && !document.querySelector('.dash-month-nav')) {
+    const nav = document.createElement('div');
+    nav.className = 'dash-month-nav';
+    dashEl.insertBefore(nav, document.getElementById('dash-content'));
+  }
+  DASH_buildMonthNav();
+  DASH_render();
+}
+
+// ===== START =====
+const _startTab = localStorage.getItem(LAST_TAB)||'vl';
+switchTab(_startTab);
+</script>
+</body>
+</html>
