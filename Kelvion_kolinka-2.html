@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelvion – Kolínka 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f1117;--surface:#181c27;--surface2:#1e2334;--border:#2a3050;
+  --accent:#ff6b35;--accent2:#00d4aa;--accent3:#ff6b6b;--accent4:#f7c948;
+  --text:#e8eaf0;--muted:#6b7799;
+  --w1:#ff6b35;--w2:#00d4aa;--w3:#a855f7;--w4:#4f7fff;--w5:#f7c948;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent);letter-spacing:-0.5px;}
+.logo span{color:var(--muted);font-weight:700;}
+.header-right{display:flex;gap:10px;align-items:center;}
+.save-indicator{font-size:0.75rem;color:var(--accent2);font-family:'DM Mono',monospace;}
+.year-nav{display:flex;gap:8px;padding:10px 28px;background:var(--surface2);border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap;}
+.year-label{font-size:0.72rem;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-right:4px;}
+.year-btn{padding:6px 18px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:0.9rem;font-weight:700;font-family:'Syne',sans-serif;transition:all 0.15s;}
+.year-btn:hover{border-color:var(--accent);color:var(--accent);}
+.year-btn.active{background:var(--accent);border-color:var(--accent);color:white;}
+.month-nav{display:flex;gap:4px;flex-wrap:wrap;padding:14px 28px;background:var(--surface);border-bottom:1px solid var(--border);}
+.month-btn{padding:7px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.month-btn:hover{border-color:var(--accent);color:var(--accent);}
+.month-btn.active{background:var(--accent);border-color:var(--accent);color:white;}
+.month-btn.has-data{border-color:#402010;color:#ff9060;}
+.month-btn.active.has-data{background:var(--accent);color:white;}
+.content{padding:24px 28px;max-width:1400px;margin:0 auto;}
+.summary-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+.card.c2::before{background:var(--accent2);}
+.card.c3::before{background:var(--accent4);}
+.card.c4::before{background:#4f7fff;}
+.card.c5::before{background:var(--accent3);}
+.card.c6::before{background:var(--accent2);}
+.card-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace;}
+.card-value{font-size:1.4rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--text);line-height:1;}
+.card-sub{font-size:0.75rem;color:var(--muted);margin-top:6px;}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden;}
+.section-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2);}
+.section-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.section-body{padding:20px;}
+.btn{padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-size:0.82rem;font-weight:600;font-family:'Inter',sans-serif;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{filter:brightness(0.9);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:transparent;border:1px solid #3a1a1a;color:var(--accent3);}
+.btn-danger:hover{background:#2a1010;}
+.btn-success{background:var(--accent2);color:#0a1a15;}
+.btn-sm{padding:4px 10px;font-size:0.76rem;}
+input,select{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:7px 10px;font-size:0.85rem;font-family:'Inter',sans-serif;outline:none;transition:border 0.15s;}
+input:focus,select:focus{border-color:var(--accent);}
+input[type="number"]{font-family:'DM Mono',monospace;}
+label{font-size:0.78rem;color:var(--muted);display:block;margin-bottom:4px;letter-spacing:0.3px;}
+/* Workers */
+.workers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+.worker-card{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.worker-header{padding:14px 16px;display:flex;align-items:center;border-bottom:1px solid var(--border);}
+.worker-color-bar{width:4px;height:36px;border-radius:2px;margin-right:12px;flex-shrink:0;}
+.worker-info{flex:1;}
+.worker-name-input{background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;outline:none;width:180px;padding:2px 0;}
+.worker-name-input:focus{border-bottom-color:var(--accent);}
+.worker-total{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;}
+.worker-meta{display:flex;gap:16px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:0.8rem;}
+.worker-meta-item .lbl{color:var(--muted);font-size:0.72rem;}
+.worker-meta-item .val{font-family:'DM Mono',monospace;font-weight:500;}
+.worker-rate-row{display:flex;gap:10px;padding:12px 16px;align-items:flex-end;border-bottom:1px solid var(--border);}
+/* Calendar */
+.cal-container{padding:14px 16px;border-bottom:1px solid var(--border);}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-title{font-size:0.82rem;color:var(--muted);font-weight:600;}
+.cal-hours-input{display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--muted);}
+.cal-hours-input input{width:60px;padding:4px 8px;font-size:0.82rem;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dow-label{text-align:center;font-size:0.68rem;font-weight:700;color:var(--muted);padding:4px 2px;font-family:'DM Mono',monospace;}
+.cal-dow-label.we{color:#b07a00;}
+.cal-cell{aspect-ratio:1;border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;font-weight:600;border:1px solid transparent;transition:all 0.12s;position:relative;user-select:none;}
+.cal-cell.empty{cursor:default;background:transparent!important;border-color:transparent!important;}
+.cal-cell.normal{background:var(--surface2);color:var(--text);border-color:var(--border);}
+.cal-cell.normal:hover{border-color:var(--accent);color:var(--accent);transform:scale(1.08);z-index:2;}
+.cal-cell.weekend{background:#1a1608;color:#b07a00;border-color:#2a2208;}
+.cal-cell.weekend:hover{border-color:#f7c948;transform:scale(1.08);z-index:2;}
+.cal-cell.worked{border-width:2px;}
+.cal-cell .cal-num{line-height:1;}
+.cal-cell .cal-h{font-size:0.62rem;opacity:0.85;font-family:'DM Mono',monospace;margin-top:1px;}
+/* Days list */
+.days-wrap{padding:12px 16px;}
+.days-list{max-height:220px;overflow-y:auto;}
+.days-list::-webkit-scrollbar{width:4px;}
+.days-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.day-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:6px;font-size:0.83rem;font-family:'DM Mono',monospace;transition:background 0.1s;}
+.day-row:hover{background:var(--surface2);}
+.day-date{color:var(--muted);min-width:80px;}
+.day-dow{min-width:26px;font-size:0.72rem;font-weight:700;}
+.day-hours-val{font-weight:500;flex:1;display:flex;align-items:center;gap:4px;}
+.day-hours-val input{width:60px;padding:3px 7px;font-size:0.8rem;}
+.day-del{opacity:0;cursor:pointer;color:var(--accent3);font-size:0.9rem;padding:2px 6px;border-radius:4px;background:none;border:none;}
+.day-row:hover .day-del{opacity:1;}
+.we-text{color:#b07a00;}
+.days-empty{color:var(--muted);font-size:0.8rem;padding:8px 0;font-style:italic;}
+/* Elektrina */
+.elec-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;}
+.field-group{display:flex;flex-direction:column;gap:4px;}
+/* Faktury table */
+.ft-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.ft-table th{background:var(--surface2);color:var(--muted);padding:8px 12px;text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border);}
+.ft-table th.r{text-align:right;}
+.ft-table td{padding:7px 12px;border-bottom:1px solid var(--border);}
+.ft-table td input{background:none;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:0.85rem;outline:none;width:100%;padding:2px;}
+.ft-table td input:focus{background:rgba(255,107,53,0.07);}
+.ft-table tr:last-child td{border-bottom:none;}
+.ft-table tr:hover td{background:rgba(255,255,255,0.02);}
+/* Material table */
+.mt-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.mt-table th{background:var(--surface2);color:var(--muted);padding:8px 10px;text-align:right;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border);}
+.mt-table th:first-child{text-align:left;}
+.mt-table td{padding:6px 10px;border-bottom:1px solid var(--border);text-align:right;font-family:'DM Mono',monospace;}
+.mt-table td:first-child{text-align:left;}
+.mt-table td input{background:none;border:none;color:var(--text);font-family:'DM Mono',monospace;font-size:0.82rem;outline:none;width:100%;padding:2px;text-align:right;}
+.mt-table td:first-child input{text-align:left;}
+.mt-table td input:focus{background:rgba(255,107,53,0.07);}
+.mt-table tr:hover td{background:rgba(255,255,255,0.02);}
+.auto-tag{color:var(--accent2);font-size:0.7rem;margin-left:4px;}
+/* AI upload */
+.pdf-upload-area{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.pdf-btn{padding:8px 16px;border:1px dashed var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-size:0.82rem;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.pdf-btn:hover{border-color:var(--accent);color:var(--accent);}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;width:380px;max-width:90vw;}
+.modal h3{font-family:'Syne',sans-serif;margin-bottom:18px;color:var(--text);font-size:1.1rem;}
+.modal-btns{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+/* Processing overlay */
+.proc-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.proc-overlay.open{display:flex;}
+.proc-box{background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:32px 40px;text-align:center;max-width:460px;width:90%;}
+.proc-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:8px;}
+.proc-sub{font-size:0.78rem;color:var(--muted);margin-bottom:20px;letter-spacing:1px;}
+.proc-spin{font-size:2rem;display:inline-block;animation:spin 1s linear infinite;margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.proc-item{display:flex;justify-content:space-between;padding:6px 10px;background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.15);border-radius:6px;margin-bottom:4px;font-size:0.82rem;}
+.proc-item-l{color:var(--muted);}
+.proc-item-v{color:var(--accent2);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--accent2);color:#0a1a15;padding:10px 18px;border-radius:8px;font-size:0.85rem;font-weight:600;transform:translateY(60px);opacity:0;transition:all 0.3s;z-index:999;}
+.toast.show{transform:translateY(0);opacity:1;}
+.notes-box{background:linear-gradient(135deg,rgba(247,201,72,.07),rgba(247,201,72,.03));border:1px solid rgba(247,201,72,.35);border-left:4px solid var(--accent4);border-radius:12px;padding:18px 20px;margin-bottom:20px;}
+.notes-box-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.notes-box-title{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:var(--accent4);}
+.notes-box-count{font-size:.72rem;color:var(--muted);font-family:'DM Mono',monospace;}
+.notes-textarea{width:100%;min-height:90px;background:rgba(0,0,0,.25);border:1px solid rgba(247,201,72,.2);border-radius:8px;color:var(--text);padding:12px 14px;font-size:.88rem;font-family:'Inter',sans-serif;line-height:1.55;resize:vertical;outline:none;transition:border .15s;}
+.notes-textarea:focus{border-color:var(--accent4);}
+.notes-textarea::placeholder{color:var(--muted);font-style:italic;}
+.notes-saved{font-size:.72rem;color:var(--accent2);font-family:'DM Mono',monospace;opacity:0;transition:opacity .3s;margin-left:auto;}
+.notes-saved.show{opacity:1;}
+.backup-panel{background:linear-gradient(135deg,rgba(79,127,255,.12),rgba(0,212,170,.08));border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.backup-title{font-family:'Syne',sans-serif;font-weight:800;color:var(--text);margin-bottom:4px;}
+.backup-text{color:var(--muted);font-size:.86rem;}
+.backup-warn{color:var(--accent4);font-weight:700;}
+.chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+.chart-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:18px;color:var(--text);}
+.chart-svg{width:100%;overflow:visible;}
+.bar-label{font-family:'DM Mono',monospace;font-size:11px;fill:var(--muted);}
+.bar-value{font-family:'DM Mono',monospace;font-size:9px;font-weight:600;}
+.chart-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:0.78rem;}
+.legend-item{display:flex;align-items:center;gap:6px;color:var(--muted);}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.stat-card-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'DM Mono',monospace;margin-bottom:6px;}
+.stat-card-value{font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;}
+
+@media(max-width:600px){.content{padding:14px;}.month-nav,header,.year-nav{padding:12px 14px;}.workers-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Kelvion <span>/ Kolínka 2026</span></div>
+  <div class="header-right">
+    <span class="save-indicator" id="saveIndicator"></span>
+    <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export</button>
+    <button class="btn btn-ghost btn-sm" onclick="importClick()">⬆ Import</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</header>
+<div class="year-nav">
+  <span class="year-label">Rok 2026</span>
+  <div style="width:1px;height:20px;background:var(--border);margin:0 8px"></div>
+  <button class="year-btn" id="ybtnChart" onclick="showChart()">📊 Přehled</button>
+  <button class="year-btn active" id="ybtnData" onclick="showData()">📋 Data</button>
+</div>
+<div class="month-nav" id="monthNav"></div>
+<div class="content" id="mainContent"></div>
+<div class="toast" id="toast"></div>
+
+<!-- Add Worker Modal -->
+<div class="modal-overlay" id="addWorkerModal" onclick="if(event.target===this)closeWorkerModal()">
+  <div class="modal">
+    <h3>👷 Přidat pracovníka</h3>
+    <div class="field-group" style="margin-bottom:14px">
+      <label>Jméno</label>
+      <input type="text" id="newWorkerName" placeholder="Jan Novák" style="width:100%"
+        onkeydown="if(event.key==='Enter')document.getElementById('newWorkerRate').focus()">
+    </div>
+    <div class="field-group">
+      <label>Hodinová sazba (Kč/h)</label>
+      <input type="number" id="newWorkerRate" value="270" style="width:100%"
+        onkeydown="if(event.key==='Enter')confirmAddWorker()">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeWorkerModal()">Zrušit</button>
+      <button class="btn btn-primary" onclick="confirmAddWorker()">Přidat</button>
+    </div>
+  </div>
+</div>
+
+<!-- Processing overlay -->
+<div class="proc-overlay" id="procOverlay">
+  <div class="proc-box" id="procBox"></div>
+</div>
+
+<script>
+const CENIK = {
+  "100304440": {mat:0.573832,kol:1.26},
+  "100304441": {mat:0.736303,kol:1.8},
+  "100304442": {mat:0.96791,kol:1.79},
+  "100304443": {mat:1.35853,kol:2.58},
+  "100304445": {mat:0.712105,kol:1.91},
+  "100304447": {mat:0.664354,kol:1.44},
+  "100304448": {mat:0.831277,kol:1.48},
+  "100304450": {mat:0.570877,kol:1.03},
+  "100304451": {mat:0.664354,kol:1.15},
+  "100304452": {mat:0.6076,kol:1.27},
+  "100304453": {mat:1.074984,kol:1.92},
+  "100304454": {mat:0.851307,kol:1.52},
+  "100304455": {mat:1.021569,kol:1.4},
+  "100304456": {mat:1.335384,kol:2.19},
+  "100304457": {mat:1.175138,kol:2.25},
+  "100304489": {mat:1.438694,kol:2.25},
+  "100304490": {mat:1.812096,kol:2.6},
+  "100304496": {mat:0.503196,kol:0.92},
+  "100304497": {mat:0.503196,kol:1.32},
+  "100304498": {mat:0.788794,kol:1.64},
+  "100304499": {mat:0.791061,kol:1.53},
+  "100304500": {mat:0.922527,kol:1.56},
+  "100304501": {mat:1.344123,kol:2.25},
+  "100304502": {mat:0.59,kol:2.08},
+  "100304503": {mat:0.256038,kol:0.63},
+  "100304504": {mat:0.256038,kol:0.99},
+  "100304505": {mat:0.305449,kol:0.96},
+  "100304506": {mat:0.411757,kol:1.1},
+  "100304507": {mat:0.398282,kol:1.34},
+  "100304508": {mat:0.485125,kol:0.95},
+  "100304509": {mat:0.712715,kol:1.2},
+  "100305222": {mat:0.200308,kol:0.46},
+  "100305223": {mat:0.200308,kol:0.59},
+  "100305224": {mat:0.387261,kol:0.88},
+  "100305226": {mat:0.400615,kol:0.9},
+  "100305230": {mat:0.307138,kol:0.7},
+  "100305231": {mat:0.3906,kol:0.88},
+  "100305232": {mat:0.293784,kol:0.73},
+  "100305233": {mat:0.63,kol:1.79},
+  "100305234": {mat:0.677707,kol:1.25},
+  "100305235": {mat:0.172841,kol:0.4},
+  "100305236": {mat:0.190125,kol:0.54},
+  "100305238": {mat:0.345682,kol:0.79},
+  "100305240": {mat:0.089838,kol:0.43},
+  "100305241": {mat:0.14979,kol:0.83},
+  "100305242": {mat:0.196146,kol:1.07},
+  "100305243": {mat:0.164703,kol:1.4},
+  "100305244": {mat:0.404271,kol:2.27},
+  "100305245": {mat:0.164703,kol:1.55},
+  "100305246": {mat:0.293471,kol:2.33},
+  "100305248": {mat:0.164703,kol:1.55},
+  "100305249": {mat:0.494109,kol:1.6},
+  "100305250": {mat:0.119784,kol:1.54},
+  "100305256": {mat:0.124666,kol:0.35},
+  "100305257": {mat:0.169999,kol:0.35},
+  "100305258": {mat:0.355864,kol:1.17},
+  "100305259": {mat:0.237998,kol:0.49},
+  "100305260": {mat:0.364931,kol:1.1},
+  "100305261": {mat:0.396664,kol:1.24},
+  "100305262": {mat:0.475996,kol:1.89},
+  "100305263": {mat:0.353597,kol:1.25},
+  "100305264": {mat:0.602929,kol:0.99},
+  "100305265": {mat:0.362664,kol:1.3},
+  "100305266": {mat:0.215332,kol:1.66},
+  "100305267": {mat:0.353597,kol:1.12},
+  "100305268": {mat:0.353597,kol:1.11},
+  "100305273": {mat:0.317331,kol:0.46},
+  "100305274": {mat:0.396664,kol:1.88},
+  "100305275": {mat:0.430663,kol:1.37},
+  "100305276": {mat:0.45333,kol:1.29},
+  "100305278": {mat:0.582529,kol:1.26},
+  "100305279": {mat:0.89306,kol:1.98},
+  "100305280": {mat:0.609729,kol:1.74},
+  "100305281": {mat:0.430663,kol:1.06},
+  "100305282": {mat:0.41253,kol:1.71},
+  "100305283": {mat:0.645995,kol:1.75},
+  "100305288": {mat:1.899955,kol:3.11},
+  "100308827": {mat:0.282755,kol:0.59},
+  "100308828": {mat:0.282755,kol:0.73},
+  "100308919": {mat:0.099212,kol:0.45},
+  "100309369": {mat:0.649882,kol:1.51},
+  "100309370": {mat:0.736303,kol:1.51},
+  "100309371": {mat:0.81581,kol:1.55},
+  "100309372": {mat:1.175319,kol:2.05},
+  "100309374": {mat:1.140751,kol:1.83},
+  "100309375": {mat:1.50026,kol:2.4},
+  "100309377": {mat:1.400012,kol:2.18},
+  "100309387": {mat:0.226898,kol:1.12},
+  "100309388": {mat:0.265202,kol:1.14},
+  "100309389": {mat:0.23884,kol:1.35},
+  "100309391": {mat:0.542023,kol:1.38},
+  "100309392": {mat:0.430663,kol:0.88},
+  "100309395": {mat:0.788794,kol:1.44},
+  "100309848": {mat:0.256038,kol:0.67},
+  "100338272": {mat:1.208124,kol:1.85},
+  "100338283": {mat:1.625188,kol:2.5},
+  "100361539": {mat:0.320787,kol:0.32},
+  "100364748": {mat:0.684566,kol:13.77},
+  "100364761": {mat:0.398503,kol:1.2},
+  "100364762": {mat:0.545668,kol:1.22},
+  "100364844": {mat:0.353858,kol:3.7},
+  "100364962": {mat:0.807907,kol:1.44},
+  "100448092": {mat:0.282755,kol:0.8},
+  "100457031": {mat:1.761187,kol:2.71},
+  "100457033": {mat:2.178251,kol:3.9},
+  "100533865": {mat:0.546178,kol:1.33},
+  "100559193": {mat:0.777099,kol:0.99},
+  "100560335": {mat:1.23523,kol:2.71},
+  "100579800": {mat:0.570877,kol:1.22},
+  "100579805": {mat:0.667692,kol:1.53},
+  "100587841": {mat:0.219141,kol:1.52},
+  "100587843": {mat:0.297305,kol:1.14},
+  "100587845": {mat:0.34895,kol:1.39},
+  "100595636": {mat:0.3657,kol:2.1},
+  "100598436": {mat:0.606849,kol:3.27},
+  "100599598": {mat:0,kol:3.02},
+  "100610257": {mat:0.213307,kol:1.56},
+  "100614046": {mat:0.553936,kol:4.14},
+  "100616679": {mat:0,kol:3.87},
+  "100616681": {mat:0,kol:4.87},
+  "100621293": {mat:0,kol:10.06},
+  "100621294": {mat:0,kol:2.64},
+  "100652325": {mat:0.277795,kol:1.82},
+  "100654366": {mat:0.646425,kol:1.25},
+  "100654367": {mat:0.376793,kol:1.08},
+  "100654369": {mat:0.349139,kol:0.94},
+  "100654371": {mat:0.210866,kol:0.63},
+  "100654372": {mat:0.3,kol:0.7},
+  "100654405": {mat:0.411362,kol:1.42},
+  "100654407": {mat:0.936798,kol:1.31},
+  "100654409": {mat:0.349139,kol:1.51},
+  "100655206": {mat:1.832815,kol:2.9},
+  "100663565": {mat:0.276368,kol:1.17},
+  "100665096": {mat:0.103289,kol:1.21},
+  "100669019": {mat:0.570877,kol:1.27},
+  "100673656": {mat:1.021569,kol:1.49},
+  "100696622": {mat:0.268632,kol:0.99},
+  "100707395": {mat:1.053305,kol:1.26},
+  "100709289": {mat:1.362092,kol:3.87},
+  "100717143": {mat:0.469605,kol:1.37},
+  "100720089": {mat:0.189878,kol:1.12},
+  "100722317": {mat:0.221932,kol:1.16},
+  "100722326": {mat:0.213762,kol:1.34},
+  "100722337": {mat:0.242423,kol:1.47},
+  "100722338": {mat:0.283347,kol:1.51},
+  "100722339": {mat:0.266307,kol:1.57},
+  "100722340": {mat:0.31,kol:2.12},
+  "100722341": {mat:0.294967,kol:1.68},
+  "100722342": {mat:0.344763,kol:1.71},
+  "100723400": {mat:1.101692,kol:1.68},
+  "100729135": {mat:0.758975,kol:3.44},
+  "100730323": {mat:0.836394,kol:1.92},
+  "100730325": {mat:0.881727,kol:2.01},
+  "100737613": {mat:0.203014,kol:1.17},
+  "100742447": {mat:0.67079,kol:1.49},
+  "100742448": {mat:0.862445,kol:1.67},
+  "100888979": {mat:0.072,kol:0.4},
+  "100910896": {mat:0.18,kol:1.23},
+};
+
+const MONTH_NAMES=['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'];
+const SHORT=['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+const DOW_CS=['Ne','Po','Út','St','Čt','Pá','So'];
+const STORAGE_KEY='kelvion_kolinka_2026';
+const WCOLORS=['var(--w1)','var(--w2)','var(--w3)','var(--w4)','var(--w5)'];
+const WCOLORS_RAW=['#ff6b35','#00d4aa','#a855f7','#4f7fff','#f7c948'];
+
+let data={};
+let currentYear=2026;
+let currentMonth=3;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function emptyMonth(){
+  return {workers:[
+    {id:uid(),name:'Pracovník 1',sazba:270,days:[]},
+    {id:uid(),name:'Pracovník 2',sazba:270,days:[]},
+    {id:uid(),name:'Pracovník 3',sazba:270,days:[]},
+    {id:uid(),name:'Pracovník 4',sazba:270,days:[]},
+    {id:uid(),name:'Pracovník 5',sazba:270,days:[]},
+    {id:uid(),name:'Pracovník 6',sazba:270,days:[]}
+  ],elCena:5.45,elKwh:0,lastKurz:24.5,faktury:[],material:[]};
+}
+function getMonth(y,m){return data[y]&&data[y][m]?data[y][m]:emptyMonth();}
+function ensureYear(y,startM){
+  if(!data[y])data[y]={};
+  for(let m=startM;m<=12;m++){
+    if(!data[y][m]) data[y][m]=emptyMonth();
+    // ensure 6 workers always exist
+    while(data[y][m].workers.length<6){
+      const i=data[y][m].workers.length+1;
+      data[y][m].workers.push({id:uid(),name:'Pracovník '+i,sazba:270,days:[]});
+    }
+  }
+}
+
+function loadData(){
+  try{
+    const saved=localStorage.getItem(STORAGE_KEY);
+    data=saved?JSON.parse(saved):{};
+  }catch(e){data={};}
+  ensureYear(2026,3);
+}
+function saveData(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  const el=document.getElementById('saveIndicator');
+  el.textContent='✓ Uloženo';setTimeout(()=>{el.textContent='';},2000);
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='kelvion_kolinka_2026_backup.json';a.click();
+  localStorage.setItem('kelvion_kolinka_lastBackup', new Date().toISOString());
+  showToast('Záloha stažena. Ulož ji na iCloud/Drive.');
+  render();
+}
+function importClick(){document.getElementById('importFile').click();}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{try{data=JSON.parse(ev.target.result);saveData();buildNav();render();showToast('Importováno!');}catch(err){alert('Chyba: '+err.message);}};
+  reader.readAsText(file);
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── HELPERS ──
+function fmt(n){return Math.round(n||0).toLocaleString('cs-CZ')+' Kč';}
+function fmtD(n){return(+n||0).toLocaleString('cs-CZ',{minimumFractionDigits:0,maximumFractionDigits:2});}
+function fmtH(n){n=parseFloat(n)||0;return n%1===0?n:n.toFixed(1);}
+function parseDate(s){const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function dateStr(y,m,d){return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
+function daysInMonth(y,m){return new Date(y,m,0).getDate();}
+function dowOfDate(s){return parseDate(s).getDay();}
+function dowName(s){return DOW_CS[dowOfDate(s)];}
+function isWeekend(s){const d=dowOfDate(s);return d===0||d===6;}
+function getMatEur(cislo){const e=CENIK[String(cislo)];return e?e.mat:0;}
+function getKolEur(cislo){const e=CENIK[String(cislo)];return e?e.kol:0;}
+
+function calcTotals(y,m){
+  const md=getMonth(y,m);
+  let totalH=0,totalMzdy=0;
+  (md.workers||[]).forEach(w=>{
+    const h=(w.days||[]).reduce((s,d)=>s+(parseFloat(d)||0),0);
+    totalH+=h;totalMzdy+=h*(parseFloat(w.sazba)||0)+(parseFloat(w.bonus)||0);
+  });
+  const elec=(md.elCena||5.45)*(md.elKwh||0);
+  const fakturace=(md.faktury||[]).reduce((s,f)=>s+(parseFloat(f.castka)||0),0);
+  const kurz=md.lastKurz||24.5;
+  let mTr=0,mNa=0;
+  (md.material||[]).forEach(mat=>{
+    mTr+=(parseFloat(mat.mnozstvi)||0)*(parseFloat(mat.cenaKs)||0);
+    mNa+=(parseFloat(mat.mnozstvi)||0)*getMatEur(mat.cislo)*kurz;
+  });
+  const matVydel=mTr-mNa;
+  const naklady=totalMzdy+elec;
+  const zisk=fakturace-naklady;
+  return{totalH,totalMzdy,elec,fakturace,mTr,mNa,matVydel,naklady,zisk};
+}
+
+// ── YEAR/NAV ──
+function buildNav(){
+  const nav=document.getElementById('monthNav');nav.innerHTML='';
+  const startM=3;
+  for(let m=startM;m<=12;m++){
+    const md=getMonth(currentYear,m);
+    const hasData=md.workers.some(w=>w.days.some(d=>parseFloat(d)>0))||md.faktury.length>0||md.material.length>0;
+    const btn=document.createElement('button');
+    btn.className='month-btn'+(m===currentMonth?' active':'')+(hasData?' has-data':'');
+    btn.textContent=SHORT[m-1];btn.title=MONTH_NAMES[m-1];
+    btn.onclick=()=>{currentMonth=m;buildNav();render();};
+    nav.appendChild(btn);
+  }
+}
+
+// ── CALENDAR ──
+function renderCalendar(y,m,wid,wi){
+  const dim=daysInMonth(y,m);
+  const firstDow=parseDate(dateStr(y,m,1)).getDay();
+  const offset=(firstDow+6)%7;
+  const md=getMonth(y,m);
+  const w=md.workers.find(x=>x.id===wid)||{days:[]};
+  const colorRaw=WCOLORS_RAW[wi%WCOLORS_RAW.length];
+  // Build day → hours map from array (index-based)
+  const workedMap={};
+  for(let d=1;d<=dim;d++){
+    const idx=d-1;
+    const h=w.days[idx];
+    if(h!==undefined&&h!==''&&parseFloat(h)>0) workedMap[dateStr(y,m,d)]=parseFloat(h);
+  }
+  let html=`<div class="cal-container">
+    <div class="cal-header">
+      <span class="cal-title">📅 Klikněte na den</span>
+      <div class="cal-hours-input"><label style="margin:0">Hod:</label>
+        <input type="number" id="calH_${wi}" value="8" step="0.5" min="0.5" max="24">
+      </div>
+    </div>
+    <div class="cal-grid">`;
+  ['Po','Út','St','Čt','Pá','So','Ne'].forEach((d,i)=>{
+    html+=`<div class="cal-dow-label${i>=5?' we':''}">${d}</div>`;
+  });
+  for(let i=0;i<offset;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=dateStr(y,m,d);
+    const dow=parseDate(ds).getDay();
+    const we=dow===0||dow===6;
+    const worked=workedMap[ds]!==undefined;
+    const cls='cal-cell '+(we?'weekend':'normal')+(worked?' worked':'');
+    const sty=worked?`border-color:${colorRaw};color:${colorRaw};background:${colorRaw}18`:'';
+    html+=`<div class="${cls}" style="${sty}" onclick="toggleDay('${y}','${m}','${wid}',${d-1},${wi},'${ds}')" title="${ds}">
+      <span class="cal-num">${d}</span>
+      ${worked?`<span class="cal-h">${fmtH(workedMap[ds])}h</span>`:''}
+    </div>`;
+  }
+  html+=`</div></div>`;
+  return html;
+}
+
+// ── WORKER CARD ──
+function renderWorkerCard(y,m,w,wi){
+  const md=getMonth(y,m);
+  const workerCount=md.workers.length;
+  const dim=daysInMonth(y,m);
+  const h=(w.days||[]).reduce((s,d)=>s+(parseFloat(d)||0),0);
+  const cost=h*(w.sazba||0);
+  const color=WCOLORS[wi%WCOLORS.length];
+  const colorRaw=WCOLORS_RAW[wi%WCOLORS_RAW.length];
+  // days list — only worked days
+  let daysList='';
+  for(let d=1;d<=dim;d++){
+    const idx=d-1;
+    const hours=w.days[idx];
+    if(hours===undefined||hours===''||parseFloat(hours)<=0) continue;
+    const ds=dateStr(y,m,d);
+    const dow=dowName(ds);
+    const we=isWeekend(ds);
+    const dp=`${d}.${m}.`;
+    daysList+=`<div class="day-row">
+      <span class="day-dow ${we?'we-text':''}">${dow}</span>
+      <span class="day-date ${we?'we-text':''}">${dp}</span>
+      <span class="day-hours-val">
+        <input type="number" value="${parseFloat(hours)}" step="0.5" min="0.5" max="24"
+          data-wi="${wi}"
+          onchange="updateDayHours('${y}','${m}','${w.id}',${idx},this.value)"
+          onkeydown="dayKeyDown(event,'${y}','${m}','${w.id}',${idx},${wi})"> h
+      </span>
+      <button class="day-del" onclick="removeDay('${y}','${m}','${w.id}',${idx})">✕</button>
+    </div>`;
+  }
+  return `<div class="worker-card">
+    <div class="worker-header">
+      <div class="worker-color-bar" style="background:${color}"></div>
+      <div class="worker-info">
+        <input class="worker-name-input" value="${w.name}" onblur="updateWorkerField('${y}','${m}','${w.id}','name',this.value)">
+      </div>
+      <div class="worker-total" style="color:${color}">${fmtH(h)} h</div>
+      ${workerCount>6?`<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="delWorker('${y}','${m}','${w.id}')">✕</button>`:''}
+    </div>
+    <div class="worker-meta">
+      <div class="worker-meta-item"><div class="lbl">Dní</div><div class="val">${w.days.filter(d=>parseFloat(d)>0).length}</div></div>
+      <div class="worker-meta-item"><div class="lbl">Sazba</div><div class="val">${w.sazba} Kč/h</div></div>
+      <div class="worker-meta-item"><div class="lbl">Náklad</div><div class="val">${cost?fmt(cost):'—'}</div></div>
+      ${(w.bonus>0)?`<div class="worker-meta-item"><div class="lbl" style="color:var(--accent4)">Bonus</div><div class="val" style="color:var(--accent4)">+${parseFloat(w.bonus).toLocaleString('cs-CZ')} Kč</div></div>`:''}
+    </div>
+    <div class="worker-rate-row">
+      <div class="field-group"><label>Hodinová sazba (Kč/h)</label>
+        <input type="number" value="${w.sazba}" style="width:120px" onblur="updateWorkerField('${y}','${m}','${w.id}','sazba',this.value)">
+      </div>
+      <div class="field-group"><label>🎁 Jednorázový bonus (Kč)</label>
+        <input type="number" value="${w.bonus||''}" placeholder="0" style="width:130px;border-color:var(--accent4)" oninput="updateWorkerField('${y}','${m}','${w.id}','bonus',this.value)">
+      </div>
+    </div>
+    ${renderCalendar(y,m,w.id,wi)}
+    <div class="days-wrap"><div class="days-list">
+      ${daysList||'<div class="days-empty">Žádné dny. Klikněte v kalendáři.</div>'}
+    </div></div>
+  </div>`;
+}
+
+// ── INVOICE RENDER ──
+function renderFaktury(y,m){
+  const md=getMonth(y,m);
+  const rows=(md.faktury||[]).map((f,i)=>`<tr>
+    <td><input type="text" value="${f.datum||''}" placeholder="dd.mm.yyyy" onblur="updF('${y}','${m}',${i},'datum',this.value)"></td>
+    <td><input type="text" value="${f.cislo||''}" placeholder="číslo" onblur="updF('${y}','${m}',${i},'cislo',this.value)"></td>
+    <td style="text-align:right"><input type="number" value="${f.castka||''}" step="0.01" style="text-align:right;color:var(--accent2)" onblur="updF('${y}','${m}',${i},'castka',this.value)"></td>
+    <td style="width:32px;text-align:center"><button class="btn btn-danger btn-sm" onclick="delF('${y}','${m}',${i})">✕</button></td>
+  </tr>`).join('');
+  const total=(md.faktury||[]).reduce((s,f)=>s+(parseFloat(f.castka)||0),0);
+  return `<table class="ft-table">
+    <thead><tr><th>Datum</th><th>Číslo faktury</th><th class="r">Kč bez DPH</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="addF('${y}','${m}')">+ Přidat ručně</button>
+  <div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+    <span style="font-size:0.78rem;color:var(--muted)">Celkem fakturováno</span>
+    <span style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent2)">${fmt(total)}</span>
+  </div>`;
+}
+
+// ── MATERIAL RENDER ──
+function renderMaterial(y,m){
+  const md=getMonth(y,m);
+  const kurz=md.lastKurz||24.5;
+  const rows=(md.material||[]).map((mat,i)=>{
+    const cenaCel=(parseFloat(mat.mnozstvi)||0)*(parseFloat(mat.cenaKs)||0);
+    const matEur=getMatEur(mat.cislo);
+    const matCzk=matEur*kurz;
+    const matCelCzk=(parseFloat(mat.mnozstvi)||0)*matCzk;
+    const vydel=cenaCel-matCelCzk;
+    const autoKol=getKolEur(mat.cislo);
+    return `<tr>
+      <td><input type="text" value="${mat.cislo||''}" placeholder="SAP číslo" style="width:120px" onchange="updM('${y}','${m}',${i},'cislo',this.value)"></td>
+      <td><input type="number" value="${mat.mnozstvi||''}" placeholder="0" step="1" style="width:65px" onblur="updM('${y}','${m}',${i},'mnozstvi',this.value)"></td>
+      <td><input type="number" value="${mat.cenaKs||''}" placeholder="0.00" step="0.01" style="width:85px;color:${autoKol>0?'var(--accent)':'var(--text)'}" onblur="updM('${y}','${m}',${i},'cenaKs',this.value)"></td>
+      <td style="color:var(--accent4)">${fmtD(cenaCel)}</td>
+      <td style="color:var(--muted);font-size:0.78rem">${matEur>0?fmtD(matEur)+' €<span class="auto-tag">✓</span>':'–'}</td>
+      <td style="color:var(--accent3)">${matEur>0?fmtD(matCelCzk):'–'}</td>
+      <td style="color:${vydel<0?'var(--accent3)':'var(--accent2)'}">${fmtD(vydel)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="delM('${y}','${m}',${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+  let mTr=0,mNa=0;
+  (md.material||[]).forEach(mat=>{
+    mTr+=(parseFloat(mat.mnozstvi)||0)*(parseFloat(mat.cenaKs)||0);
+    mNa+=(parseFloat(mat.mnozstvi)||0)*getMatEur(mat.cislo)*kurz;
+  });
+  const mV=mTr-mNa;
+  return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+    <div class="field-group"><label>Kurz EUR/Kč</label>
+      <input type="number" value="${kurz}" step="0.01" style="width:100px" onblur="updKurz('${y}','${m}',this.value)">
+    </div>
+    <button class="btn btn-ghost btn-sm" style="align-self:flex-end" onclick="document.getElementById('pdfInput').click()">📄 Nahrát fakturu (AI)</button>
+    <input type="file" id="pdfInput" accept="application/pdf,image/*" style="display:none" onchange="handlePdf(this,'${y}','${m}')">
+    <span style="font-size:0.75rem;color:var(--muted);align-self:flex-end">Automaticky vyplní položky z faktury</span>
+  </div>
+  <table class="mt-table">
+    <thead><tr><th>Číslo výrobku</th><th>Množ.</th><th>Cena/ks Kč</th><th>Cena cel.</th><th>Mat. EUR/ks</th><th>Mat. Kč</th><th>Výdělek</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="addM('${y}','${m}')">+ Přidat položku</button>
+  <div style="display:flex;gap:24px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap">
+    <div style="text-align:right"><div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">Tržby celkem</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent4)">${fmt(mTr)}</div></div>
+    <div style="text-align:right"><div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">Náklad mat.</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent3)">${fmt(mNa)}</div></div>
+    <div style="text-align:right"><div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px">Výdělek celkem</div><div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent2)">${fmt(mV)}</div></div>
+  </div>`;
+}
+
+// ── MAIN RENDER ──
+function render(){
+  const y=currentYear;const m=currentMonth;
+  const md=getMonth(y,m);
+  const t=calcTotals(y,m);
+
+  let html=`<div class="summary-cards">
+    <div class="card"><div class="card-label">Celkem hodin</div><div class="card-value" id="sc_h">${fmtH(t.totalH)}</div><div class="card-sub">odpracovaných</div></div>
+    <div class="card c2"><div class="card-label">Mzdový náklad</div><div class="card-value" id="sc_m">${fmt(t.totalMzdy)}</div><div class="card-sub">pracovníci</div></div>
+    <div class="card c3"><div class="card-label">Elektřina</div><div class="card-value" id="sc_e">${fmt(t.elec)}</div><div class="card-sub">hala Kelvion</div></div>
+    <div class="card c4"><div class="card-label">Fakturace</div><div class="card-value" id="sc_f">${fmt(t.fakturace)}</div><div class="card-sub">příjem</div></div>
+    <div class="card c5"><div class="card-label">Výdělek materiál</div><div class="card-value" id="sc_mv">${fmt(t.matVydel)}</div><div class="card-sub">tržby − náklad mat.</div></div>
+    <div class="card c6" style="border-left-color:${t.zisk>=0?'var(--accent2)':'var(--accent3)'}"><div class="card-label">Čistý zisk</div><div class="card-value" id="sc_z" style="color:${t.zisk>=0?'var(--accent2)':'var(--accent3)'}">${fmt(t.zisk)}</div><div class="card-sub">Fakturace − (mzdy + el.)</div></div>
+  </div>`;
+
+  // Backup panel
+  const lastBackupRaw=localStorage.getItem('kelvion_kolinka_lastBackup');
+  const lastBackup=lastBackupRaw?new Date(lastBackupRaw):null;
+  const daysSince=lastBackup?Math.floor((Date.now()-lastBackup.getTime())/86400000):null;
+  const backupMsg=!lastBackup?'<span class="backup-warn">Zatím nemáš uloženou žádnou zálohu JSON.</span>':(daysSince>14?'<span class="backup-warn">Poslední záloha před '+daysSince+' dny.</span>':'Poslední záloha: '+lastBackup.toLocaleDateString('cs-CZ'));
+  html+=`<div class="backup-panel">
+    <div style="flex:1">
+      <div class="backup-title">💾 Bezpečnost dat — záloha JSON</div>
+      <div class="backup-text">${backupMsg}</div>
+      <div style="margin-top:6px;font-size:.82rem;color:var(--accent4);font-weight:600;">⚠ Po každém větším doplnění dat si stáhni JSON zálohu. Data jsou uložena jen v tomto prohlížeči.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-success" onclick="exportData()">💾 Stáhnout zálohu</button>
+      <button class="btn btn-ghost btn-sm" onclick="importClick()">⬆ Obnovit zálohu</button>
+    </div>
+  </div>`;
+
+  // Poznámky
+  const noteLen=(md.note||'').trim().length;
+  html+=`<div class="notes-box">
+    <div class="notes-box-header">
+      <span style="font-size:1.1rem">📝</span>
+      <span class="notes-box-title">Poznámky k měsíci ${MONTH_NAMES[m-1]} ${y}</span>
+      ${noteLen>0?`<span class="notes-box-count">${noteLen} znaků</span>`:''}
+      <span class="notes-saved" id="note_saved_${y}_${m}">✓ Uloženo</span>
+    </div>
+    <textarea class="notes-textarea" placeholder="Sem piš poznámky k tomuto měsíci – výpadky strojů, problémy, důležité události…"
+      oninput="setNote('${y}','${m}',this.value)">${md.note||''}</textarea>
+  </div>`;
+
+  // Workers
+  html+=`<div class="section">
+    <div class="section-head">
+      <div class="section-title">👷 Pracovníci – ${MONTH_NAMES[m-1]} ${y}</div>
+      <button class="btn btn-primary btn-sm" onclick="showWorkerModal()">+ Přidat pracovníka</button>
+    </div>
+    <div class="section-body">
+      <div class="workers-grid">
+        ${md.workers.map((w,wi)=>renderWorkerCard(y,m,w,wi)).join('')}
+      </div>
+    </div>
+  </div>`;
+
+  // Elektrina
+  const elec=(md.elCena||5.45)*(md.elKwh||0);
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">⚡ Elektřina hala Kelvion</div></div>
+    <div class="section-body">
+      <div class="elec-row">
+        <div class="field-group"><label>Cena za kWh (Kč)</label>
+          <input type="number" step="0.01" value="${md.elCena||5.45}" style="width:110px"
+            onchange="updElec('${y}','${m}','elCena',this.value)" onblur="updElec('${y}','${m}','elCena',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">×</div>
+        <div class="field-group"><label>Počet kWh</label>
+          <input type="number" step="1" value="${md.elKwh||''}" placeholder="0" style="width:130px"
+            onchange="updElec('${y}','${m}','elKwh',this.value)" onblur="updElec('${y}','${m}','elKwh',this.value)"></div>
+        <div style="font-size:1.4rem;color:var(--muted);align-self:flex-end;padding-bottom:6px">=</div>
+        <div style="align-self:flex-end;padding-bottom:6px">
+          <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px">Náklad</div>
+          <div id="elec_result" style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent4)">${elec?fmt(elec):'— Kč'}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Faktury
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">🧾 Faktury</div></div>
+    <div class="section-body" id="faktury_section">${renderFaktury(y,m)}</div>
+  </div>`;
+
+  // Material
+  html+=`<div class="section">
+    <div class="section-head"><div class="section-title">📦 Materiál</div></div>
+    <div class="section-body" id="material_section">${renderMaterial(y,m)}</div>
+  </div>`;
+
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+// ── ACTIONS ──
+function updateSummaryCards(){
+  const t=calcTotals(currentYear,currentMonth);
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  set('sc_h',fmtH(t.totalH));
+  set('sc_m',fmt(t.totalMzdy));
+  set('sc_e',fmt(t.elec));
+  set('sc_f',fmt(t.fakturace));
+  set('sc_mv',fmt(t.matVydel));
+  const zEl=document.getElementById('sc_z');
+  if(zEl){zEl.textContent=fmt(t.zisk);zEl.style.color=t.zisk>=0?'var(--accent2)':'var(--accent3)';}
+}
+
+function toggleDay(y,m,wid,idx,wi,ds){
+  const md=getMonth(y,m);
+  const w=md.workers.find(x=>x.id===wid);if(!w)return;
+  const h=w.days[idx];
+  if(h!==undefined&&h!==''&&parseFloat(h)>0){
+    w.days[idx]='';
+    saveData();render();
+    showToast('Odstraněno: '+ds.slice(8)+'.'+ds.slice(5,7)+'.');
+  } else {
+    const hoursEl=document.getElementById('calH_'+wi);
+    const hours=parseFloat(hoursEl?hoursEl.value:8)||8;
+    w.days[idx]=hours;
+    saveData();render();
+    showToast('Přidáno: '+ds.slice(8)+'.'+ds.slice(5,7)+'. – '+hours+'h');
+  }
+}
+function removeDay(y,m,wid,idx){
+  const w=getMonth(y,m).workers.find(x=>x.id===wid);if(!w)return;
+  w.days[idx]='';saveData();render();
+}
+function updateDayHours(y,m,wid,idx,val){
+  const w=getMonth(y,m).workers.find(x=>x.id===wid);if(!w)return;
+  w.days[idx]=parseFloat(val)||0;saveData();updateSummaryCards();
+}
+function dayKeyDown(e,y,m,wid,idx,wi){
+  if(e.key!=='Enter')return;e.preventDefault();
+  updateDayHours(y,m,wid,idx,e.target.value);
+  const all=Array.from(document.querySelectorAll(`input[data-wi="${wi}"]`));
+  const next=all[all.indexOf(e.target)+1];
+  if(next){next.focus();next.select();}
+}
+function setNote(y,m,val){const md=getMonth(y,m);md.note=val;saveData();const el=document.getElementById('note_saved_'+y+'_'+m);if(el){el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2000);}}
+function updateWorkerField(y,m,wid,field,val){
+  const w=getMonth(y,m).workers.find(x=>x.id===wid);if(!w)return;
+  w[field]=field==='sazba'?parseFloat(val)||0:val;
+  saveData();updateSummaryCards();
+}
+function delWorker(y,m,wid){
+  if(!confirm('Smazat pracovníka?'))return;
+  const md=getMonth(y,m);
+  md.workers=md.workers.filter(w=>w.id!==wid);
+  saveData();render();
+}
+
+function showWorkerModal(){
+  document.getElementById('addWorkerModal').classList.add('open');
+  document.getElementById('newWorkerName').value='';
+  document.getElementById('newWorkerRate').value='270';
+  document.getElementById('newWorkerName').focus();
+}
+function closeWorkerModal(){document.getElementById('addWorkerModal').classList.remove('open');}
+function confirmAddWorker(){
+  const name=document.getElementById('newWorkerName').value.trim();
+  const sazba=parseFloat(document.getElementById('newWorkerRate').value)||270;
+  if(!name){document.getElementById('newWorkerName').focus();return;}
+  getMonth(currentYear,currentMonth).workers.push({id:uid(),name,sazba,days:[]});
+  saveData();closeWorkerModal();render();showToast('Přidán: '+name);
+}
+
+function updElec(y,m,field,val){
+  const md=getMonth(y,m);md[field]=parseFloat(val)||0;
+  saveData();
+  const elec=md.elCena*md.elKwh;
+  const el=document.getElementById('elec_result');if(el)el.textContent=elec?fmt(elec):'— Kč';
+  updateSummaryCards();
+}
+
+function addF(y,m){getMonth(y,m).faktury.push({datum:'',cislo:'',castka:''});saveData();document.getElementById('faktury_section').innerHTML=renderFaktury(y,m);updateSummaryCards();}
+function delF(y,m,i){getMonth(y,m).faktury.splice(i,1);saveData();document.getElementById('faktury_section').innerHTML=renderFaktury(y,m);updateSummaryCards();}
+function updF(y,m,i,k,val){const md=getMonth(y,m);md.faktury[i][k]=k==='castka'?parseFloat(val)||0:val;saveData();document.getElementById('faktury_section').innerHTML=renderFaktury(y,m);updateSummaryCards();}
+
+function addM(y,m){getMonth(y,m).material.push({cislo:'',mnozstvi:'',cenaKs:''});saveData();document.getElementById('material_section').innerHTML=renderMaterial(y,m);updateSummaryCards();}
+function delM(y,m,i){getMonth(y,m).material.splice(i,1);saveData();document.getElementById('material_section').innerHTML=renderMaterial(y,m);updateSummaryCards();}
+function updM(y,m,i,k,val){
+  const md=getMonth(y,m);
+  md.material[i][k]=['mnozstvi','cenaKs'].includes(k)?parseFloat(val)||0:val;
+  if(k==='cislo'){
+    const kolEur=getKolEur(val);
+    if(kolEur>0) md.material[i].cenaKs=Math.round(kolEur*(md.lastKurz||24.5)*100)/100;
+  }
+  saveData();document.getElementById('material_section').innerHTML=renderMaterial(y,m);updateSummaryCards();
+}
+function updKurz(y,m,val){getMonth(y,m).lastKurz=parseFloat(val)||24.5;saveData();document.getElementById('material_section').innerHTML=renderMaterial(y,m);updateSummaryCards();}
+
+// ── AI PDF ──
+function toB64(file){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=()=>r(rd.result.split(',')[1]);rd.onerror=()=>j(new Error('Nelze načíst'));rd.readAsDataURL(file);});}
+
+function showProc(txt, spin=true){
+  const box=document.getElementById('procBox');
+  box.innerHTML=`<div class="proc-title">ZPRACOVÁNÍ</div><div class="proc-sub">FAKTURA PDF</div>${spin?'<div class="proc-spin">⚙</div>':''}<div style="font-size:0.85rem;color:var(--muted)">${txt}</div>`;
+  document.getElementById('procOverlay').classList.add('open');
+}
+function hideProc(){document.getElementById('procOverlay').classList.remove('open');}
+function showProcSuccess(p,md){
+  const kurz=md.lastKurz||24.5;
+  const items=(p.polozky||[]).map(i=>{
+    const matEur=getMatEur(String(i.cislo));
+    const tag=matEur>0?`<span style="color:var(--accent2);font-size:0.72rem"> ✓ mat: ${matEur.toFixed(4)} EUR</span>`:`<span style="color:var(--muted);font-size:0.72rem"> (neznámé)</span>`;
+    return `<div class="proc-item"><span class="proc-item-l">${i.cislo} · ${i.mnozstvi} ks</span><span class="proc-item-v">${(i.cena_ks_czk||0).toLocaleString('cs-CZ')} Kč/ks${tag}</span></div>`;
+  }).join('');
+  const box=document.getElementById('procBox');
+  box.innerHTML=`<div class="proc-title" style="color:var(--accent2)">✓ HOTOVO</div>
+    <div class="proc-sub" style="margin-bottom:14px">FAKTURA PŘIDÁNA</div>
+    <div class="proc-item"><span class="proc-item-l">Datum</span><span class="proc-item-v">${p.datum||'–'}</span></div>
+    <div class="proc-item"><span class="proc-item-l">Číslo faktury</span><span class="proc-item-v">${p.cislo_faktury||'–'}</span></div>
+    <div class="proc-item"><span class="proc-item-l">Částka bez DPH</span><span class="proc-item-v">${(p.castka_czk_bez_dph||0).toLocaleString('cs-CZ')} Kč</span></div>
+    <div class="proc-item"><span class="proc-item-l">Kurz EUR/Kč</span><span class="proc-item-v">${kurz}</span></div>
+    ${items?'<div style="margin-top:10px;font-size:0.72rem;color:var(--muted);text-align:left;margin-bottom:6px;letter-spacing:1px">MATERIÁL</div>'+items:''}
+    <button class="btn btn-primary" style="margin-top:18px;width:100%" onclick="hideProc()">Zavřít</button>`;
+}
+
+async function handlePdf(input,y,m){
+  const file=input.files[0];if(!file)return;input.value='';
+  showProc('Čtu fakturu pomocí AI...');
+  try{
+    const b64=await toB64(file);
+    const isImg=file.type.startsWith('image/');
+    const body={model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:[
+      isImg?{type:'image',source:{type:'base64',media_type:file.type,data:b64}}:{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+      {type:'text',text:`Z faktury vytáhni data, vrať POUZE čistý JSON bez markdown:\n{"datum":"DD.MM.YYYY","cislo_faktury":"číslo","castka_czk_bez_dph":číslo,"kurz":číslo,"polozky":[{"cislo":"9-12místné SAP číslo výrobku","mnozstvi":číslo,"cena_eur":číslo,"cena_ks_czk":číslo}]}\ncastka_czk_bez_dph = základ DPH v Kč z rekapitulace. kurz = použitý kurz EUR/Kč z faktury. cena_ks_czk = jednotková cena v EUR × kurz. Vrať POUZE JSON, nic jiného.`}
+    ]}]};
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.error)throw new Error(d.error.message);
+    const txt=d.content?.find(b=>b.type==='text')?.text||'';
+    const p=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const md=getMonth(y,m);
+    md.faktury.push({datum:p.datum||'',cislo:p.cislo_faktury||'',castka:p.castka_czk_bez_dph||0});
+    if(p.kurz) md.lastKurz=p.kurz;
+    (p.polozky||[]).forEach(item=>md.material.push({cislo:item.cislo||'',mnozstvi:item.mnozstvi||0,cenaKs:item.cena_ks_czk||0}));
+    saveData();
+    document.getElementById('faktury_section').innerHTML=renderFaktury(y,m);
+    document.getElementById('material_section').innerHTML=renderMaterial(y,m);
+    updateSummaryCards();
+    showProcSuccess(p,md);
+  }catch(e){hideProc();alert('Chyba při zpracování: '+e.message);}
+}
+
+function showData(){
+  document.getElementById('ybtnChart').className='year-btn';
+  document.getElementById('ybtnData').className='year-btn active';
+  document.getElementById('monthNav').style.display='';
+  buildNav();render();
+}
+
+function showChart(){
+  document.getElementById('ybtnChart').className='year-btn active';
+  document.getElementById('ybtnData').className='year-btn';
+  document.getElementById('monthNav').style.display='none';
+  renderChart();
+}
+
+function renderChart(){
+  const MONTH_SHORT=['Led','Úno','Bře','Dub','Kvě','Čvn','Čvc','Srp','Zář','Říj','Lis','Pro'];
+  const months=[];
+  for(let m=3;m<=12;m++){
+    const md=getMonth(2026,m);
+    const t=calcTotals(2026,m);
+    months.push({m, label:MONTH_SHORT[m-1], hours:t.totalH, mzdy:t.totalMzdy, elec:t.elec,
+      fakturace:t.fakturace, matVydel:t.matVydel, zisk:t.zisk});
+  }
+  const tot=months.reduce((a,m)=>({
+    fakturace:a.fakturace+m.fakturace, zisk:a.zisk+m.zisk,
+    hours:a.hours+m.hours, mzdy:a.mzdy+m.mzdy, elec:a.elec+m.elec, matVydel:a.matVydel+m.matVydel
+  }),{fakturace:0,zisk:0,hours:0,mzdy:0,elec:0,matVydel:0});
+
+  function fmtK(n){return Math.abs(n)>=1000?(n/1000).toFixed(0)+'k':Math.round(n).toString();}
+  function fmtKc(n){return Math.round(n).toLocaleString('cs-CZ')+' Kč';}
+
+  function buildBarChart(months){
+    const BAR_W=16,GROUP_W=65,PAD_L=52,PAD_B=36,PAD_T=20,H=240;
+    const vals=months.flatMap(m=>[m.fakturace,m.mzdy+m.elec,Math.abs(m.zisk)]);
+    const maxVal=Math.max(...vals,1);
+    const minVal=Math.min(...months.map(m=>m.zisk),0);
+    const range=maxVal-minVal||1;
+    const totalW=PAD_L+months.length*GROUP_W+10;
+    const toY=v=>H-PAD_B-((v-minVal)/range)*(H-PAD_T-PAD_B);
+    let svg=`<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    for(let i=0;i<=4;i++){
+      const v=minVal+(range*i/4);
+      const y=toY(v);
+      svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg+=`<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    }
+    if(minVal<0){
+      const y0=toY(0);
+      svg+=`<line x1="${PAD_L-8}" y1="${y0}" x2="${totalW-10}" y2="${y0}" stroke="var(--muted)" stroke-width="1.5"/>`;
+    }
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*GROUP_W;
+      const bars=[
+        {v:mo.fakturace,   color:'#4f7fff'},
+        {v:mo.mzdy+mo.elec,color:'#ff6b6b'},
+        {v:mo.zisk,        color:mo.zisk>=0?'#00d4aa':'#ff3333'},
+      ];
+      bars.forEach((b,bi)=>{
+        const bx=x+bi*(BAR_W+2)+4;
+        const y0=toY(0);
+        const bh=Math.abs(b.v)/range*(H-PAD_T-PAD_B);
+        const by=b.v>=0?toY(b.v):y0;
+        svg+=`<rect x="${bx}" y="${by}" width="${BAR_W}" height="${Math.max(bh,1)}" fill="${b.color}" rx="2" opacity="0.85"/>`;
+        if(bh>12) svg+=`<text x="${bx+BAR_W/2}" y="${b.v>=0?by-3:by+bh+10}" text-anchor="middle" class="bar-value" fill="${b.color}">${fmtK(b.v)}</text>`;
+      });
+      svg+=`<text x="${x+GROUP_W/2-4}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    return svg;
+  }
+
+  function buildLineChart(months){
+    const PAD_L=52,PAD_B=36,PAD_T=24,H=200;
+    const vals=months.map(m=>m.zisk);
+    const minV=Math.min(...vals,0);
+    const maxV=Math.max(...vals,1);
+    const range=maxV-minV||1;
+    const totalW=PAD_L+months.length*65+10;
+    const toY=v=>H-PAD_B-((v-minV)/range)*(H-PAD_T-PAD_B);
+    let svg=`<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    for(let i=0;i<=4;i++){
+      const v=minV+range*i/4;
+      const y=toY(v);
+      svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg+=`<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    }
+    if(minV<0){
+      svg+=`<line x1="${PAD_L-8}" y1="${toY(0)}" x2="${totalW-10}" y2="${toY(0)}" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    }
+    const pts=months.map((mo,i)=>`${PAD_L+i*65+32},${toY(mo.zisk)}`).join(' ');
+    svg+=`<polyline points="${pts}" fill="none" stroke="#00d4aa" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*65+32;const y=toY(mo.zisk);
+      svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#00d4aa" stroke="var(--bg)" stroke-width="1.5"/>`;
+      if(Math.abs(mo.zisk)>0) svg+=`<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="#00d4aa">${fmtK(mo.zisk)}</text>`;
+      svg+=`<text x="${x}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    return svg;
+  }
+
+  function buildHoursChart(months){
+    const PAD_L=52,PAD_B=36,PAD_T=20,H=160;
+    const maxV=Math.max(...months.map(m=>m.hours),1);
+    const totalW=PAD_L+months.length*65+10;
+    const toY=v=>H-PAD_B-(v/maxV)*(H-PAD_T-PAD_B);
+    let svg=`<svg class="chart-svg" viewBox="0 0 ${totalW} ${H}" style="height:${H}px">`;
+    [0,0.5,1].forEach(f=>{
+      const v=maxV*f;const y=toY(v);
+      svg+=`<line x1="${PAD_L-8}" y1="${y}" x2="${totalW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+      svg+=`<text x="${PAD_L-10}" y="${y+4}" text-anchor="end" class="bar-label">${fmtK(v)}</text>`;
+    });
+    const pts=months.map((mo,i)=>`${PAD_L+i*65+32},${toY(mo.hours)}`).join(' ');
+    svg+=`<polyline points="${pts}" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    months.forEach((mo,i)=>{
+      const x=PAD_L+i*65+32;const y=toY(mo.hours);
+      svg+=`<circle cx="${x}" cy="${y}" r="4" fill="#a855f7" stroke="var(--bg)" stroke-width="1.5"/>`;
+      if(mo.hours>0) svg+=`<text x="${x}" y="${y-8}" text-anchor="middle" class="bar-value" fill="#a855f7">${fmtK(mo.hours)}</text>`;
+      svg+=`<text x="${x}" y="${H-4}" text-anchor="middle" class="bar-label">${mo.label}</text>`;
+    });
+    svg+='</svg>';
+    return svg;
+  }
+
+  const hasData=months.some(m=>m.fakturace>0||m.hours>0);
+
+  let html=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+    <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--text)">📊 Finanční přehled</div>
+    <div style="font-size:0.78rem;color:var(--muted)">Kelvion – Kolínka 2026 (březen–prosinec)</div>
+  </div>`;
+
+  html+=`<div class="stats-grid">
+    <div class="stat-card"><div class="stat-card-label">Celková fakturace</div><div class="stat-card-value" style="color:#4f7fff">${fmtKc(tot.fakturace)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkový zisk</div><div class="stat-card-value" style="color:${tot.zisk>=0?'#00d4aa':'#ff6b6b'}">${fmtKc(tot.zisk)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Výdělek materiál</div><div class="stat-card-value" style="color:#f7c948">${fmtKc(tot.matVydel)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Celkem hodin</div><div class="stat-card-value" style="color:#a855f7">${fmtK(tot.hours)} h</div></div>
+    <div class="stat-card"><div class="stat-card-label">Mzdové náklady</div><div class="stat-card-value" style="color:#ff6b6b">${fmtKc(tot.mzdy)}</div></div>
+    <div class="stat-card"><div class="stat-card-label">Elektřina celkem</div><div class="stat-card-value" style="color:#f7c948">${fmtKc(tot.elec)}</div></div>
+  </div>`;
+
+  if(hasData){
+    html+=`<div class="chart-wrap">
+      <div class="chart-title">Příjmy, náklady a zisk po měsících — 2026</div>
+      ${buildBarChart(months)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4f7fff"></div>Fakturace</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>Náklady (mzdy + el.)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk</div>
+      </div>
+    </div>`;
+    html+=`<div class="chart-wrap">
+      <div class="chart-title">Čistý zisk po měsících — 2026</div>
+      ${buildLineChart(months)}
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4aa"></div>Čistý zisk = Fakturace − (Mzdy + Elektřina)</div>
+      </div>
+    </div>`;
+    html+=`<div class="chart-wrap">
+      <div class="chart-title">Odpracované hodiny po měsících — 2026</div>
+      ${buildHoursChart(months)}
+    </div>`;
+  } else {
+    html+=`<div style="text-align:center;padding:60px;color:var(--muted)">Zatím žádná data. Doplňte hodiny a fakturaci.</div>`;
+  }
+
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+loadData();buildNav();render();
+</script>
+</body>
+</html>
