@@ -176,6 +176,29 @@ label { font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 
 .year-btn:hover { border-color:var(--accent); color:var(--accent); }
 .year-btn.active { background:var(--accent); border-color:var(--accent); color:white; }
 
+.notes-box {
+  background: linear-gradient(135deg, rgba(247,201,72,.07), rgba(247,201,72,.03));
+  border: 1px solid rgba(247,201,72,.35);
+  border-left: 4px solid var(--accent4);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.notes-box-header { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.notes-box-title { font-family:'Syne',sans-serif; font-size:0.92rem; font-weight:700; color:var(--accent4); }
+.notes-box-count { font-size:0.72rem; color:var(--muted); font-family:'DM Mono',monospace; }
+.notes-textarea {
+  width:100%; min-height:90px; background:rgba(0,0,0,.25);
+  border:1px solid rgba(247,201,72,.2); border-radius:8px;
+  color:var(--text); padding:12px 14px; font-size:0.88rem;
+  font-family:'Inter',sans-serif; line-height:1.55; resize:vertical;
+  outline:none; transition:border .15s;
+}
+.notes-textarea:focus { border-color:var(--accent4); }
+.notes-textarea::placeholder { color:var(--muted); font-style:italic; }
+.notes-saved { font-size:0.72rem; color:var(--accent2); font-family:'DM Mono',monospace; opacity:0; transition:opacity .3s; margin-left:auto; }
+.notes-saved.show { opacity:1; }
+
 .backup-panel { background:linear-gradient(135deg, rgba(79,127,255,.12), rgba(0,212,170,.08)); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
 .backup-title { font-family:'Syne',sans-serif; font-weight:800; color:var(--text); margin-bottom:4px; }
 .backup-text { color:var(--muted); font-size:.86rem; }
@@ -271,7 +294,7 @@ function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
 function dateStr(y,m,d) { return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
 function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 function sumHours(w) { return (w&&w.days||[]).reduce((a,d)=>a+parseFloat(d[1]||0),0); }
-function workerCost(w) { return sumHours(w)*(w&&w.rate||0); }
+function workerCost(w) { return sumHours(w)*(w&&w.rate||0) + (parseFloat(w&&w.bonus)||0); }
 function totalMzdy(y,m) {
   const md = getMD(y,m);
   return getAllWorkers(y,m).reduce((s,w)=>s+workerCost(md.workers[w]),0);
@@ -445,10 +468,14 @@ function renderWorkerCard(y, m, name, wi) {
       <div class="worker-meta-item"><div class="lbl">Dní</div><div class="val">${w.days.length}</div></div>
       <div class="worker-meta-item"><div class="lbl">Sazba</div><div class="val">${w.rate} Kč/h</div></div>
       <div class="worker-meta-item"><div class="lbl">Náklad</div><div class="val">${cost?cost.toLocaleString('cs-CZ')+' Kč':'—'}</div></div>
+      ${(w.bonus>0)?`<div class="worker-meta-item"><div class="lbl" style="color:var(--accent4)">Bonus</div><div class="val" style="color:var(--accent4)">+${parseFloat(w.bonus).toLocaleString('cs-CZ')} Kč</div></div>`:''}
     </div>
     <div class="worker-rate-row">
       <div class="field-group"><label>Hodinová sazba (Kč/h)</label>
         <input type="number" value="${w.rate}" style="width:120px" oninput="setRate(${y},${m},'${name}',this.value)">
+      </div>
+      <div class="field-group"><label>🎁 Jednorázový bonus (Kč)</label>
+        <input type="number" value="${w.bonus||''}" placeholder="0" style="width:130px;border-color:var(--accent4)" oninput="setBonus(${y},${m},'${name}',this.value)">
       </div>
     </div>`;
 
@@ -645,6 +672,20 @@ function render() {
     </div>
   </div>`;
 
+  // ── POZNÁMKY ──
+  const noteVal = (md.note||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+  const noteLen = (md.note||'').trim().length;
+  html+=`<div class="notes-box">
+    <div class="notes-box-header">
+      <span style="font-size:1.1rem">📝</span>
+      <span class="notes-box-title">Poznámky k měsíci ${MONTH_NAMES[m-1]} ${y}</span>
+      ${noteLen>0?`<span class="notes-box-count">${noteLen} znaků</span>`:''}
+      <span class="notes-saved" id="note_saved_${y}_${m}">✓ Uloženo</span>
+    </div>
+    <textarea class="notes-textarea" placeholder="Sem piš poznámky k tomuto měsíci – výpadky strojů, problémy, důležité události…"
+      oninput="setNote(${y},${m},this.value)">${md.note||''}</textarea>
+  </div>`;
+
   html+=renderManagerCheck(y,m);
 
   // Backup panel with more prominent warning
@@ -742,7 +783,15 @@ function hoursKeyDown(e,y,m,name,ds,wi,idx) {
   if(next){next.focus();next.select();}
 }
 function setRate(y,m,name,val) { data[y][m].workers[name].rate=parseFloat(val)||0; saveData(); updateSummaryCards(); }
+function setBonus(y,m,name,val) { data[y][m].workers[name].bonus=parseFloat(val)||0; saveData(); updateSummaryCards(); }
 
+function setNote(y,m,val) {
+  if(!data[y][m]) return;
+  data[y][m].note = val;
+  saveData();
+  const el = document.getElementById(`note_saved_${y}_${m}`);
+  if(el){ el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2000); }
+}
 function setElecField(y,m,field,val) {
   data[y][m][field]=parseFloat(val)||0;
   saveData();
