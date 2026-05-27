@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Prehled</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--s:#181c27;--s2:#1e2334;--bd:#2a3050;--a:#4f7fff;--a2:#00d4aa;--a3:#ff6b6b;--a4:#f7c948;--tx:#e8eaf0;--mu:#6b7799;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
+header{background:var(--s);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+.logo span{color:var(--mu);}
+nav{display:flex;gap:4px;padding:10px 24px;background:var(--s);border-bottom:1px solid var(--bd);flex-wrap:wrap;}
+.tb,.stb{padding:6px 14px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--mu);cursor:pointer;font-size:0.8rem;font-weight:600;font-family:'Inter',sans-serif;}
+.tb:hover,.stb:hover{border-color:var(--a);color:var(--a);}
+.tb.on,.stb.on{background:var(--a);border-color:var(--a);color:white;}
+.ct{padding:20px 24px;max-width:1300px;margin:0 auto;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:20px;}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:10px;padding:15px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--a);}
+.card.c2::before{background:var(--a2);}
+.card.c3::before{background:var(--a3);}
+.card.c4::before{background:var(--a4);}
+.card.c5::before{background:#a855f7;}
+.cl{font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:6px;font-family:'DM Mono',monospace;}
+.cv{font-size:1.25rem;font-weight:700;font-family:'Syne',sans-serif;}
+.cs{font-size:0.68rem;color:var(--mu);margin-top:4px;}
+.sec{background:var(--s);border:1px solid var(--bd);border-radius:12px;margin-bottom:16px;overflow:hidden;}
+.sh{padding:12px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;background:var(--s2);}
+.st{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;}
+.sb{padding:18px;}
+.btn{padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:0.8rem;font-weight:600;font-family:'Inter',sans-serif;}
+.bp{background:var(--a);color:white;}
+.bg{background:transparent;border:1px solid var(--bd);color:var(--mu);}
+.bg:hover{border-color:var(--a);color:var(--a);}
+.bd2{background:transparent;border:1px solid #3a1a1a;color:var(--a3);}
+.bsm{padding:4px 9px;font-size:0.74rem;}
+input[type=text],input[type=number],input[type=date],select{background:var(--bg);border:1px solid var(--bd);border-radius:6px;color:var(--tx);padding:7px 11px;font-size:0.85rem;font-family:'Inter',sans-serif;outline:none;}
+input:focus,select:focus{border-color:var(--a);}
+label{font-size:0.74rem;color:var(--mu);display:block;margin-bottom:3px;}
+.fg{display:flex;flex-direction:column;gap:3px;}
+.tbl{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.tbl th{background:var(--s2);color:var(--mu);padding:8px 12px;text-align:left;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--bd);}
+.tbl th.r{text-align:right;}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--bd);}
+.tbl td.r{text-align:right;font-family:'DM Mono',monospace;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,0.015);}
+.dbtn{cursor:pointer;color:var(--a3);border:none;background:none;font-size:0.85rem;padding:2px 5px;opacity:0;}
+.tbl tr:hover .dbtn{opacity:1;}
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;}
+.mo.op{display:flex;}
+.mb{background:var(--s);border:1px solid var(--bd);border-radius:12px;padding:24px;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.mb h3{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:16px;}
+.mbt{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.ai{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:11px;}
+.ai label{font-size:0.68rem;color:var(--mu);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px;}
+.ai input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--bd);border-radius:0;padding:3px 0;font-family:'DM Mono',monospace;font-size:0.95rem;color:var(--tx);}
+.ai input:focus{border-bottom-color:var(--a);outline:none;}
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;}
+.nd{text-align:center;padding:36px;color:var(--mu);font-size:0.85rem;}
+.up{color:var(--a2);}
+.dn{color:var(--a3);}
+.backup-panel{background:linear-gradient(135deg,rgba(79,127,255,.12),rgba(0,212,170,.08));border:1px solid var(--bd);border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+.backup-warn{color:#f7c948;font-weight:700;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--a2);color:#0a1a15;padding:9px 16px;border-radius:8px;font-size:0.84rem;font-weight:600;transform:translateY(50px);opacity:0;transition:all 0.3s;z-index:999;}
+.toast.show{transform:translateY(0);opacity:1;}
+.app-frame{width:100%;border:none;border-radius:12px;background:transparent;display:block;}
+.zona{border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
+.zona-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:#0f1117;flex-shrink:0;text-align:center;}
+#chtip{position:fixed;pointer-events:none;background:#1e2334;border:1px solid #2a3050;color:#e8eaf0;padding:7px 13px;border-radius:8px;font-family:'DM Mono',monospace;font-size:0.78rem;white-space:nowrap;z-index:9999;opacity:0;transition:opacity 0.15s;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
+</style>
+</head>
+<body>
+<div id="chtip"></div>
+<header>
+  <div class="logo">Finance <span>/ Prehled</span></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span id="si" style="font-size:0.75rem;color:var(--a2);font-family:'DM Mono',monospace;"></span>
+    <button class="btn bg bsm" onclick="expD()">Export</button>
+    <button class="btn bg bsm" onclick="document.getElementById('impF').click()">Import</button>
+    <input type="file" id="impF" accept=".json" style="display:none" onchange="impD(event)">
+  </div>
+</header>
+<nav>
+  <button class="tb on" id="tb-cashflow" onclick="goTab('cashflow')">Cashflow</button>
+  <button class="tb" id="tb-prehled" onclick="goTab('prehled')">Prehled</button>
+  <button class="tb" id="tb-zadat" onclick="goTab('zadat')">Zadat tyden</button>
+  <button class="tb" id="tb-historie" onclick="goTab('historie')">Historie</button>
+  <button class="tb" id="tb-uvery" onclick="goTab('uvery')">Uvery a Leasingy</button>
+  <button class="tb" id="tb-rezie" onclick="goTab('rezie')">Rezie a Investice</button>
+  <button class="tb" id="tb-odmeny" onclick="goTab('odmeny')">Odmeny</button>
+  <button class="tb" id="tb-vyplaty" onclick="goTab('vyplaty')">Vyplaty</button>
+  <button class="tb" id="tb-osobni" onclick="goTab('osobni')">Osobni finance</button>
+  <button class="tb" id="tb-firemni" onclick="goTab('firemni')">Firemni finance</button>
+</nav>
+<div class="ct" id="ct"></div>
+<div class="toast" id="toast"></div>
+<script>
+var SK='finance_v3';
+var curTab='cashflow';
+var dat={};
+var editIdx=-1;
+var odmR=new Date().getFullYear();
+var odmM=new Date().getMonth();
+var vypR=new Date().getFullYear();
+var vypM=new Date().getMonth();
+var vypV='prehled';
+var cfTab='p';
+
+var UCTY=[
+  {key:'osobni',label:'Osobni ucet',sfx:'Kc',g:'osobni'},
+  {key:'sporici',label:'Sporici ucet',sfx:'Kc',g:'osobni'},
+  {key:'penzijni',label:'Penzijni sporeni',sfx:'Kc',g:'osobni'},
+  {key:'investicni',label:'Investicni ucet',sfx:'Kc',g:'investice'},
+  {key:'investicni2',label:'Vydel. investic',sfx:'Kc',g:'investice'},
+  {key:'holanek',label:'Holanek CNC',sfx:'Kc',g:'firemni'},
+  {key:'lakovna',label:'Prakova lakovna',sfx:'Kc',g:'firemni'},
+  {key:'kovovyroba',label:'Kovovyroba',sfx:'Kc',g:'firemni'},
+  {key:'zhplastform',label:'ZHPlastform',sfx:'Kc',g:'firemni'},
+  {key:'cizomenovy',label:'Cizomenovy EUR',sfx:'EUR',g:'firemni'}
+];
+var GRPS=[
+  {k:'osobni',l:'Osobni majetek',c:'#4f7fff',i:'Osobni'},
+  {k:'investice',l:'Investice',c:'#a855f7',i:'Invest.'},
+  {k:'firemni',l:'Firemni majetek',c:'#00d4aa',i:'Firemni'}
+];
+var FAKTIT=[
+  {k:'nezaplacene',l:'Nezaplacene faktury'},
+  {k:'po_splatnosti',l:'Po splatnosti'},
+  {k:'pokladna',l:'Pokladna'}
+];
+var EUR=25;
+var MNAM=['Leden','Unor','Brezen','Duben','Kveten','Cerven','Cervenec','Srpen','Zari','Rijen','Listopad','Prosinec'];
+var SKODM={'Vedeni':'#4f7fff','Vyroba':'#00d4aa','Kelvion':'#f7c948','Externi':'#a855f7','Lakovna':'#ff6b35','Administrativa':'#00bcd4','Rodice':'#ff9800'};
+var SKODML=['Vedeni','Vyroba','Kelvion','Externi','Administrativa','Rodice','Lakovna'];
+
+var DEF_LEASINGY=[
+  {id:'l1',nazev:'Crafter',uvery:0,poj:0,urok:0,den:1,aktiv:true},
+  {id:'l2',nazev:'Multivan',uvery:0,poj:0,urok:0,den:1,aktiv:true},
+  {id:'l3',nazev:'Obytnák',uvery:21519,poj:0,urok:2157,den:1,aktiv:true},
+  {id:'l4',nazev:'Iveco',uvery:14935,poj:0,urok:1926,den:1,aktiv:true},
+  {id:'l5',nazev:'Skoda',uvery:6196,poj:0,urok:1465,den:1,aktiv:true},
+  {id:'l6',nazev:'Peugeot',uvery:9023,poj:0,urok:1236,den:1,aktiv:true},
+  {id:'l7',nazev:'Porsche',uvery:32980,poj:4651,urok:9499,den:1,aktiv:true},
+  {id:'l8',nazev:'Laser',uvery:23224,poj:731,urok:4186,den:1,aktiv:true},
+  {id:'l9',nazev:'Ohranaci lis',uvery:18734,poj:731,urok:3805,den:1,aktiv:true},
+  {id:'l10',nazev:'Mazda',uvery:0,poj:1383,urok:0,den:1,aktiv:true},
+  {id:'l11',nazev:'Dacia',uvery:0,poj:778,urok:0,den:1,aktiv:true}
+];
+var DEF_UVERY=[
+  {id:'u1',nazev:'Stredisko',celkem:18000000,splatka:136745,zbyva:0,den:1,doplaceni:'2044-02-28',aktiv:true,mena:'CZK',urok_pct:null},
+  {id:'u2',nazev:'Mcely+lakovna',celkem:252469,splatka:3661,zbyva:173463,den:1,doplaceni:'2030-07-31',aktiv:true,mena:'CZK',urok_pct:null},
+  {id:'u3',nazev:'Hala D (EUR)',celkem:34000,splatka:2000,zbyva:18000,den:1,doplaceni:'',aktiv:true,mena:'EUR',urok_pct:null},
+  {id:'u4',nazev:'Dolni dvur',celkem:87500,splatka:1414,zbyva:87500,den:1,doplaceni:'2040-06-30',aktiv:true,mena:'CZK',urok_pct:null}
+];
+var DEF_REZIE={skupiny:[
+  {id:'rg1',nazev:'Horni areal',polozky:[
+    {id:'r1',nazev:'Popelnice',castka:2604},{id:'r2',nazev:'Elektrika',castka:32157},
+    {id:'r3',nazev:'Voda',castka:806},{id:'r4',nazev:'Pojisteni',castka:2316},
+    {id:'r5',nazev:'Ucetni',castka:404},{id:'r6',nazev:'Prac.uraz',castka:2148}
+  ]},
+  {id:'rg2',nazev:'Stredisko',polozky:[
+    {id:'r7',nazev:'Popelnice',castka:468},{id:'r8',nazev:'Elektrika',castka:9524},
+    {id:'r9',nazev:'Voda',castka:806},{id:'r10',nazev:'Pojisteni',castka:2555}
+  ]}
+]};
+var DEF_INV=[
+  {id:'is1',skupina:'Spodni dvur',polozky:[
+    {id:'i1',nazev:'Polystyren',firma:'DEK',castka:10138},
+    {id:'i2',nazev:'Okna',firma:'PAGEN',castka:57050},
+    {id:'i3',nazev:'Trapezovy plech',firma:'DEK',castka:153800},
+    {id:'i4',nazev:'Mineralni vata',firma:'DEK',castka:96710},
+    {id:'i5',nazev:'Sadrokarton',firma:'DEK',castka:68226},
+    {id:'i6',nazev:'Tepelne cerpadlo',firma:'Bluetherm',castka:630000}
+  ]},
+  {id:'is2',skupina:'Horni areal',polozky:[{id:'i7',nazev:'Beton',firma:'SMB',castka:10138}]},
+  {id:'is3',skupina:'Lakovna',polozky:[{id:'i8',nazev:'Mala hala',firma:'Jerabek',castka:10138}]}
+];
+var DEF_ZAM=[
+  {id:'z1',jmeno:'Milan Moran',sk:'Vedeni'},{id:'z2',jmeno:'Tomas Priscak',sk:'Vedeni'},
+  {id:'z3',jmeno:'Vaclav Hradecky',sk:'Vedeni'},{id:'z4',jmeno:'Denisa Rulikova',sk:'Vedeni'},
+  {id:'z5',jmeno:'Olga Stempakova',sk:'Vedeni'},{id:'z6',jmeno:'Katerina Kucerova',sk:'Vedeni'},
+  {id:'z7',jmeno:'Tomas Zivnustka',sk:'Vedeni'},{id:'z8',jmeno:'Petr Benes',sk:'Vyroba'},
+  {id:'z9',jmeno:'Michal Spalda',sk:'Vyroba'},{id:'z10',jmeno:'Jiri Pazout',sk:'Vyroba'},
+  {id:'z11',jmeno:'Karel Klouda',sk:'Vyroba'},{id:'z12',jmeno:'Petr Hajek',sk:'Kelvion'},
+  {id:'z13',jmeno:'Josef Capek',sk:'Kelvion'},{id:'z14',jmeno:'Tomas Maly',sk:'Kelvion'},
+  {id:'z15',jmeno:'Tomas Naroda',sk:'Kelvion'},{id:'z16',jmeno:'Frantisek Vesely',sk:'Kelvion'},
+  {id:'z17',jmeno:'Ivan Sitar',sk:'Kelvion'},{id:'z18',jmeno:'Ihor Kudria',sk:'Externi'},
+  {id:'z19',jmeno:'Ivan',sk:'Externi'},{id:'z20',jmeno:'Vasil Karchevsky',sk:'Externi'},
+  {id:'z21',jmeno:'Maxim',sk:'Externi'},{id:'z22',jmeno:'Valerij',sk:'Externi'},
+  {id:'z23',jmeno:'Mihail',sk:'Externi'},{id:'z24',jmeno:'Jiri Vorlicek',sk:'Lakovna'},
+  {id:'z25',jmeno:'Petr Hrdina',sk:'Lakovna'},{id:'z26',jmeno:'Jan Benes',sk:'Lakovna'},
+  {id:'z27',jmeno:'Jirina Vorlickova',sk:'Lakovna'}
+];
+var DEF_VYP=[
+  {id:'v1',jmeno:'Milan Moran',sk:'Vedeni',typ:'HPP',hs:465,naklad:620,fixni:null,dop:null},
+  {id:'v2',jmeno:'Tomas Priscak',sk:'Vedeni',typ:'OSVC',hs:400,naklad:400,fixni:null,dop:null},
+  {id:'v3',jmeno:'Vaclav Hradecky',sk:'Vedeni',typ:'HPP',hs:400,naklad:535,fixni:null,dop:null},
+  {id:'v7',jmeno:'Tomas Zivnustka',sk:'Vedeni',typ:'OSVC',hs:330,naklad:330,fixni:null,dop:null},
+  {id:'v8',jmeno:'Petr Benes',sk:'Vyroba',typ:'OSVC',hs:320,naklad:320,fixni:null,dop:null},
+  {id:'v9',jmeno:'Michal Spalda',sk:'Vyroba',typ:'HPP',hs:237,naklad:270,fixni:null,dop:null},
+  {id:'v10',jmeno:'Jiri Pazout',sk:'Vyroba',typ:'HPP',hs:237,naklad:270,fixni:null,dop:null},
+  {id:'v11',jmeno:'Karel Klouda',sk:'Vyroba',typ:'OSVC',hs:240,naklad:240,fixni:null,dop:null},
+  {id:'v12',jmeno:'Petr Hajek',sk:'Kelvion',typ:'HPP',hs:237,naklad:270,fixni:null,dop:null},
+  {id:'v13',jmeno:'Josef Capek',sk:'Kelvion',typ:'HPP',hs:237,naklad:270,fixni:null,dop:null},
+  {id:'v14',jmeno:'Tomas Maly',sk:'Kelvion',typ:'OSVC',hs:250,naklad:250,fixni:null,dop:null},
+  {id:'v15',jmeno:'Tomas Naroda',sk:'Kelvion',typ:'HPP',hs:200,naklad:267,fixni:null,dop:null},
+  {id:'v16',jmeno:'Frantisek Vesely',sk:'Kelvion',typ:'HPP',hs:200,naklad:267,fixni:null,dop:null},
+  {id:'v17',jmeno:'Ivan Sitar',sk:'Kelvion',typ:'OSVC',hs:240,naklad:240,fixni:null,dop:null},
+  {id:'v18',jmeno:'Ihor Kudria',sk:'Externi',typ:'OSVC',hs:260,naklad:260,fixni:null,dop:null},
+  {id:'v19',jmeno:'Ivan',sk:'Externi',typ:'OSVC',hs:285,naklad:285,fixni:null,dop:null},
+  {id:'v20',jmeno:'Vasil Karchevsky',sk:'Externi',typ:'OSVC',hs:265,naklad:265,fixni:null,dop:null},
+  {id:'v21',jmeno:'Maksym Kukushkin',sk:'Externi',typ:'OSVC',hs:330,naklad:330,fixni:null,dop:null},
+  {id:'v22',jmeno:'Valerii Servachynskyij',sk:'Externi',typ:'OSVC',hs:290,naklad:290,fixni:null,dop:null},
+  {id:'v23',jmeno:'Mihail Negara',sk:'Externi',typ:'OSVC',hs:290,naklad:290,fixni:null,dop:null},
+  {id:'v28',jmeno:'Kristyna Bubenickova',sk:'Administrativa',typ:'HPP',hs:null,naklad:51800,fixni:26000,dop:17000},
+  {id:'v5',jmeno:'Olga Stempakova',sk:'Administrativa',typ:'HPP',hs:null,naklad:43450,fixni:25000,dop:10000},
+  {id:'v6',jmeno:'Katerina Kucerova',sk:'Administrativa',typ:'HPP',hs:null,naklad:14410,fixni:11750,dop:0},
+  {id:'v4',jmeno:'Denisa Rulikova',sk:'Administrativa',typ:'HPP',hs:null,naklad:64800,fixni:48400,dop:0},
+  {id:'v29',jmeno:'Vladimir Holanek',sk:'Rodice',typ:'',hs:null,naklad:48800,fixni:26000,dop:14000},
+  {id:'v30',jmeno:'Ilona Holankova',sk:'Rodice',typ:'',hs:null,naklad:38800,fixni:26000,dop:4000},
+  {id:'v24',jmeno:'Jiri Vorlicek',sk:'Lakovna',typ:'HPP',hs:null,naklad:67000,fixni:35000,dop:17000},
+  {id:'v25',jmeno:'Petr Hrdina',sk:'Lakovna',typ:'HPP',hs:null,naklad:47000,fixni:26000,dop:12000},
+  {id:'v27',jmeno:'Jirina Vorlickova',sk:'Lakovna',typ:'HPP',hs:null,naklad:40500,fixni:26000,dop:5500},
+  {id:'v26',jmeno:'Jan Benes',sk:'Lakovna',typ:'OSVC',hs:230,naklad:230,fixni:null,dop:null}
+];
+var CF_INIT=[{"id": "p0", "nazev": "15 CONSTRUCTION", "splatnost": "2026-02-03", "castka": 161820.0, "dluh": 161820.0, "zaplaceno": false, "poznamka": "URGOVÁNO 28.4"}, {"id": "p1", "nazev": "103 MAX BLACK", "splatnost": "2026-04-07", "castka": 39325.0, "dluh": 39325.0, "zaplaceno": false, "poznamka": "URGOVÁNO 28.4"}, {"id": "p2", "nazev": "104 PR-TECH", "splatnost": "2026-05-24", "castka": 212887.0, "dluh": 212887.0, "zaplaceno": false, "poznamka": ""}, {"id": "p3", "nazev": "117 APP", "splatnost": "2026-05-14", "castka": 68225.0, "dluh": 68225.0, "zaplaceno": false, "poznamka": ""}, {"id": "p4", "nazev": "118 APP", "splatnost": "2026-05-14", "castka": 8139.0, "dluh": 8139.0, "zaplaceno": false, "poznamka": ""}, {"id": "p5", "nazev": "119 MAX BLACK", "splatnost": "2026-04-15", "castka": 605.0, "dluh": 605.0, "zaplaceno": false, "poznamka": ""}, {"id": "p6", "nazev": "120 ANTOLIN", "splatnost": "2026-04-30", "castka": 287435.0, "dluh": 287435.0, "zaplaceno": false, "poznamka": ""}, {"id": "p7", "nazev": "129 APP", "splatnost": "2026-05-15", "castka": 18839.0, "dluh": 18839.0, "zaplaceno": false, "poznamka": ""}, {"id": "p8", "nazev": "130 APP", "splatnost": "2026-05-15", "castka": 53493.0, "dluh": 53493.0, "zaplaceno": false, "poznamka": ""}, {"id": "p9", "nazev": "131 APP", "splatnost": "2026-05-15", "castka": 26969.0, "dluh": 26969.0, "zaplaceno": false, "poznamka": ""}, {"id": "p10", "nazev": "132 APP", "splatnost": "2026-05-15", "castka": 26108.0, "dluh": 26108.0, "zaplaceno": false, "poznamka": ""}, {"id": "p11", "nazev": "133 APP", "splatnost": "2026-05-15", "castka": 85833.0, "dluh": 85833.0, "zaplaceno": false, "poznamka": ""}, {"id": "p12", "nazev": "134 APP", "splatnost": "2026-05-15", "castka": 26108.0, "dluh": 26108.0, "zaplaceno": false, "poznamka": ""}, {"id": "p13", "nazev": "135 APP", "splatnost": "2026-05-15", "castka": 26969.0, "dluh": 26969.0, "zaplaceno": false, "poznamka": ""}, {"id": "p14", "nazev": "136 KELVION", "splatnost": "2026-05-22", "castka": 18703.0, "dluh": 18703.0, "zaplaceno": false, "poznamka": ""}, {"id": "p15", "nazev": "140 MAGNA", "splatnost": "2026-05-07", "castka": 512106.0, "dluh": 512106.0, "zaplaceno": false, "poznamka": ""}, {"id": "p16", "nazev": "144 PR-TECH", "splatnost": "2026-04-27", "castka": 237281.0, "dluh": 237281.0, "zaplaceno": false, "poznamka": ""}, {"id": "p17", "nazev": "145 ANTOLIN", "splatnost": "2026-05-10", "castka": 20165.0, "dluh": 20165.0, "zaplaceno": false, "poznamka": ""}, {"id": "p18", "nazev": "148 ANTOLIN", "splatnost": "2026-05-10", "castka": 170993.0, "dluh": 170993.0, "zaplaceno": false, "poznamka": ""}, {"id": "p19", "nazev": "149 ANTOLIN", "splatnost": "2026-05-10", "castka": 28744.0, "dluh": 28744.0, "zaplaceno": false, "poznamka": ""}, {"id": "p20", "nazev": "150 KELVION", "splatnost": "2026-05-23", "castka": 95438.0, "dluh": 95438.0, "zaplaceno": false, "poznamka": ""}, {"id": "p21", "nazev": "153 KELVION", "splatnost": "2026-05-28", "castka": 106759.0, "dluh": 106759.0, "zaplaceno": false, "poznamka": ""}, {"id": "p22", "nazev": "154 KELVION", "splatnost": "2026-05-29", "castka": 111666.0, "dluh": 111666.0, "zaplaceno": false, "poznamka": ""}, {"id": "p23", "nazev": "159 PR-TECH", "splatnost": "2026-04-30", "castka": 28919.0, "dluh": 28919.0, "zaplaceno": false, "poznamka": ""}, {"id": "p24", "nazev": "160 PR-TECH", "splatnost": "2026-04-30", "castka": 30008.0, "dluh": 30008.0, "zaplaceno": false, "poznamka": ""}, {"id": "p25", "nazev": "161 PR-TECH", "splatnost": "2026-04-30", "castka": 5142.0, "dluh": 5142.0, "zaplaceno": false, "poznamka": ""}, {"id": "p26", "nazev": "163 KELVION", "splatnost": "2026-05-31", "castka": 128063.0, "dluh": 128063.0, "zaplaceno": false, "poznamka": ""}, {"id": "p27", "nazev": "164 KELVION", "splatnost": "2026-05-31", "castka": 27224.0, "dluh": 27224.0, "zaplaceno": false, "poznamka": ""}, {"id": "p28", "nazev": "165 KELVION", "splatnost": "2026-06-01", "castka": 3535.0, "dluh": 3535.0, "zaplaceno": false, "poznamka": ""}, {"id": "p29", "nazev": "166 KELVION", "splatnost": "2026-05-31", "castka": 18120.0, "dluh": 18120.0, "zaplaceno": false, "poznamka": ""}, {"id": "p30", "nazev": "167 ZÁMEK LOUČEŇ", "splatnost": "2026-04-30", "castka": 14520.0, "dluh": 14520.0, "zaplaceno": false, "poznamka": ""}, {"id": "p31", "nazev": "168 KELVION", "splatnost": "2026-05-31", "castka": 310770.0, "dluh": 310770.0, "zaplaceno": false, "poznamka": ""}, {"id": "p32", "nazev": "169 MAGNA", "splatnost": "2026-05-20", "castka": 6655.0, "dluh": 6655.0, "zaplaceno": false, "poznamka": ""}, {"id": "p33", "nazev": "170 APP", "splatnost": "2026-06-03", "castka": 149942.0, "dluh": 149942.0, "zaplaceno": false, "poznamka": ""}, {"id": "p34", "nazev": "171 KELVION", "splatnost": "2026-06-04", "castka": 76533.0, "dluh": 76533.0, "zaplaceno": false, "poznamka": ""}, {"id": "p35", "nazev": "172 KELVION", "splatnost": "2026-06-04", "castka": 7347.0, "dluh": 7347.0, "zaplaceno": false, "poznamka": ""}, {"id": "p36", "nazev": "173 DPOV", "splatnost": "2026-06-05", "castka": 1805.0, "dluh": 1805.0, "zaplaceno": false, "poznamka": ""}, {"id": "p37", "nazev": "174 KELVION", "splatnost": "2026-06-05", "castka": 46819.0, "dluh": 46819.0, "zaplaceno": false, "poznamka": ""}, {"id": "p38", "nazev": "175 PR-TECH", "splatnost": "2026-05-07", "castka": 583.22, "dluh": 583.22, "zaplaceno": false, "poznamka": ""}, {"id": "p39", "nazev": "176 ORT", "splatnost": "2026-05-06", "castka": 35738.0, "dluh": 35738.0, "zaplaceno": false, "poznamka": ""}, {"id": "p40", "nazev": "177 KELVION", "splatnost": "2026-05-30", "castka": 37116.0, "dluh": 37116.0, "zaplaceno": false, "poznamka": ""}, {"id": "p41", "nazev": "178 KELVION", "splatnost": "2026-06-07", "castka": 38589.0, "dluh": 38589.0, "zaplaceno": false, "poznamka": ""}, {"id": "p42", "nazev": "179 APP", "splatnost": "2026-06-06", "castka": 250432.0, "dluh": 250432.0, "zaplaceno": false, "poznamka": ""}, {"id": "p43", "nazev": "180 APP", "splatnost": "2026-06-06", "castka": 14499.0, "dluh": 14499.0, "zaplaceno": false, "poznamka": ""}, {"id": "p44", "nazev": "183 KELVION", "splatnost": "2026-06-08", "castka": 43494.0, "dluh": 43494.0, "zaplaceno": false, "poznamka": ""}, {"id": "p45", "nazev": "184 KELVION", "splatnost": "2026-06-08", "castka": 48182.0, "dluh": 48182.0, "zaplaceno": false, "poznamka": ""}, {"id": "p46", "nazev": "185 KELVION", "splatnost": "2026-06-08", "castka": 71891.0, "dluh": 71891.0, "zaplaceno": false, "poznamka": ""}, {"id": "p47", "nazev": "186 KELVION", "splatnost": "2026-06-12", "castka": 42491.0, "dluh": 42491.0, "zaplaceno": false, "poznamka": ""}, {"id": "p48", "nazev": "187 PR-TECH", "splatnost": "2026-05-13", "castka": 61710.0, "dluh": 61710.0, "zaplaceno": false, "poznamka": ""}, {"id": "p49", "nazev": "188 HAUK", "splatnost": "2026-05-13", "castka": 326506.0, "dluh": 326506.0, "zaplaceno": false, "poznamka": ""}, {"id": "p50", "nazev": "189 APP", "splatnost": "2026-06-18", "castka": 29145.0, "dluh": 29145.0, "zaplaceno": false, "poznamka": ""}, {"id": "p51", "nazev": "190 SET ART", "splatnost": "2026-05-20", "castka": 38720.0, "dluh": 38720.0, "zaplaceno": false, "poznamka": ""}, {"id": "p52", "nazev": "191 SET ART", "splatnost": "2026-05-20", "castka": 70180.0, "dluh": 70180.0, "zaplaceno": false, "poznamka": ""}, {"id": "p53", "nazev": "192 DPOV", "splatnost": "2026-06-05", "castka": 2709.0, "dluh": 2709.0, "zaplaceno": false, "poznamka": ""}, {"id": "p54", "nazev": "194 PILOUS", "splatnost": "2026-05-20", "castka": 10841.0, "dluh": 10841.0, "zaplaceno": false, "poznamka": ""}, {"id": "p55", "nazev": "195 PILOUS", "splatnost": "2026-05-20", "castka": 252648.0, "dluh": 252648.0, "zaplaceno": false, "poznamka": ""}, {"id": "p56", "nazev": "196 KELVION", "splatnost": "2026-06-20", "castka": 112663.0, "dluh": 112663.0, "zaplaceno": false, "poznamka": ""}, {"id": "p57", "nazev": "197 KELVION", "splatnost": "2026-06-21", "castka": 104321.0, "dluh": 104321.0, "zaplaceno": false, "poznamka": ""}, {"id": "p58", "nazev": "198 PR-TECH", "splatnost": "2026-05-25", "castka": 1766.0, "dluh": 1766.0, "zaplaceno": false, "poznamka": ""}, {"id": "p59", "nazev": "199 KELVION", "splatnost": "2026-06-22", "castka": 52612.0, "dluh": 52612.0, "zaplaceno": false, "poznamka": ""}, {"id": "p60", "nazev": "200 KELVION", "splatnost": "2026-06-22", "castka": 50142.0, "dluh": 50142.0, "zaplaceno": false, "poznamka": ""}, {"id": "p61", "nazev": "201 KELVION", "splatnost": "2026-06-22", "castka": 12681.0, "dluh": 12681.0, "zaplaceno": false, "poznamka": ""}, {"id": "p62", "nazev": "202 KELVION", "splatnost": "2026-06-22", "castka": 210265.0, "dluh": 210265.0, "zaplaceno": false, "poznamka": ""}, {"id": "p63", "nazev": "203 MĚSTYS LOUČEŇ", "splatnost": "2026-05-25", "castka": 5650.0, "dluh": 5650.0, "zaplaceno": false, "poznamka": ""}, {"id": "p64", "nazev": "204 MAGNA", "splatnost": "2026-06-07", "castka": 22056.0, "dluh": 22056.0, "zaplaceno": false, "poznamka": ""}, {"id": "p65", "nazev": "205 MAGNA", "splatnost": "2026-06-07", "castka": 132340.0, "dluh": 132340.0, "zaplaceno": false, "poznamka": ""}, {"id": "p66", "nazev": "206 PR-TECH", "splatnost": "2026-05-26", "castka": 5142.0, "dluh": 5142.0, "zaplaceno": false, "poznamka": ""}, {"id": "p67", "nazev": "207 APP", "splatnost": "2026-06-24", "castka": 91456.0, "dluh": 91456.0, "zaplaceno": false, "poznamka": ""}, {"id": "p68", "nazev": "208 APP", "splatnost": "2026-06-24", "castka": 75497.0, "dluh": 75497.0, "zaplaceno": false, "poznamka": ""}, {"id": "p69", "nazev": "209 ANTOLIN", "splatnost": "2026-06-10", "castka": 806949.0, "dluh": 806949.0, "zaplaceno": false, "poznamka": ""}, {"id": "p70", "nazev": "210 MĚSTYS LOUČEŇ", "splatnost": "2026-05-26", "castka": 22385.0, "dluh": 22385.0, "zaplaceno": false, "poznamka": ""}, {"id": "p71", "nazev": "211 KELVION", "splatnost": "2026-06-26", "castka": 63484.0, "dluh": 63484.0, "zaplaceno": false, "poznamka": ""}];
+var Z_INIT=[{"id": "z0", "nazev": "Prášková lakovna Holánek s.r.o.", "splatnost": "2025-12-12", "castka": 118580.0, "zaplaceno": false}, {"id": "z1", "nazev": "Prášková lakovna Holánek s.r.o.", "splatnost": "2025-12-18", "castka": 53240.0, "zaplaceno": false}, {"id": "z2", "nazev": "Prášková lakovna Holánek s.r.o.", "splatnost": "2025-12-23", "castka": 5796.0, "zaplaceno": false}, {"id": "z3", "nazev": "Prášková lakovna Holánek s.r.o.", "splatnost": "2026-02-09", "castka": 120395.0, "zaplaceno": false}, {"id": "z4", "nazev": "Prášková lakovna Holánek s.r.o.", "splatnost": "2026-03-13", "castka": 80392.0, "zaplaceno": false}, {"id": "z5", "nazev": "Prášková lakovna Holánek s.r.o.", "splatnost": "2026-04-08", "castka": 92275.0, "zaplaceno": false}, {"id": "z6", "nazev": "DPT, s.r.o.", "splatnost": "2026-05-21", "castka": 579.0, "zaplaceno": false}, {"id": "z7", "nazev": "DPT, s.r.o.", "splatnost": "2026-05-21", "castka": 549.0, "zaplaceno": false}, {"id": "z8", "nazev": "SIAD Czech spol. s r.o.", "splatnost": "2026-05-21", "castka": 2502.0, "zaplaceno": false}, {"id": "z9", "nazev": "WEDOS, a.s.", "splatnost": "2026-05-22", "castka": 193.6, "zaplaceno": false}, {"id": "z10", "nazev": "Stavebniny DEK a.s.", "splatnost": "2026-05-23", "castka": 8968.69, "zaplaceno": false}, {"id": "z11", "nazev": "T-Mobile Czech Republic a.s.", "splatnost": "2026-05-24", "castka": 6510.56, "zaplaceno": false}, {"id": "z12", "nazev": "JIRY, spol. s r.o.", "splatnost": "2026-05-25", "castka": 41536.0, "zaplaceno": false}, {"id": "z13", "nazev": "Štěpán Kořínek", "splatnost": "2026-05-25", "castka": 647.0, "zaplaceno": false}, {"id": "z14", "nazev": "Colora plus, s.r.o.", "splatnost": "2026-05-28", "castka": 17169.9, "zaplaceno": false}, {"id": "z15", "nazev": "MEKR'S, s.r.o.", "splatnost": "2026-05-28", "castka": 5681.72, "zaplaceno": false}, {"id": "z16", "nazev": "Proindustry, s.r.o.", "splatnost": "2026-05-30", "castka": 853.34, "zaplaceno": false}, {"id": "z17", "nazev": "JIRY, spol. s r.o.", "splatnost": "2026-06-01", "castka": 30540.0, "zaplaceno": false}, {"id": "z18", "nazev": "NEREZOVÉ MATERIÁLY, s.r.o.", "splatnost": "2026-06-03", "castka": 11512.21, "zaplaceno": false}, {"id": "z19", "nazev": "Colora plus, s.r.o.", "splatnost": "2026-06-05", "castka": 3667.51, "zaplaceno": false}, {"id": "z20", "nazev": "MEKR'S, s.r.o.", "splatnost": "2026-06-05", "castka": 3701.26, "zaplaceno": false}, {"id": "z21", "nazev": "Peťura stavebniny, s.r.o.", "splatnost": "2026-06-05", "castka": 741.0, "zaplaceno": false}, {"id": "z22", "nazev": "STRONGO, s.r.o.", "splatnost": "2026-06-07", "castka": 18634.0, "zaplaceno": false}, {"id": "z23", "nazev": "Kelvion s.r.o.", "splatnost": "2026-06-13", "castka": 974.8, "zaplaceno": false}];
+</script>
+
+<script>
+function load(){
+  try{var s=localStorage.getItem(SK);if(s)dat=JSON.parse(s);}catch(e){}
+  if(!dat.weeks)dat.weeks=[];
+  // Automaticke snizeni "zbyva" podle probehlych splatek od posledniho otevreni
+  checkUveryAutoReduce();
+}
+function checkUveryAutoReduce(){
+  if(!dat.uvery||!dat.uvery.length)return;
+  var today=new Date();today.setHours(0,0,0,0);
+  var lastCheck=dat.lastUveryCheck?new Date(dat.lastUveryCheck):null;
+  // Pokud jeste nikdy nebezela kontrola, ulozime dnesni datum a skoncime
+  if(!lastCheck){dat.lastUveryCheck=today.toISOString().slice(0,10);return;}
+  var changed=false;
+  for(var i=0;i<dat.uvery.length;i++){
+    var u=dat.uvery[i];
+    if(!u.aktiv||!u.splatka||u.zbyva<=0)continue;
+    var den=u.den||1;
+    // Projdeme kazdy mesic od lastCheck do dnes a hledame, jestli probehl den splatky
+    var d=new Date(lastCheck.getFullYear(),lastCheck.getMonth(),den);
+    // Posuneme o 1 mesic dopredu pokud ten mesicni den uz byl pred lastCheck
+    if(d<=lastCheck)d=new Date(d.getFullYear(),d.getMonth()+1,den);
+    while(d<=today){
+      // Probehl splatkovy den — odecteme splatku
+      u.zbyva=Math.max(0,((+u.zbyva||0)-(+u.splatka||0)));
+      changed=true;
+      d=new Date(d.getFullYear(),d.getMonth()+1,den);
+    }
+  }
+  dat.lastUveryCheck=today.toISOString().slice(0,10);
+  if(changed)save();
+}
+function showTip(evt,txt){var t=document.getElementById('chtip');if(!t)return;t.textContent=txt;t.style.opacity=1;t.style.left=(evt.clientX+14)+'px';t.style.top=(evt.clientY-36)+'px';}
+function hideTip(){var t=document.getElementById('chtip');if(t)t.style.opacity=0;}
+document.addEventListener('mousemove',function(e){var t=document.getElementById('chtip');if(t&&t.style.opacity==='1'){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-36)+'px';}});
+function save(){localStorage.setItem(SK,JSON.stringify(dat));var e=document.getElementById('si');if(e){e.textContent='Ulozeno';setTimeout(function(){e.textContent='';},2000);}}
+function expD(){var b=new Blob([JSON.stringify(dat,null,2)],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);var now=new Date();var stamp=now.toISOString().slice(0,10);a.download='finance_backup_'+stamp+'.json';a.click();localStorage.setItem(SK+'_lastBackup',now.toISOString());toast('Záloha stažena. Ulož ji na iCloud/Drive!');render();}
+function impD(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{dat=JSON.parse(ev.target.result);save();render();toast('Importovano');}catch(err){alert(err.message);}};r.readAsText(f);}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function tdStr(){return new Date().toISOString().slice(0,10);}
+function fmtD(s){if(!s)return'--';var d=new Date(s);return d.toLocaleDateString('cs-CZ');}
+function fmtK(n){if(n===null||n===undefined)return'--';return(+n||0).toLocaleString('cs-CZ',{maximumFractionDigits:0})+' Kc';}
+function fmtN(n){if(n===null||n===undefined)return'--';return(+n||0).toLocaleString('cs-CZ',{maximumFractionDigits:0});}
+function ucetKc(w,u){var v=parseFloat(w[u.key])||0;return u.sfx==='EUR'?v*EUR:v;}
+function totalKc(w){if(!w)return 0;var s=0;for(var i=0;i<UCTY.length;i++)s+=ucetKc(w,UCTY[i]);s+=parseFloat(w.pokladna)||0;return s;}
+function skupKc(w,g){if(!w)return 0;var s=0;for(var i=0;i<UCTY.length;i++)if(UCTY[i].g===g)s+=ucetKc(w,UCTY[i]);return s;}
+
+function goTab(t){curTab=t;var b=document.querySelectorAll('nav .tb');for(var i=0;i<b.length;i++)b[i].classList.remove('on');var e=document.getElementById('tb-'+t);if(e)e.classList.add('on');render();}
+function render(){var e=document.getElementById('ct');if(curTab==='prehled')e.innerHTML=rPrehled();else if(curTab==='zadat')e.innerHTML=rZadat();else if(curTab==='historie')e.innerHTML=rHistorie();else if(curTab==='uvery')e.innerHTML=rUvery();else if(curTab==='rezie')e.innerHTML=rRezie();else if(curTab==='odmeny')e.innerHTML=rOdmeny();else if(curTab==='vyplaty')e.innerHTML=rVyplaty();else if(curTab==='cashflow')e.innerHTML=rCashflow();else if(curTab==='osobni')e.innerHTML=rOsobniFinance();else if(curTab==='firemni')e.innerHTML=rFiremniFinance();}
+
+function rPrehled(){
+  var wks=dat.weeks.slice().sort(function(a,b){return a.datum<b.datum?-1:1;});
+  var last=wks[wks.length-1],prev=wks[wks.length-2];
+  if(!last)return '<div class="nd">Zadna data. Pouzijte zalozku Zadat tyden.</div>';
+  var tot=totalKc(last),ptot=prev?totalKc(prev):null;
+  function tH(v,pv){if(pv===null||pv===undefined)return'';var d=v-pv,pct=pv?(d/pv*100):0;return '<div class="cs '+(d>0?'up':d<0?'dn':'')+'">'+(d>=0?'+ ':'')+fmtK(d)+' ('+pct.toFixed(1)+'%)</div>';}
+  var html='<div class="cards">';
+  html+='<div class="card"><div class="cl">Celkovy majetek</div><div class="cv">'+fmtK(tot)+'</div><div class="cs">'+fmtD(last.datum)+'</div>'+tH(tot,ptot)+'</div>';
+  html+='<div class="card" style="border-left:3px solid #4f7fff"><div class="cl">Osobni majetek</div><div class="cv" style="color:#4f7fff">'+fmtK(skupKc(last,'osobni'))+'</div>'+tH(skupKc(last,'osobni'),prev?skupKc(prev,'osobni'):null)+'</div>';
+  html+='<div class="card" style="border-left:3px solid #a855f7"><div class="cl">Investice</div><div class="cv" style="color:#a855f7">'+fmtK(skupKc(last,'investice'))+'</div>'+tH(skupKc(last,'investice'),prev?skupKc(prev,'investice'):null)+'</div>';
+  html+='<div class="card" style="border-left:3px solid #00d4aa"><div class="cl">Firemni majetek</div><div class="cv" style="color:#00d4aa">'+fmtK(skupKc(last,'firemni'))+'</div>'+tH(skupKc(last,'firemni'),prev?skupKc(prev,'firemni'):null)+'</div>';
+  html+='</div>';
+  if(wks.length>=2)html+=rChart(wks);
+  return html;
+}
+
+function mkSmoothPath(pts){
+  if(pts.length<2)return'';
+  var d='M'+pts[0][0]+','+pts[0][1];
+  for(var i=1;i<pts.length;i++){
+    var p0=pts[i-1],p1=pts[i];
+    var cpx=(p0[0]+p1[0])/2;
+    d+=' C'+cpx+','+p0[1]+' '+cpx+','+p1[1]+' '+p1[0]+','+p1[1];
+  }
+  return d;
+}
+function mkAreaPath(pts,baseY){
+  if(pts.length<2)return'';
+  var d=mkSmoothPath(pts);
+  d+=' L'+pts[pts.length-1][0]+','+baseY+' L'+pts[0][0]+','+baseY+' Z';
+  return d;
+}
+function buildChart(wks,lines,title,chartId){
+  var PL=72,PR=24,PT=24,PB=44,H=280;
+  var W=900;
+  var TW=W+PL+PR;
+  var CH=H-PT-PB;
+  var allVals=[];
+  for(var li=0;li<lines.length;li++)for(var wi=0;wi<wks.length;wi++)allVals.push(lines[li].fn(wks[wi]));
+  var minV=Math.min.apply(null,allVals),maxV=Math.max.apply(null,allVals);
+  var pad=(maxV-minV)*0.12||maxV*0.1||10000;
+  minV=Math.max(0,minV-pad);maxV=maxV+pad;
+  var rng=maxV-minV||1;
+  function toY(v){return H-PB-Math.round(((v-minV)/rng)*CH);}
+  function toX(wi){return PL+Math.round(wi*(W/(wks.length-1||1)));}
+  var baseY=H-PB;
+
+  var defs='<defs>';
+  for(var li=0;li<lines.length;li++){
+    var L=lines[li];
+    defs+='<linearGradient id="grad_'+chartId+'_'+li+'" x1="0" y1="0" x2="0" y2="1">';
+    defs+='<stop offset="0%" stop-color="'+L.c+'" stop-opacity="0.28"/>';
+    defs+='<stop offset="100%" stop-color="'+L.c+'" stop-opacity="0.02"/>';
+    defs+='</linearGradient>';
+  }
+  defs+='</defs>';
+
+  var svg='<svg id="'+chartId+'" width="100%" viewBox="0 0 '+TW+' '+H+'" style="display:block;overflow:visible;">';
+  svg+=defs;
+
+  // Grid
+  for(var gi=0;gi<=4;gi++){
+    var gv=minV+(rng*gi/4),gy=toY(gv);
+    svg+='<line x1="'+PL+'" y1="'+gy+'" x2="'+(TW-PR)+'" y2="'+gy+'" stroke="#1e2334" stroke-width="1"/>';
+    svg+='<text x="'+(PL-8)+'" y="'+(gy+4)+'" text-anchor="end" font-family="DM Mono,monospace" font-size="10" fill="#3d4f72">'+Math.round(gv/1000)+'k</text>';
+  }
+
+  // Areas (bottom to top order — thinner lines on top)
+  for(var li=0;li<lines.length;li++){
+    var L=lines[li],pts=[];
+    for(var wi=0;wi<wks.length;wi++)pts.push([toX(wi),toY(L.fn(wks[wi]))]);
+    svg+='<path d="'+mkAreaPath(pts,baseY)+'" fill="url(#grad_'+chartId+'_'+li+')" />';
+  }
+
+  // Lines & dots
+  for(var li=0;li<lines.length;li++){
+    var L=lines[li],pts=[];
+    for(var wi=0;wi<wks.length;wi++)pts.push([toX(wi),toY(L.fn(wks[wi]))]);
+    svg+='<path d="'+mkSmoothPath(pts)+'" fill="none" stroke="'+L.c+'" stroke-width="'+(li===0?'2.5':'2')+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    for(var wi=0;wi<wks.length;wi++){
+      var cx=pts[wi][0],cy=pts[wi][1],val=L.fn(wks[wi]);
+      svg+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#0f1117" stroke="'+L.c+'" stroke-width="2" class="chart-dot" style="cursor:pointer;" onmouseenter="showTip(evt,\''+fmtK(val)+' — '+L.label+'\')" onmouseleave="hideTip()"/>';
+    }
+  }
+
+  // X labels
+  var step=Math.max(1,Math.ceil(wks.length/8));
+  for(var wi=0;wi<wks.length;wi+=step){
+    var d=new Date(wks[wi].datum),dd=d.getDate(),dm=d.getMonth()+1;
+    svg+='<text x="'+toX(wi)+'" y="'+(H-6)+'" text-anchor="middle" font-family="DM Mono,monospace" font-size="10" fill="#3d4f72">'+(dd<10?'0':'')+dd+'.'+(dm<10?'0':'')+dm+'.</text>';
+  }
+  svg+='</svg>';
+
+  // Legend
+  var legend='<div style="display:flex;gap:18px;flex-wrap:wrap;padding:0 0 14px 0;">';
+  for(var li=0;li<lines.length;li++){
+    var L=lines[li];
+    legend+='<div style="display:flex;align-items:center;gap:7px;font-size:0.78rem;color:var(--mu);">';
+    legend+='<svg width="28" height="10"><line x1="0" y1="5" x2="18" y2="5" stroke="'+L.c+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="5" r="3.5" fill="#0f1117" stroke="'+L.c+'" stroke-width="2"/></svg>';
+    legend+=L.label+'</div>';
+  }
+  legend+='</div>';
+
+  return '<div class="sec"><div class="sh"><div class="st">'+title+'</div></div><div class="sb" style="overflow-x:auto;padding-bottom:8px;">'+legend+svg+'</div></div>';
+}
+
+function rChart(wks){
+  var lines=[
+    {c:'#e8eaf0',label:'Celkem',fn:function(w){return totalKc(w);}},
+    {c:'#4f7fff',label:'Osobni',fn:function(w){return skupKc(w,'osobni');}},
+    {c:'#a855f7',label:'Investice',fn:function(w){return skupKc(w,'investice');}},
+    {c:'#00d4aa',label:'Firemni',fn:function(w){return skupKc(w,'firemni');}}
+  ];
+  return buildChart(wks,lines,'Vyvoj majetku','ch_prehled');
+}
+
+function rZadat(){return '<div class="sec"><div class="sh"><div class="st">Zadat tyden</div></div><div class="sb" style="text-align:center;padding:40px;"><div style="color:var(--mu);margin-bottom:20px;">Jednou tydne zadejte stav vsech uctu</div><button class="btn bp" style="padding:10px 24px" onclick="openWM()">Otevrit formular</button></div></div>';}
+
+function rHistorie(){
+  var wks=dat.weeks.slice().sort(function(a,b){return b.datum<a.datum?-1:1;});
+  if(!wks.length)return'<div class="nd">Zadne zaznamy.</div>';
+  var html='<div class="sec"><div class="sh"><div class="st">Historie</div><span style="font-size:0.78rem;color:var(--mu)">'+wks.length+' zapisu</span></div><div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl"><thead><tr><th>Datum</th><th class="r">Celkem</th><th class="r">Zmena</th><th></th></tr></thead><tbody>';
+  for(var wi=0;wi<wks.length;wi++){var w=wks[wi],nx=wks[wi+1],tot=totalKc(w),ptot=nx?totalKc(nx):null,diff=ptot!==null?tot-ptot:null,dc=diff===null?'':diff>0?' class="up"':' class="dn"',oi=dat.weeks.indexOf(w);html+='<tr><td><b>'+fmtD(w.datum)+'</b></td><td class="r" style="font-weight:700">'+fmtK(tot)+'</td><td'+dc+' class="r">'+(diff!==null?(diff>=0?'+ ':'')+fmtK(Math.abs(diff)):'--')+'</td><td><button class="btn bg bsm" onclick="openWM('+oi+')" style="margin-right:4px">Upravit</button><button class="dbtn" onclick="delW('+oi+')" style="opacity:1">X</button></td></tr>';}
+  html+='</tbody></table></div></div>';
+  return html;
+}
+
+function openWM(idx){
+  editIdx=(idx!==undefined)?idx:-1;
+  var w=(editIdx>=0)?dat.weeks[editIdx]:null;
+  var mh='<div class="mb" style="width:700px;max-width:96vw;"><h3>'+(w?'Upravit zapis':'Novy tydenni zapis')+'</h3><div class="fg" style="margin-bottom:14px"><label>Datum</label><input type="date" id="wD" value="'+(w?w.datum:tdStr())+'" style="width:180px"></div>';
+  for(var gi=0;gi<GRPS.length;gi++){var sk=GRPS[gi];mh+='<div style="font-size:0.75rem;font-weight:600;color:'+sk.c+';margin:12px 0 8px;text-transform:uppercase;">'+sk.l+'</div><div class="ag" style="margin-bottom:8px;">';for(var ui=0;ui<UCTY.length;ui++){if(UCTY[ui].g!==sk.k)continue;var u=UCTY[ui];mh+='<div class="ai"><label>'+u.label+'</label><input type="number" id="ac_'+u.key+'" placeholder="0" value="'+((w&&w[u.key]!==undefined)?w[u.key]:'')+'"><div style="font-size:0.68rem;color:var(--mu);margin-top:2px">'+u.sfx+'</div></div>';}mh+='</div>';}
+  mh+='<div style="font-size:0.75rem;color:var(--mu);margin:12px 0 8px;text-transform:uppercase;">Faktury a Pokladna</div><div class="ag" style="margin-bottom:8px;">';
+  for(var fi=0;fi<FAKTIT.length;fi++){var f=FAKTIT[fi];mh+='<div class="ai"><label>'+f.l+'</label><input type="number" id="fk_'+f.k+'" placeholder="0" value="'+((w&&w[f.k]!==undefined)?w[f.k]:'')+'"></div>';}
+  mh+='</div><div class="mbt"><button class="btn bg" onclick="this.closest(\'.mo\').remove()">Zrusit</button><button class="btn bp" onclick="saveW()">Ulozit</button></div></div>';
+  var ov=document.createElement('div');ov.className='mo op';ov.onclick=function(e){if(e.target===ov)ov.remove();};ov.innerHTML=mh;document.body.appendChild(ov);
+}
+function saveW(){
+  var d=document.getElementById('wD');if(!d||!d.value)return;
+  var w={id:(editIdx>=0)?dat.weeks[editIdx].id:uid(),datum:d.value};
+  for(var ui=0;ui<UCTY.length;ui++){var el=document.getElementById('ac_'+UCTY[ui].key);if(el&&el.value!=='')w[UCTY[ui].key]=parseFloat(el.value)||0;}
+  for(var fi=0;fi<FAKTIT.length;fi++){var el=document.getElementById('fk_'+FAKTIT[fi].k);if(el&&el.value!=='')w[FAKTIT[fi].k]=parseFloat(el.value)||0;}
+  if(editIdx>=0)dat.weeks[editIdx]=w;else dat.weeks.push(w);
+  save();document.querySelector('.mo.op').remove();render();toast('Ulozeno');
+}
+function delW(i){if(!confirm('Smazat?'))return;dat.weeks.splice(i,1);save();render();}
+
+function ensureUV(){if(!dat.leasingy)dat.leasingy=JSON.parse(JSON.stringify(DEF_LEASINGY));if(!dat.uvery)dat.uvery=JSON.parse(JSON.stringify(DEF_UVERY));}
+
+function uvNextDate(den){
+  // Vrátí datum příští platby (tento nebo příští měsíc) pro daný den v měsíci
+  var t=new Date();t.setHours(0,0,0,0);
+  var d=new Date(t.getFullYear(),t.getMonth(),den);
+  if(d<=t)d=new Date(t.getFullYear(),t.getMonth()+1,den);
+  return d;
+}
+
+function uvNextDates(den,months){
+  // Vrátí pole příštích N dat plateb
+  var t=new Date();t.setHours(0,0,0,0);
+  var dates=[];
+  var start=new Date(t.getFullYear(),t.getMonth(),den);
+  if(start<=t)start=new Date(t.getFullYear(),t.getMonth()+1,den);
+  for(var i=0;i<months;i++){
+    var d=new Date(start.getFullYear(),start.getMonth()+i,den);
+    dates.push(d);
+  }
+  return dates;
+}
+
+function rUvery(){
+  ensureUV();var L=dat.leasingy,U=dat.uvery;
+  var tL=0;for(var i=0;i<L.length;i++)if(L[i].aktiv)tL+=(+L[i].uvery||0)+(+L[i].poj||0)+(+L[i].urok||0);
+  var tU=0;for(var i=0;i<U.length;i++)if(U[i].aktiv)tU+=(+U[i].splatka||0);
+  var today=new Date();today.setHours(0,0,0,0);
+
+  var html='<div class="cards" style="margin-bottom:20px;">'
+    +'<div class="card c3"><div class="cl">Celkem měsíčně</div><div class="cv" style="color:var(--a3)">'+fmtK(tL+tU)+'</div></div>'
+    +'<div class="card"><div class="cl">Leasingy</div><div class="cv">'+fmtK(tL)+'</div></div>'
+    +'<div class="card c4"><div class="cl">Úvěry</div><div class="cv">'+fmtK(tU)+'</div></div>'
+    +'</div>';
+
+  // ── LEASINGY ──
+  html+='<div class="sec" style="margin-bottom:16px;"><div class="sh"><div class="st">Leasingy</div><button class="btn bg bsm" onclick="addLS()">+ Přidat</button></div>'
+    +'<div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:800px;">'
+    +'<thead><tr><th>Název</th><th class="r">Splátka</th><th class="r">Pojištění</th><th class="r">Úrok</th><th class="r">Celkem/měs</th><th>Den</th><th>Příští platba</th><th>Aktivní</th><th></th></tr></thead><tbody>';
+
+  for(var i=0;i<L.length;i++){
+    var l=L[i],cel=(+l.uvery||0)+(+l.poj||0)+(+l.urok||0);
+    var next=uvNextDate(l.den||1);
+    var dl=Math.ceil((next-today)/86400000);
+    var dcol=dl<=7?'var(--a4)':'var(--mu)';
+    html+='<tr style="'+(l.aktiv?'':'opacity:0.4')+'">'
+      +'<td><input type="text" value="'+l.nazev+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:110px;padding:2px;" onblur="updL('+i+',\'nazev\',this.value)"></td>'
+      +'<td class="r"><input type="number" value="'+(l.uvery||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:80px;text-align:right;padding:2px;" onblur="updL('+i+',\'uvery\',this.value)"></td>'
+      +'<td class="r"><input type="number" value="'+(l.poj||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:80px;text-align:right;padding:2px;" onblur="updL('+i+',\'poj\',this.value)"></td>'
+      +'<td class="r"><input type="number" value="'+(l.urok||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:70px;text-align:right;padding:2px;" onblur="updL('+i+',\'urok\',this.value)"></td>'
+      +'<td class="r" style="font-weight:700;color:var(--a3)">'+(cel?fmtK(cel):'--')+'</td>'
+      +'<td><input type="number" value="'+(l.den||1)+'" min="1" max="31" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:35px;text-align:center;padding:2px;" onblur="updL('+i+',\'den\',this.value)">.</td>'
+      +'<td style="font-size:0.82rem;color:'+dcol+'">'+fmtD(next.toISOString().slice(0,10))+' <span style="font-size:0.72rem">('+dl+' d)</span></td>'
+      +'<td><input type="checkbox" '+(l.aktiv?'checked':'')+' onchange="updL('+i+',\'aktiv\',this.checked)" style="width:15px;height:15px;cursor:pointer;"></td>'
+      +'<td><button class="dbtn" style="opacity:1" onclick="delLS('+i+')">×</button></td></tr>';
+  }
+  html+='<tr style="background:var(--s2)"><td colspan="4" style="font-weight:700;padding:8px 12px;">Celkem</td>'
+    +'<td class="r" style="font-weight:700;color:var(--a3)">'+fmtK(tL)+'</td><td colspan="4"></td></tr></tbody></table></div></div>';
+
+  // ── ÚVĚRY ──
+  html+='<div class="sec"><div class="sh"><div class="st">Úvěry</div><button class="btn bg bsm" onclick="addUV()">+ Přidat</button></div>'
+    +'<div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:800px;">'
+    +'<thead><tr><th>Název</th><th>Měna</th><th class="r">Úrok %</th><th class="r">Celková výše</th><th class="r">Měsíční splátka</th><th class="r">Zbývá</th><th>Den</th><th>Příští platba</th><th>Aktivní</th><th></th></tr></thead><tbody>';
+
+  for(var i=0;i<U.length;i++){
+    var u=U[i];
+    var next=uvNextDate(u.den||1);
+    var dl=Math.ceil((next-today)/86400000);
+    var dcol=dl<=7?'var(--a4)':'var(--mu)';
+    var isEur=(u.mena==='EUR');
+    var menaBg=isEur?'rgba(247,201,72,0.15)':'rgba(79,127,255,0.12)';
+    var menaCol=isEur?'var(--a4)':'var(--a)';
+    var menaLabel=isEur?'EUR':'CZK';
+    html+='<tr style="'+(u.aktiv?'':'opacity:0.4')+'">'
+      +'<td><input type="text" value="'+u.nazev+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:130px;padding:2px;font-weight:600;" onblur="updU('+i+',\'nazev\',this.value)"></td>'
+      +'<td><select onchange="updU('+i+',\'mena\',this.value)" style="background:'+menaBg+';border:1px solid transparent;border-radius:5px;color:'+menaCol+';padding:3px 8px;font-size:0.75rem;font-weight:700;cursor:pointer;"><option value="CZK" '+((!isEur)?'selected':'')+'>CZK</option><option value="EUR" '+(isEur?'selected':'')+'>EUR</option></select></td>'
+      +'<td class="r"><input type="number" value="'+(u.urok_pct!=null?u.urok_pct:'')+'" placeholder="—" step="0.01" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--a4);width:55px;text-align:right;padding:2px;font-weight:700;" onblur="updU('+i+',\'urok_pct\',this.value)"><span style="color:var(--mu);font-size:0.75rem"> %</span></td>'
+      +'<td class="r"><input type="number" value="'+(u.celkem||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--mu);width:100px;text-align:right;padding:2px;" onblur="updU('+i+',\'celkem\',this.value)"></td>'
+      +'<td class="r"><input type="number" value="'+(u.splatka||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:100px;text-align:right;padding:2px;font-weight:600;" onblur="updU('+i+',\'splatka\',this.value)"></td>'
+      +'<td class="r"><input type="number" value="'+(u.zbyva||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--a4);width:100px;text-align:right;padding:2px;" onblur="updU('+i+',\'zbyva\',this.value)"></td>'
+      +'<td><input type="number" value="'+(u.den||1)+'" min="1" max="31" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:35px;text-align:center;padding:2px;" onblur="updU('+i+',\'den\',this.value)">.</td>'
+      +'<td style="font-size:0.82rem;color:'+dcol+'">'+fmtD(next.toISOString().slice(0,10))+' <span style="font-size:0.72rem">('+dl+' d)</span></td>'
+      +'<td><input type="checkbox" '+(u.aktiv?'checked':'')+' onchange="updU('+i+',\'aktiv\',this.checked)" style="width:15px;height:15px;cursor:pointer;"></td>'
+      +'<td><button class="dbtn" style="opacity:1" onclick="delUV('+i+')">×</button></td></tr>';
+  }
+  html+='<tr style="background:var(--s2)"><td colspan="4" style="font-weight:700;padding:8px 12px;">Celkem</td>'
+    +'<td class="r" style="font-weight:700;color:var(--a3)">'+fmtK(tU)+'</td><td colspan="5"></td></tr></tbody></table></div></div>';
+
+  return html;
+}
+
+// Vrátí pole {splatnost, castka} pro cashflow graf — příštích 60 dní
+function uvGetCashflowItems(days){
+  ensureUV();
+  var today=new Date();today.setHours(0,0,0,0);
+  var items=[];
+  var L=dat.leasingy,U=dat.uvery;
+  // Kolik měsíců dopředu potřebujeme (60 dní = max 3 měsíce)
+  var months=3;
+  for(var i=0;i<L.length;i++){
+    if(!L[i].aktiv)continue;
+    var cel=(+L[i].uvery||0)+(+L[i].poj||0)+(+L[i].urok||0);
+    if(!cel)continue;
+    var dates=uvNextDates(L[i].den||1,months);
+    for(var j=0;j<dates.length;j++){
+      var diff=Math.ceil((dates[j]-today)/86400000);
+      if(diff>=0&&diff<days)items.push({splatnost:dates[j].toISOString().slice(0,10),castka:cel,nazev:L[i].nazev});
+    }
+  }
+  for(var i=0;i<U.length;i++){
+    if(!U[i].aktiv)continue;
+    if(!U[i].splatka)continue;
+    var dates=uvNextDates(U[i].den||1,months);
+    for(var j=0;j<dates.length;j++){
+      var diff=Math.ceil((dates[j]-today)/86400000);
+      if(diff>=0&&diff<days)items.push({splatnost:dates[j].toISOString().slice(0,10),castka:U[i].splatka,nazev:U[i].nazev});
+    }
+  }
+  return items;
+}
+function updL(i,f,v){ensureUV();dat.leasingy[i][f]=(f==='aktiv')?v:(f==='nazev')?v:(parseFloat(v)||0);save();render();}
+function delLS(i){if(!confirm('Smazat?'))return;dat.leasingy.splice(i,1);save();render();}
+function addLS(){ensureUV();dat.leasingy.push({id:'l'+Date.now(),nazev:'Nový',uvery:0,poj:0,urok:0,den:1,aktiv:true});save();render();}
+function updU(i,f,v){ensureUV();var u=dat.uvery[i];if(!u)return;if(f==='aktiv')u[f]=v;else if(f==='nazev'||f==='doplaceni'||f==='mena')u[f]=v;else u[f]=(v===''||v===null)?null:parseFloat(v)||0;save();render();}
+function delUV(i){if(!confirm('Smazat?'))return;dat.uvery.splice(i,1);save();render();}
+function addUV(){ensureUV();dat.uvery.push({id:'u'+Date.now(),nazev:'Nový úvěr',celkem:0,splatka:0,zbyva:0,den:1,aktiv:true});save();render();}
+function ensureRZ(){if(!dat.rezie)dat.rezie=JSON.parse(JSON.stringify(DEF_REZIE));if(!dat.inv)dat.inv=JSON.parse(JSON.stringify(DEF_INV));}
+function rRezie(){
+  ensureRZ();var R=dat.rezie,INV=dat.inv;
+  var tR=0;for(var gi=0;gi<R.skupiny.length;gi++)for(var pi=0;pi<R.skupiny[gi].polozky.length;pi++)tR+=(+R.skupiny[gi].polozky[pi].castka||0);
+  var tI=0;for(var si=0;si<INV.length;si++)for(var pi=0;pi<INV[si].polozky.length;pi++)tI+=(+INV[si].polozky[pi].castka||0);
+  var html='<div class="cards" style="margin-bottom:20px;"><div class="card c3"><div class="cl">Rezie / mesic</div><div class="cv" style="color:var(--a3)">'+fmtK(tR)+'</div></div><div class="card c4"><div class="cl">Investice celkem</div><div class="cv" style="color:var(--a4)">'+fmtK(tI)+'</div></div></div>';
+  html+='<div class="sec" style="margin-bottom:16px;"><div class="sh"><div class="st">Rezie provozoven</div><button class="btn bg bsm" onclick="addRG()">+ Provozovna</button></div><div class="sb" style="padding:0;">';
+  for(var gi=0;gi<R.skupiny.length;gi++){
+    var g=R.skupiny[gi],gT=0;for(var pi=0;pi<g.polozky.length;pi++)gT+=(+g.polozky[pi].castka||0);
+    html+='<div style="padding:14px 18px;border-bottom:1px solid var(--bd);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><input type="text" value="'+g.nazev+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);font-weight:700;width:200px;padding:2px;" onblur="updRG('+gi+',this.value)"><div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:700;color:var(--a3)">'+fmtK(gT)+'/mes</span><button class="btn bg bsm" onclick="addRP('+gi+')">+ Polozka</button><button class="dbtn" style="opacity:1" onclick="delRG('+gi+')">X</button></div></div><table class="tbl"><thead><tr><th>Naklad</th><th class="r">Kc/mes</th><th></th></tr></thead><tbody>';
+    for(var pi=0;pi<g.polozky.length;pi++){var p=g.polozky[pi];html+='<tr><td><input type="text" value="'+p.nazev+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:200px;padding:2px;" onblur="updRP('+gi+','+pi+',\'nazev\',this.value)"></td><td class="r"><input type="number" value="'+(p.castka||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:100px;text-align:right;padding:2px;font-weight:600;" onblur="updRP('+gi+','+pi+',\'castka\',this.value)"></td><td><button class="dbtn" onclick="delRP('+gi+','+pi+')">X</button></td></tr>';}
+    html+='</tbody></table></div>';
+  }
+  html+='</div></div>';
+  html+='<div class="sec"><div class="sh"><div class="st">Investice</div><button class="btn bg bsm" onclick="addIG()">+ Projekt</button></div><div class="sb" style="padding:0;">';
+  for(var si=0;si<INV.length;si++){
+    var sk=INV[si],sT=0;for(var pi=0;pi<sk.polozky.length;pi++)sT+=(+sk.polozky[pi].castka||0);
+    html+='<div style="padding:14px 18px;border-bottom:1px solid var(--bd);"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><input type="text" value="'+sk.skupina+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);font-weight:700;width:200px;padding:2px;" onblur="updIG('+si+',this.value)"><div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:700;color:var(--a4)">'+fmtK(sT)+'</span><button class="btn bg bsm" onclick="addIP('+si+')">+ Polozka</button><button class="dbtn" style="opacity:1" onclick="delIG('+si+')">X</button></div></div><table class="tbl" style="min-width:500px;"><thead><tr><th>Nazev</th><th>Firma</th><th class="r">Castka</th><th></th></tr></thead><tbody>';
+    for(var pi=0;pi<sk.polozky.length;pi++){var p=sk.polozky[pi];html+='<tr><td><input type="text" value="'+p.nazev+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:130px;padding:2px;" onblur="updIP('+si+','+pi+',\'nazev\',this.value)"></td><td><input type="text" value="'+(p.firma||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--mu);width:70px;padding:2px;font-size:0.8rem;" onblur="updIP('+si+','+pi+',\'firma\',this.value)"></td><td class="r"><input type="number" value="'+(p.castka||'')+'" style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--tx);width:90px;text-align:right;padding:2px;font-weight:600;" onblur="updIP('+si+','+pi+',\'castka\',this.value)"></td><td><button class="dbtn" onclick="delIP('+si+','+pi+')">X</button></td></tr>';}
+    html+='</tbody></table></div>';
+  }
+  html+='</div></div>';
+  return html;
+}
+function updRG(gi,v){ensureRZ();dat.rezie.skupiny[gi].nazev=v;save();}
+function delRG(gi){if(!confirm('Smazat?'))return;dat.rezie.skupiny.splice(gi,1);save();render();}
+function addRG(){ensureRZ();dat.rezie.skupiny.push({id:'rg'+Date.now(),nazev:'Nova provozovna',polozky:[]});save();render();}
+function updRP(gi,pi,f,v){ensureRZ();dat.rezie.skupiny[gi].polozky[pi][f]=(f==='castka')?parseFloat(v)||0:v;save();render();}
+function delRP(gi,pi){ensureRZ();dat.rezie.skupiny[gi].polozky.splice(pi,1);save();render();}
+function addRP(gi){ensureRZ();dat.rezie.skupiny[gi].polozky.push({id:'r'+Date.now(),nazev:'Novy naklad',castka:0});save();render();}
+function updIG(si,v){ensureRZ();dat.inv[si].skupina=v;save();}
+function delIG(si){if(!confirm('Smazat?'))return;dat.inv.splice(si,1);save();render();}
+function addIG(){ensureRZ();dat.inv.push({id:'ig'+Date.now(),skupina:'Novy projekt',polozky:[]});save();render();}
+function updIP(si,pi,f,v){ensureRZ();dat.inv[si].polozky[pi][f]=(f==='castka')?parseFloat(v)||0:v;save();}
+function delIP(si,pi){ensureRZ();dat.inv[si].polozky.splice(pi,1);save();render();}
+function addIP(si){ensureRZ();dat.inv[si].polozky.push({id:'i'+Date.now(),nazev:'',firma:'',castka:0});save();render();}
+
+function ensureOD(){if(!dat.zam)dat.zam=JSON.parse(JSON.stringify(DEF_ZAM));if(!dat.odmeny)dat.odmeny={};}
+function odmKey(){return odmR+'_'+odmM;}
+function rOdmeny(){
+  ensureOD();var zam=dat.zam,key=odmKey(),md=dat.odmeny[key]||{};
+  var sks=[];for(var i=0;i<zam.length;i++)if(sks.indexOf(zam[i].sk)<0)sks.push(zam[i].sk);
+  var totM=0;for(var i=0;i<zam.length;i++)totM+=parseFloat((md[zam[i].id]||{}).castka)||0;
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;"><div style="display:flex;align-items:center;gap:8px;"><button class="btn bg bsm" onclick="odmPrev()">&#9664;</button><div style="font-family:Syne,sans-serif;font-size:1.1rem;font-weight:800;min-width:160px;text-align:center;">'+MNAM[odmM]+' '+odmR+'</div><button class="btn bg bsm" onclick="odmNext()">&#9654;</button></div><button class="btn bp bsm" onclick="addZamMo()">+ Pridat zamestnance</button></div>';
+  html+='<div class="cards" style="margin-bottom:20px;"><div class="card c3"><div class="cl">Odmeny '+MNAM[odmM]+'</div><div class="cv" style="color:var(--a3)">'+fmtK(totM)+'</div></div></div>';
+  for(var si=0;si<sks.length;si++){
+    var sk=sks[si],col=SKODM[sk]||'var(--a)';
+    var zsk=[];for(var zi=0;zi<zam.length;zi++)if(zam[zi].sk===sk)zsk.push(zam[zi]);
+    var skT=0;for(var zi=0;zi<zsk.length;zi++)skT+=parseFloat((md[zsk[zi].id]||{}).castka)||0;
+    html+='<div class="sec" style="margin-bottom:12px;"><div class="sh"><div class="st" style="color:'+col+'">'+sk+'</div><span style="font-weight:700;color:'+col+'">'+(skT?fmtK(skT):'--')+'</span></div><div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:420px;"><thead><tr><th>Jmeno</th><th class="r">Odmena Kc</th><th>Info</th><th></th></tr></thead><tbody>';
+    for(var zi=0;zi<zsk.length;zi++){var z=zsk[zi],od=md[z.id]||{};html+='<tr><td><b>'+z.jmeno+'</b></td><td class="r"><input type="number" value="'+(od.castka||'')+'" placeholder="0" style="background:none;border:none;border-bottom:2px solid '+col+';color:'+col+';width:100px;text-align:right;padding:2px;font-weight:700;font-size:0.95rem;" onblur="updOd(\''+z.id+'\',this.value,null)"></td><td><input type="text" value="'+(od.info||'')+'" placeholder="za co..." style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--mu);width:200px;padding:2px;font-size:0.82rem;" onblur="updOd(\''+z.id+'\',null,this.value)"></td><td><button class="dbtn" onclick="rmZam(\''+z.id+'\')" style="opacity:1">X</button></td></tr>';}
+    html+='</tbody></table></div></div>';
+  }
+  return html;
+}
+function odmPrev(){odmM--;if(odmM<0){odmM=11;odmR--;}render();}
+function odmNext(){odmM++;if(odmM>11){odmM=0;odmR++;}render();}
+function updOd(zid,castka,info){ensureOD();var key=odmKey();if(!dat.odmeny[key])dat.odmeny[key]={};if(!dat.odmeny[key][zid])dat.odmeny[key][zid]={castka:0,info:''};if(castka!==null)dat.odmeny[key][zid].castka=parseFloat(castka)||0;if(info!==null)dat.odmeny[key][zid].info=info;save();}
+function rmZam(id){if(!confirm('Odebrat?'))return;dat.zam=dat.zam.filter(function(z){return z.id!==id;});save();render();}
+function addZamMo(){var sk=SKODML.map(function(s){return '<option>'+s+'</option>';}).join('');var m=document.createElement('div');m.className='mo op';m.onclick=function(e){if(e.target===m)m.remove();};m.innerHTML='<div class="mb"><h3>Pridat zamestnance</h3><div class="mg"><div class="fg" style="grid-column:1/-1"><label>Jmeno</label><input type="text" id="zJm" style="width:100%"></div><div class="fg"><label>Skupina</label><select id="zSk" style="width:100%">'+sk+'</select></div></div><div class="mbt"><button class="btn bg" onclick="this.closest(\'.mo\').remove()">Zrusit</button><button class="btn bp" onclick="saveZam()">Pridat</button></div></div>';document.body.appendChild(m);document.getElementById('zJm').focus();}
+function saveZam(){var n=document.getElementById('zJm').value.trim();if(!n)return;ensureOD();dat.zam.push({id:'z'+Date.now(),jmeno:n,sk:document.getElementById('zSk').value});save();document.querySelector('.mo.op').remove();render();toast('Pridan: '+n);}
+
+function ensureVY(){if(!dat.vypZam)dat.vypZam=JSON.parse(JSON.stringify(DEF_VYP));if(!dat.vypMes)dat.vypMes={};}
+function vypKey(){return vypR+'_'+vypM;}
+function rVyplaty(){
+  ensureVY();
+  var snav='<div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;"><button class="stb'+(vypV==='p'?' on':'')+'" onclick="vypV=\'p\';render()">Prehled sazeb</button><button class="stb'+(vypV==='m'?' on':'')+'" onclick="vypV=\'m\';render()">Mesicni vyplaty</button></div>';
+  if(vypV==='p')return snav+rVypP();
+  return snav+rVypM();
+}
+function rVypP(){
+  function typBadge(typ){
+    if(!typ)return '';
+    var tc=typ==='OSVČ'?'rgba(247,201,72,0.15)':'rgba(79,127,255,0.1)';
+    var tco=typ==='OSVČ'?'var(--a4)':'var(--a)';
+    return '<span style="font-size:0.68rem;padding:2px 7px;border-radius:4px;background:'+tc+';color:'+tco+'">'+typ+'</span>';
+  }
+  function fmtKc(v){return (v!=null&&v!=='')?v.toLocaleString('cs-CZ')+'\u00a0Kč':'—';}
+
+  var hodinove170=[
+    {sk:'Vedení',barva:'#4f7fff',zam:[
+      {jmeno:'Milan Moran',typ:'HPP',cista:350,hruba:465,naklad:620},
+      {jmeno:'Tomáš Prisčák',typ:'OSVČ',cista:345,hruba:400,naklad:400},
+      {jmeno:'Václav Hradecký',typ:'HPP',cista:320,hruba:400,naklad:535},
+      {jmeno:'Tomáš Živnůstka',typ:'OSVČ',cista:285,hruba:330,naklad:330}
+    ]},
+    {sk:'Výroba',barva:'#00d4aa',zam:[
+      {jmeno:'Petr Beneš',typ:'OSVČ',cista:265,hruba:320,naklad:320},
+      {jmeno:'Michal Špalda',typ:'HPP',cista:190,hruba:237,naklad:270},
+      {jmeno:'Jiří Pažout',typ:'HPP',cista:190,hruba:237,naklad:270},
+      {jmeno:'Karel Klouda',typ:'OSVČ',cista:200,hruba:240,naklad:240}
+    ]},
+    {sk:'Pracovníci Kelvion',barva:'#f7c948',zam:[
+      {jmeno:'Petr Hájek',typ:'HPP',cista:190,hruba:237,naklad:270},
+      {jmeno:'Josef Čapek',typ:'HPP',cista:190,hruba:237,naklad:270},
+      {jmeno:'Tomáš Malý',typ:'OSVČ',cista:220,hruba:250,naklad:250},
+      {jmeno:'Tomáš Národa',typ:'HPP',cista:160,hruba:200,naklad:267},
+      {jmeno:'František Veselý',typ:'HPP',cista:160,hruba:200,naklad:267},
+      {jmeno:'Ivan Sitar',typ:'OSVČ',cista:200,hruba:240,naklad:240}
+    ]}
+  ];
+  var hodinove200=[
+    {sk:'Výroba externí',barva:'#a855f7',zam:[
+      {jmeno:'Ihor Kudria',typ:'OSVČ',cista:230,hruba:260,naklad:260},
+      {jmeno:'Ivan',typ:'OSVČ',cista:245,hruba:285,naklad:285},
+      {jmeno:'Vasil Karchevky',typ:'OSVČ',cista:230,hruba:265,naklad:265},
+      {jmeno:'Maksym Kukushkin',typ:'OSVČ',cista:290,hruba:330,naklad:330},
+      {jmeno:'Válerii Servachynskyij',typ:'OSVČ',cista:250,hruba:290,naklad:290},
+      {jmeno:'Mihail Negara',typ:'OSVČ',cista:250,hruba:290,naklad:290}
+    ]},
+    {sk:'Spodní dvůr',barva:'#ff9800',zam:[
+      {jmeno:'Mykhailo Ivana',typ:'OSVČ',cista:240,hruba:280,naklad:280},
+      {jmeno:'Mykhailo Matichak',typ:'OSVČ',cista:200,hruba:240,naklad:240}
+    ]}
+  ];
+  var lakovnaHod=[
+    {sk:'Lakovna — hodinově',barva:'#ff6b35',zam:[
+      {jmeno:'Jan Beneš',typ:'OSVČ',cista:190,hruba:230,naklad:230}
+    ]}
+  ];
+  var fixniSek=[
+    {sk:'Administrativa',barva:'#00bcd4',fixni:true,zam:[
+      {jmeno:'Kristýna Bubeníčková',typ:'HPP',cista:43000,hruba:26000,dop:17000,naklad:51800},
+      {jmeno:'Olga Stempáková',typ:'HPP',cista:35000,hruba:25000,dop:10000,naklad:43450},
+      {jmeno:'Kateřina Kučerová',typ:'HPP',cista:9552,hruba:11750,dop:0,naklad:14410},
+      {jmeno:'Denisa Rulíková',typ:'HPP',cista:38000,hruba:48400,dop:0,naklad:64800}
+    ]},
+    {sk:'Rodiče',barva:'#ff9800',fixni:true,zam:[
+      {jmeno:'Vladimír Holánek',typ:'',cista:35000,hruba:26000,dop:14000,naklad:48800},
+      {jmeno:'Ilona Holánková',typ:'',cista:25000,hruba:26000,dop:4000,naklad:38800}
+    ]},
+    {sk:'Lakovna — fixně',barva:'#ff6b35',fixni:true,zam:[
+      {jmeno:'Jiří Vorlíček',typ:'HPP',cista:28000,hruba:35000,dop:17000,naklad:67000},
+      {jmeno:'Petr Hrdina',typ:'HPP',cista:26000,hruba:26000,dop:12000,naklad:47000},
+      {jmeno:'Jiřina Vorlíčková',typ:'HPP',cista:21600,hruba:26000,dop:5500,naklad:40500}
+    ]}
+  ];
+
+  function renderHodTable(sekce, hodin){
+    var html='';
+    for(var si=0;si<sekce.length;si++){
+      var sek=sekce[si];
+      var skT=0;for(var zi=0;zi<sek.zam.length;zi++)skT+=sek.zam[zi].naklad*hodin;
+      html+='<div style="border-bottom:1px solid var(--bd);">';
+      html+='<div style="padding:8px 18px 6px;display:flex;align-items:center;justify-content:space-between;">';
+      html+='<span style="font-size:0.8rem;font-weight:700;color:'+sek.barva+'">'+sek.sk+'</span>';
+      html+='<span style="font-size:0.8rem;font-weight:700;color:'+sek.barva+'">'+fmtKc(skT)+'</span>';
+      html+='</div>';
+      html+='<div style="overflow-x:auto;"><table class="tbl" style="min-width:560px;">';
+      html+='<thead><tr><th>Jméno</th><th>Typ</th><th class="r">Čistá Kč/h</th><th class="r">Hrubá Kč/h</th><th class="r" style="color:var(--a3)">Náklad Kč/h</th><th class="r" style="color:var(--a3)">Měs. náklad</th></tr></thead><tbody>';
+      for(var zi=0;zi<sek.zam.length;zi++){
+        var z=sek.zam[zi];
+        html+='<tr><td><b>'+z.jmeno+'</b></td><td>'+typBadge(z.typ)+'</td>';
+        html+='<td class="r" style="color:var(--mu)">'+fmtKc(z.cista)+'</td>';
+        html+='<td class="r">'+fmtKc(z.hruba)+'</td>';
+        html+='<td class="r" style="color:var(--a3);font-weight:700">'+fmtKc(z.naklad)+'</td>';
+        html+='<td class="r" style="font-weight:700">'+fmtKc(z.naklad*hodin)+'</td></tr>';
+      }
+      html+='</tbody></table></div></div>';
+    }
+    return html;
+  }
+
+  var html='';
+
+  // Hodinove 170h
+  html+='<div class="sec" style="margin-bottom:16px;">';
+  html+='<div class="sh" style="background:rgba(79,127,255,0.06)"><div class="st">Placení hodinově <span style="font-size:0.72rem;color:var(--mu);font-weight:400;margin-left:8px;">odhad za 170 hod/měs</span></div></div>';
+  html+=renderHodTable(hodinove170, 170);
+  html+='</div>';
+
+  // Hodinove 200h
+  html+='<div class="sec" style="margin-bottom:16px;">';
+  html+='<div class="sh" style="background:rgba(168,85,247,0.06)"><div class="st">Výroba externí <span style="font-size:0.72rem;color:var(--mu);font-weight:400;margin-left:8px;">odhad za 200 hod/měs</span></div></div>';
+  html+=renderHodTable(hodinove200, 200);
+  html+='</div>';
+
+  // Lakovna hodinove
+  html+='<div class="sec" style="margin-bottom:16px;">';
+  html+='<div class="sh" style="background:rgba(255,107,53,0.06)"><div class="st">Lakovna — hodinově <span style="font-size:0.72rem;color:var(--mu);font-weight:400;margin-left:8px;">odhad za 170 hod/měs</span></div></div>';
+  html+=renderHodTable(lakovnaHod, 170);
+  html+='</div>';
+
+  // Fixni mesicni
+  html+='<div class="sec" style="margin-bottom:100px;">';
+  html+='<div class="sh" style="background:rgba(0,212,170,0.06)"><div class="st">Placení fixně měsíčně</div></div>';
+  for(var si=0;si<fixniSek.length;si++){
+    var sek=fixniSek[si];
+    var skT=0;for(var zi=0;zi<sek.zam.length;zi++)skT+=sek.zam[zi].naklad;
+    html+='<div style="border-bottom:1px solid var(--bd);">';
+    html+='<div style="padding:8px 18px 6px;display:flex;align-items:center;justify-content:space-between;">';
+    html+='<span style="font-size:0.8rem;font-weight:700;color:'+sek.barva+'">'+sek.sk+'</span>';
+    html+='<span style="font-size:0.8rem;font-weight:700;color:'+sek.barva+'">'+fmtKc(skT)+'</span>';
+    html+='</div>';
+    html+='<div style="overflow-x:auto;"><table class="tbl" style="min-width:580px;">';
+    html+='<thead><tr><th>Jméno</th><th>Typ</th><th class="r">Čistá/měs</th><th class="r">Hrubá/měs</th><th class="r">Doplatek</th><th class="r" style="color:var(--a3)">Náklad firmy</th></tr></thead><tbody>';
+    for(var zi=0;zi<sek.zam.length;zi++){
+      var z=sek.zam[zi];
+      html+='<tr><td><b>'+z.jmeno+'</b></td><td>'+typBadge(z.typ)+'</td>';
+      html+='<td class="r" style="color:var(--mu)">'+fmtKc(z.cista)+'</td>';
+      html+='<td class="r">'+fmtKc(z.hruba)+'</td>';
+      html+='<td class="r" style="color:var(--a4)">'+fmtKc(z.dop)+'</td>';
+      html+='<td class="r" style="color:var(--a3);font-weight:700">'+fmtKc(z.naklad)+'</td></tr>';
+    }
+    html+='</tbody></table></div></div>';
+  }
+  html+='</div>';
+
+  // SPODNI LISTA
+  var listaItems=[
+    {label:'Kovovýroba',sub:'Vedení + Výroba + Externí + Administrativa + Rodiče',val:'1\u202f113\u202f510\u00a0Kč',col:'#4f7fff'},
+    {label:'Kelvion',sub:'Pracovníci Kelvion',val:'265\u202f880\u00a0Kč',col:'#f7c948'},
+    {label:'Lakovna',sub:'Fixně + Jan Beneš',val:'193\u202f600\u00a0Kč',col:'#ff6b35'},
+    {label:'Investice',sub:'Spodní dvůr',val:'104\u202f000\u00a0Kč',col:'#a855f7'}
+  ];
+  html+='<div style="position:fixed;bottom:0;left:0;right:0;background:var(--s);border-top:2px solid var(--bd);padding:12px 24px;display:flex;align-items:center;gap:0;z-index:200;box-shadow:0 -6px 24px rgba(0,0,0,0.5);overflow-x:auto;">';
+  for(var li=0;li<listaItems.length;li++){
+    var it=listaItems[li];
+    html+='<div style="flex:1;min-width:160px;padding:0 20px;'+(li>0?'border-left:1px solid var(--bd)':'')+'">';
+    html+='<div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:1px;">'+it.label+'</div>';
+    html+='<div style="font-family:Syne,sans-serif;font-size:1.05rem;font-weight:800;color:'+it.col+'">'+it.val+'</div>';
+    html+='<div style="font-size:0.6rem;color:var(--mu);margin-top:1px;">'+it.sub+'</div>';
+    html+='</div>';
+  }
+  html+='<div style="border-left:2px solid var(--bd);padding-left:24px;margin-left:8px;white-space:nowrap;">';
+  html+='<div style="font-size:0.62rem;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:1px;">Celkem (odhad)</div>';
+  html+='<div style="font-family:Syne,sans-serif;font-size:1.3rem;font-weight:800;color:var(--a3)">1\u202f676\u202f990\u00a0Kč</div>';
+  html+='</div>';
+  html+='</div>';
+  return html;
+}
+function rVypM(){
+  var zam=dat.vypZam,key=vypKey(),md=dat.vypMes[key]||{},sks=[];for(var i=0;i<zam.length;i++)if(sks.indexOf(zam[i].sk)<0)sks.push(zam[i].sk);
+  var totN=0;for(var zi=0;zi<zam.length;zi++){var z=zam[zi],m=md[z.id]||{};totN+=(parseFloat(m.hod)||0)*(z.naklad||z.hs||0)+(parseFloat(z.fixni)||0)+(parseFloat(z.dop)||0)+(parseFloat(m.extra)||0);}
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;"><div style="display:flex;align-items:center;gap:8px;"><button class="btn bg bsm" onclick="vypPrev()">&#9664;</button><div style="font-family:Syne,sans-serif;font-size:1.1rem;font-weight:800;min-width:160px;text-align:center;">'+MNAM[vypM]+' '+vypR+'</div><button class="btn bg bsm" onclick="vypNext()">&#9654;</button></div></div>';
+  html+='<div class="cards" style="margin-bottom:20px;"><div class="card c3"><div class="cl">Naklad firmy celkem</div><div class="cv" style="color:var(--a3)">'+fmtK(totN)+'</div></div></div>';
+  for(var si=0;si<sks.length;si++){
+    var sk=sks[si],col=SKODM[sk]||'var(--a)';
+    var zsk=[];for(var zi=0;zi<zam.length;zi++)if(zam[zi].sk===sk)zsk.push(zam[zi]);
+    var skN=0;for(var zi=0;zi<zsk.length;zi++){var z=zsk[zi],m=md[z.id]||{};skN+=(parseFloat(m.hod)||0)*(z.naklad||z.hs||0)+(parseFloat(z.fixni)||0)+(parseFloat(z.dop)||0)+(parseFloat(m.extra)||0);}
+    html+='<div class="sec" style="margin-bottom:12px;"><div class="sh"><div class="st" style="color:'+col+'">'+sk+'</div><span style="font-weight:700;color:'+col+'">'+(skN?fmtK(skN):'--')+'</span></div><div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:580px;"><thead><tr><th>Jmeno</th><th>Typ</th><th class="r">Sazba</th><th class="r" style="color:var(--a2)">Hodiny</th><th class="r" style="color:var(--a4)">Extra</th><th>Poznamka</th><th class="r">Naklad</th></tr></thead><tbody>';
+    for(var zi=0;zi<zsk.length;zi++){var z=zsk[zi],m=md[z.id]||{},hod=parseFloat(m.hod)||0,saz=z.naklad||z.hs||0,fix=parseFloat(z.fixni)||0,dop=parseFloat(z.dop)||0,ext=parseFloat(m.extra)||0,nc=hod*saz+fix+dop+ext;var tc=(z.typ==='OSVC')?'rgba(247,201,72,0.15)':'rgba(79,127,255,0.1)';var tco=(z.typ==='OSVC')?'var(--a4)':'var(--a)';html+='<tr><td><b>'+z.jmeno+'</b></td><td><span style="font-size:0.7rem;padding:2px 5px;border-radius:4px;background:'+tc+';color:'+tco+'">'+(z.typ||'HPP')+'</span></td><td class="r" style="color:var(--mu);font-size:0.8rem">'+(saz?saz+' /h':'--')+'</td><td class="r"><input type="number" value="'+(m.hod||'')+'" placeholder="0" style="background:none;border:none;border-bottom:2px solid var(--a2);color:var(--a2);width:65px;text-align:right;padding:2px;font-weight:700;font-size:0.95rem;" onblur="updVM(\''+z.id+'\',\'hod\',this.value)"></td><td class="r"><input type="number" value="'+(m.extra||'')+'" placeholder="0" style="background:none;border:none;border-bottom:1px solid var(--a4);color:var(--a4);width:75px;text-align:right;padding:2px;" onblur="updVM(\''+z.id+'\',\'extra\',this.value)"></td><td><input type="text" value="'+(m.poz||'')+'" placeholder="pozn..." style="background:none;border:none;border-bottom:1px solid var(--bd);color:var(--mu);width:120px;padding:2px;font-size:0.78rem;" onblur="updVM(\''+z.id+'\',\'poz\',this.value)"></td><td class="r" style="font-weight:700;color:'+(nc>0?'var(--a3)':'var(--mu)')+'">'+(nc?fmtK(nc):'--')+'</td></tr>';}
+    html+='<tr style="background:var(--s2)"><td colspan="6" style="font-weight:700;padding:8px 12px;">Celkem '+sk+'</td><td class="r" style="font-weight:700;color:'+col+'">'+(skN?fmtK(skN):'--')+'</td></tr></tbody></table></div></div>';
+  }
+  return html;
+}
+function vypPrev(){vypM--;if(vypM<0){vypM=11;vypR--;}render();}
+function vypNext(){vypM++;if(vypM>11){vypM=0;vypR++;}render();}
+function updVZ(id,f,v){ensureVY();var z=null;for(var i=0;i<dat.vypZam.length;i++)if(dat.vypZam[i].id===id){z=dat.vypZam[i];break;}if(z){z[f]=(v==='')?null:parseFloat(v)||0;save();render();}}
+function updVM(id,f,v){ensureVY();var key=vypKey();if(!dat.vypMes[key])dat.vypMes[key]={};if(!dat.vypMes[key][id])dat.vypMes[key][id]={};dat.vypMes[key][id][f]=(f==='poz')?v:(v===''?null:parseFloat(v)||0);save();}
+function delVZ(id){if(!confirm('Odebrat?'))return;dat.vypZam=dat.vypZam.filter(function(x){return x.id!==id;});save();render();}
+function addVZam(){var sk=SKODML.map(function(s){return '<option>'+s+'</option>';}).join('');var m=document.createElement('div');m.className='mo op';m.onclick=function(e){if(e.target===m)m.remove();};m.innerHTML='<div class="mb"><h3>Pridat zamestnance</h3><div class="mg"><div class="fg" style="grid-column:1/-1"><label>Jmeno</label><input type="text" id="vJm" style="width:100%"></div><div class="fg"><label>Skupina</label><select id="vSk" style="width:100%">'+sk+'</select></div><div class="fg"><label>Typ</label><select id="vTp" style="width:100%"><option value="">HPP</option><option value="OSVC">OSVC</option></select></div><div class="fg"><label>Naklad/h</label><input type="number" id="vNh" style="width:100%"></div><div class="fg"><label>Fixni/mes</label><input type="number" id="vFx" style="width:100%"></div></div><div class="mbt"><button class="btn bg" onclick="this.closest(\'.mo\').remove()">Zrusit</button><button class="btn bp" onclick="saveVZam()">Pridat</button></div></div>';document.body.appendChild(m);document.getElementById('vJm').focus();}
+function saveVZam(){var n=document.getElementById('vJm').value.trim();if(!n)return;ensureVY();dat.vypZam.push({id:'v'+Date.now(),jmeno:n,sk:document.getElementById('vSk').value,typ:document.getElementById('vTp').value,hs:null,naklad:parseFloat(document.getElementById('vNh').value)||null,fixni:parseFloat(document.getElementById('vFx').value)||null,dop:null});save();document.querySelector('.mo.op').remove();render();toast('Pridan');}
+
+function rCFChart(nezapl,nezavz,bal,today){
+  var days=60;
+  var dayData=[];
+  var run=bal;
+
+  // Faktury po splatnosti přidáme na den 0 (dnes)
+  var overdueInc=0,overdueOut=0,overdueItems=[];
+  for(var i=0;i<nezapl.length;i++){
+    if(nezapl[i].splatnost&&new Date(nezapl[i].splatnost)<today){
+      overdueInc+=(nezapl[i].dluh||0);
+      overdueItems.push(nezapl[i].nazev.split(' ').slice(0,2).join(' '));
+    }
+  }
+  for(var i=0;i<nezavz.length;i++){
+    if(nezavz[i].splatnost&&new Date(nezavz[i].splatnost)<today){
+      overdueOut+=(+nezavz[i].castka||0);
+    }
+  }
+
+  var uvItems=uvGetCashflowItems(days);
+
+  for(var di=0;di<days;di++){
+    var d=new Date(today);d.setDate(today.getDate()+di);
+    var ds=d.toISOString().slice(0,10);
+    var inc=0,out=0,items=[];
+
+    // Den 0 = dnes: přičti všechno co je po splatnosti
+    if(di===0){inc+=overdueInc;out+=overdueOut;items=items.concat(overdueItems);}
+
+    for(var i=0;i<nezapl.length;i++){if(nezapl[i].splatnost===ds){inc+=(nezapl[i].dluh||0);items.push(nezapl[i].nazev.split(' ').slice(0,2).join(' '));}}
+    for(var i=0;i<nezavz.length;i++){if(nezavz[i].splatnost===ds){out+=(+nezavz[i].castka||0);}}
+    for(var i=0;i<uvItems.length;i++){if(uvItems[i].splatnost===ds){out+=uvItems[i].castka;}}
+    run+=inc-out;
+    dayData.push({d:d,ds:ds,inc:inc,out:out,run:run,items:items});
+  }
+  // SVG chart
+  var PL=70,PR=20,PT=30,PB=50,H=200,W=Math.min(1100,window.innerWidth-120)||900;
+  var TW=W+PL+PR;
+  var runs=dayData.map(function(x){return x.run;});
+  var incs=dayData.map(function(x){return x.inc;});
+  var minV=Math.min.apply(null,runs)*1.05;
+  var maxV=Math.max.apply(null,runs.concat(incs))*1.05;
+  if(minV===maxV){minV=minV*0.9;maxV=maxV*1.1;}
+  var rng=maxV-minV||1,CH=H-PT-PB;
+  function toY(v){return H-PB-Math.round(((v-minV)/rng)*CH);}
+  var DW=Math.floor(W/days);
+  var svg='<svg width="100%" viewBox="0 0 '+TW+' '+H+'">';
+  // Grid lines
+  for(var gi=0;gi<=4;gi++){var gv=minV+(rng*gi/4),gy=toY(gv);svg+='<line x1="'+PL+'" y1="'+gy+'" x2="'+(TW-PR)+'" y2="'+gy+'" stroke="#2a3050" stroke-width="1"/><text x="'+(PL-5)+'" y="'+(gy+4)+'" text-anchor="end" font-family="monospace" font-size="9" fill="#6b7799">'+Math.round(gv/1000)+'k</text>';}
+  // Zero line
+  if(minV<0){var zy=toY(0);svg+='<line x1="'+PL+'" y1="'+zy+'" x2="'+(TW-PR)+'" y2="'+zy+'" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="4,3"/>';}
+  // Bars for income
+  for(var di=0;di<dayData.length;di++){var dd=dayData[di];if(dd.inc>0){var bx=PL+di*DW+1,bh=Math.round((dd.inc/rng)*CH),by=toY(dd.inc>0?dd.inc:0);svg+='<rect x="'+bx+'" y="'+Math.min(by,toY(0))+'" width="'+(DW-2)+'" height="'+Math.max(bh,2)+'" fill="#00d4aa" opacity="0.7" rx="1"/>';}}
+  // Bars for outgoing
+  for(var di=0;di<dayData.length;di++){var dd=dayData[di];if(dd.out>0){var bx=PL+di*DW+1,bh=Math.round((dd.out/rng)*CH),by=toY(0);svg+='<rect x="'+bx+'" y="'+by+'" width="'+(DW-2)+'" height="'+Math.max(bh,2)+'" fill="#ff6b6b" opacity="0.7" rx="1"/>';}}
+  // Balance line
+  var pts='';for(var di=0;di<dayData.length;di++){var cx=PL+di*DW+Math.floor(DW/2),cy=toY(dayData[di].run);pts+=cx+','+cy+' ';}
+  svg+='<polyline points="'+pts+'" fill="none" stroke="#f7c948" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+  // Dots only on days with events
+  for(var di=0;di<dayData.length;di++){var dd=dayData[di];if(dd.inc>0||dd.out>0){var cx=PL+di*DW+Math.floor(DW/2),cy=toY(dd.run);svg+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#f7c948" stroke="#0f1117" stroke-width="1.5"/>';}}
+  // X labels - every 7 days
+  for(var di=0;di<dayData.length;di+=7){var dd=dayData[di],d=dd.d,dm=d.getMonth()+1,dday=d.getDate();svg+='<text x="'+(PL+di*DW+Math.floor(DW/2))+'" y="'+(H-4)+'" text-anchor="middle" font-family="monospace" font-size="9" fill="#6b7799">'+(dday<10?'0':'')+dday+'.'+(dm<10?'0':'')+dm+'.</text>';}
+  // Today marker
+  svg+='<line x1="'+PL+'" y1="'+PT+'" x2="'+PL+'" y2="'+(H-PB)+'" stroke="#4f7fff" stroke-width="1.5" stroke-dasharray="3,3"/><text x="'+(PL+3)+'" y="'+(PT+10)+'" font-family="monospace" font-size="8" fill="#4f7fff">Dnes</text>';
+  svg+='</svg>';
+  // Find critical days
+  var critDays=[];
+  for(var di=0;di<dayData.length;di++){var dd=dayData[di];if(dd.inc>0||dd.out>0){var d=dd.d,dm=d.getMonth()+1,dday=d.getDate(),lbl=(dday<10?'0':'')+dday+'.'+(dm<10?'0':'')+dm+'.';critDays.push({lbl:lbl,inc:dd.inc,out:dd.out,run:dd.run,items:dd.items});}}
+  var critHtml='';
+  if(critDays.length>0){
+    critHtml='<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">';
+    for(var ci=0;ci<critDays.length&&ci<15;ci++){var cd=critDays[ci];var col=cd.run>=0?'#00d4aa':'#ff6b6b';critHtml+='<div style="background:'+col+'18;border:1px solid '+col+'44;border-radius:8px;padding:8px 12px;min-width:120px;"><div style="font-family:DM Mono,monospace;font-size:0.75rem;font-weight:700;color:'+col+';">'+cd.lbl+'</div>';if(cd.inc)critHtml+='<div style="font-size:0.68rem;color:#00d4aa;">+ '+fmtK(cd.inc)+'</div>';if(cd.out)critHtml+='<div style="font-size:0.68rem;color:#ff6b6b;">- '+fmtK(cd.out)+'</div>';critHtml+='<div style="font-size:0.72rem;color:'+col+';font-weight:600;">'+fmtK(cd.run)+'</div></div>';}
+    critHtml+='</div>';
+  }
+  return '<div class="sec" style="margin-bottom:16px;"><div class="sh"><div class="st">Denni cashflow — nasledujicich 60 dni</div></div><div class="sb" style="overflow-x:auto;">'+svg+'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:0.72rem;color:var(--mu);"><div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:8px;background:#00d4aa;border-radius:2px;"></div>Ocekavane prijmy</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:8px;background:#ff6b6b;border-radius:2px;"></div>Ocekavane vydaje</div><div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:8px;background:#f7c948;border-radius:2px;"></div>Pohyblivy zustatek</div></div>'+critHtml+'</div></div>';
+}
+
+function ensureCF(){
+  if(!dat.cfP)dat.cfP={};
+  if(Object.keys(dat.cfP).length===0){
+    for(var i=0;i<CF_INIT.length;i++){
+      var f=CF_INIT[i];
+      var m=f.nazev.match(/^(\d+)\s+(.*)/);
+      if(!m)continue;
+      dat.cfP[m[1]]={cislo:m[1],nazev:m[2].trim(),splatnost:f.splatnost,dluh:f.dluh};
+    }
+  }
+  if(!dat.cfZ||dat.cfZ.length===0)dat.cfZ=JSON.parse(JSON.stringify(Z_INIT));
+  if(!dat.cfBal)dat.cfBal=0;
+}
+
+// ── IMPORT ZÁVAZKŮ Z EXCELU ──
+function cfImportZ(){document.getElementById('cfZxlsxInput').click();}
+function cfHandleZxlsx(e){
+  var f=e.target.files[0];if(!f)return;
+  e.target.value='';
+  var r=new FileReader();
+  r.onload=function(ev){
+    if(typeof XLSX!=='undefined'){cfDoImportZ(ev.target.result);return;}
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=function(){cfDoImportZ(ev.target.result);};
+    document.head.appendChild(s);
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function cfDoImportZ(buf){
+  var wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
+  var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:null});
+  var hi=-1;
+  for(var i=0;i<Math.min(8,rows.length);i++){
+    var j=(rows[i]||[]).join('|').toUpperCase();
+    if(j.indexOf('FIRMA')>=0&&j.indexOf('SPLATNO')>=0){hi=i;break;}
+  }
+  if(hi<0){alert('Nenalezena hlavička (Firma + Splatno).');return;}
+  var hdr=rows[hi],iF=-1,iS=-1,iC=-1;
+  for(var j=0;j<hdr.length;j++){
+    if(!hdr[j])continue;
+    var h=String(hdr[j]).toUpperCase().trim();
+    if(h==='FIRMA'&&iF<0)iF=j;
+    else if(h.indexOf('SPLATNO')>=0&&iS<0)iS=j;
+    else if(h==='CELKEM'&&iC<0)iC=j;
+  }
+  if(iF<0||iS<0||iC<0){alert('Chybí sloupce Firma / Splatno / Celkem.');return;}
+  var nove=[];
+  for(var ri=hi+1;ri<rows.length;ri++){
+    var r=rows[ri];
+    if(!r||r[iF]==null)continue;
+    var firma=String(r[iF]).trim();
+    if(!firma||firma.toUpperCase()==='CELKEM')continue;
+    var sv=r[iS],spl='';
+    if(sv instanceof Date)spl=sv.toISOString().slice(0,10);
+    else if(typeof sv==='number'&&sv>40000)spl=new Date(Math.round((sv-25569)*86400000)).toISOString().slice(0,10);
+    else if(sv)spl=String(sv).slice(0,10);
+    if(!spl)continue;
+    var castka=parseFloat(r[iC])||0;
+    if(castka<=0)continue;
+    nove.push({id:'z'+ri,nazev:firma,splatnost:spl,castka:castka,zaplaceno:false});
+  }
+  dat.cfZ=nove;
+  save();render();
+  alert('✓ Závazky aktualizovány\n• '+nove.length+' položek\n• Celkem: '+fmtK(nove.reduce(function(s,z){return s+z.castka;},0)));
+}
+
+function cfList(){
+  var arr=[];
+  for(var k in dat.cfP)arr.push(dat.cfP[k]);
+  arr.sort(function(a,b){return parseInt(a.cislo)-parseInt(b.cislo);});
+  return arr;
+}
+
+// ── IMPORT Z EXCELU ──
+function cfImportXlsx(){document.getElementById('cfXlsxInput').click();}
+function cfHandleXlsx(e){
+  var f=e.target.files[0];if(!f)return;
+  e.target.value='';
+  var r=new FileReader();
+  r.onload=function(ev){
+    if(typeof XLSX!=='undefined'){cfDoImport(ev.target.result);return;}
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=function(){cfDoImport(ev.target.result);};
+    document.head.appendChild(s);
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function cfDoImport(buf){
+  ensureCF();
+  var wb=XLSX.read(new Uint8Array(buf),{type:'array',cellDates:true});
+  var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:null});
+
+  // Najdi hlavičku
+  var hi=-1;
+  for(var i=0;i<Math.min(8,rows.length);i++){
+    var joined=(rows[i]||[]).join('|').toUpperCase();
+    if(joined.indexOf('SPLATNOST')>=0&&joined.indexOf('DLUH')>=0){hi=i;break;}
+  }
+  if(hi<0){alert('Nenalezena hlavička (SPLATNOST + DLUH).');return;}
+
+  // Sloupce
+  var hdr=rows[hi],iN=-1,iS=-1,iD=-1;
+  for(var j=0;j<hdr.length;j++){
+    if(!hdr[j])continue;
+    var h=String(hdr[j]).toUpperCase().replace(/\s/g,'');
+    if((h==='NÁZEV'||h==='NAZEV')&&iN<0)iN=j;
+    else if(h==='SPLATNOST'&&iS<0)iS=j;
+    else if(h==='DLUH'&&iD<0)iD=j;
+  }
+  if(iN<0||iS<0||iD<0){alert('Chybí sloupce. Nalezeno: '+hdr.filter(Boolean).join(', '));return;}
+
+  // Přečti všechny faktury z Excelu do mapy cislo->dluh
+  var excelData={};
+  for(var ri=hi+1;ri<rows.length;ri++){
+    var r=rows[ri];
+    if(!r||r[iN]==null)continue;
+    var raw=String(r[iN]).trim();
+    var m=raw.match(/^(\d+)\s+(.*)/);
+    if(!m)continue;
+    var cislo=m[1];
+    var nazev=m[2].trim();
+    var dluh=parseFloat(r[iD])||0;
+    var sv=r[iS],spl='';
+    if(sv instanceof Date)spl=sv.toISOString().slice(0,10);
+    else if(typeof sv==='number'&&sv>40000)spl=new Date(Math.round((sv-25569)*86400000)).toISOString().slice(0,10);
+    else if(sv)spl=String(sv).slice(0,10);
+    if(!spl)continue;
+    excelData[cislo]={nazev:nazev,splatnost:spl,dluh:dluh};
+  }
+
+  var zaplaceno=0,pridano=0,aktualizovano=0;
+
+  // 1. Projdi existující — co má dluh=0 v Excelu → smaž
+  for(var cislo in dat.cfP){
+    if(excelData[cislo]!==undefined&&excelData[cislo].dluh===0){
+      delete dat.cfP[cislo];
+      zaplaceno++;
+    } else if(excelData[cislo]!==undefined&&excelData[cislo].dluh>0){
+      // Aktualizuj pokud se změnil dluh nebo splatnost
+      var ex=dat.cfP[cislo],nd=excelData[cislo];
+      if(Math.round(ex.dluh)!==Math.round(nd.dluh)||ex.splatnost!==nd.splatnost){
+        ex.dluh=nd.dluh;ex.splatnost=nd.splatnost;ex.nazev=nd.nazev;aktualizovano++;
+      }
+    }
+  }
+
+  // 2. Přidej nové (ty co nejsou v dat.cfP)
+  for(var cislo in excelData){
+    if(!dat.cfP[cislo]&&excelData[cislo].dluh>0){
+      var nd=excelData[cislo];
+      dat.cfP[cislo]={cislo:cislo,nazev:nd.nazev,splatnost:nd.splatnost,dluh:nd.dluh};
+      pridano++;
+    }
+  }
+
+  save();render();
+  alert('✓ Import dokončen:\n• '+zaplaceno+' faktur zaplaceno (smazáno)\n• '+pridano+' nových přidáno\n• '+aktualizovano+' aktualizováno');
+}
+
+// ── ZOBRAZENÍ ──
+function rCashflow(){
+  ensureCF();
+  var faktury=cfList();
+  var z=dat.cfZ,bal=+dat.cfBal||0;
+  var today=new Date();today.setHours(0,0,0,0);
+  var nezapl=faktury; // v dat.cfP jsou jen nezaplacené (zaplacené se smažou při importu)
+  var pospl=nezapl.filter(function(f){return f.splatnost&&new Date(f.splatnost)<today;});
+  var tP=nezapl.reduce(function(s,f){return s+f.dluh;},0);
+  var tO=pospl.reduce(function(s,f){return s+f.dluh;},0);
+  var nezavz=z.filter(function(f){return !f.zaplaceno;});
+  var tZ=nezavz.reduce(function(s,f){return s+(+f.castka||0);},0);
+
+  var lastBackupRaw=localStorage.getItem(SK+'_lastBackup');
+  var lastBackup=lastBackupRaw?new Date(lastBackupRaw):null;
+  var daysSince=lastBackup?Math.floor((Date.now()-lastBackup.getTime())/86400000):null;
+  var backupMsg=!lastBackup?'<span class="backup-warn">⚠️ Zatím nemáš uloženou žádnou zálohu!</span>':(daysSince>14?'<span class="backup-warn">⚠️ Poslední záloha před '+daysSince+' dny — doporuč zálohu obnovit.</span>':'✅ Poslední záloha: '+lastBackup.toLocaleDateString('cs-CZ'));
+  var backupPanel='<div class="backup-panel"><div><div style="font-weight:800;font-family:Syne,sans-serif;margin-bottom:3px;">💾 Záloha dat</div><div style="font-size:0.84rem;color:var(--mu)">'+backupMsg+'</div></div><button class="btn bp bsm" onclick="expD()">💾 Stáhnout zálohu</button></div>';
+
+  var nav='<div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;align-items:center;justify-content:space-between;">'
+    +'<div style="display:flex;gap:6px;">'
+    +'<button class="stb'+(cfTab==='p'?' on':'')+'" onclick="cfTab=\'p\';render()">Přehled</button>'
+    +'<button class="stb'+(cfTab==='ph'?' on':'')+'" onclick="cfTab=\'ph\';render()">Pohledávky ('+nezapl.length+')</button>'
+    +'<button class="stb'+(cfTab==='z'?' on':'')+'" onclick="cfTab=\'z\';render()">Závazky</button>'
+    +'</div>'
+    +'<div><input type="file" id="cfXlsxInput" accept=".xlsx" style="display:none" onchange="cfHandleXlsx(event)">'
+    +'<button class="btn bg bsm" onclick="cfImportXlsx()" style="border-color:#4f7fff;color:#4f7fff;">⬆ Aktualizovat z Excelu</button></div>'
+    +'</div>';
+
+  if(cfTab==='ph')return backupPanel+nav+rCFPohledavky(nezapl,pospl,tP,tO,bal,today);
+  if(cfTab==='z')return backupPanel+nav+rCFZavazky(nezavz,tZ,today);
+  return backupPanel+nav+rCFPrehled(nezapl,pospl,nezavz,bal,tP,tO,tZ,today);
+}
+
+function rCFPrehled(nezapl,pospl,nezavz,bal,tP,tO,tZ,today){
+  var volny=bal+tP-tZ;
+  var zc=volny>=500000?'#00d4aa':volny>=200000?'#f7c948':'#ff6b6b';
+  var zt=volny>=500000?'ZELENÁ ZÓNA':volny>=200000?'ŽLUTÁ ZÓNA':'ČERVENÁ ZÓNA';
+  var ztxt=volny>=500000?'Můžete nakupovat a investovat':volny>=200000?'Pozor — šetřete, s investicemi počkejte':'Nekupujte, neinvestujte — cashflow je v riziku';
+
+  var html='<div style="background:'+zc+'18;border:2px solid '+zc+';border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;">'
+    +'<div style="width:52px;height:52px;border-radius:50%;background:'+zc+';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#0f1117;text-align:center;flex-shrink:0;line-height:1.2">'+zt.split(' ')[0]+'</div>'
+    +'<div><div style="font-weight:700;font-size:1rem;color:'+zc+'">'+zt+'</div>'
+    +'<div style="font-size:0.82rem;color:var(--mu);margin-top:4px">'+ztxt+'</div>'
+    +'<div style="font-size:0.72rem;color:var(--mu);margin-top:6px">Volný cashflow: <b style="color:'+zc+'">'+fmtK(volny)+'</b></div>'
+    +'</div></div>';
+
+  // Karty
+  var uvPristi=uvGetCashflowItems(31);
+  var tUVmes=0;for(var uvi=0;uvi<uvPristi.length;uvi++)tUVmes+=uvPristi[uvi].castka;
+  html+='<div class="cards" style="margin-bottom:20px;">'
+    +'<div class="card"><div class="cl">Zůstatek na účtu</div><div class="cv" style="color:var(--a2)">'+fmtK(bal)+'</div>'
+    +'<div class="cs" style="cursor:pointer;color:var(--a)" onclick="cfShowBal()">Upravit</div></div>'
+    +'<div class="card c2"><div class="cl">Pohledávky</div><div class="cv">'+fmtK(tP)+'</div><div class="cs">'+nezapl.length+' faktur</div></div>'
+    +'<div class="card c3"><div class="cl">Po splatnosti</div><div class="cv" style="color:var(--a3)">'+fmtK(tO)+'</div><div class="cs">'+pospl.length+' faktur</div></div>'
+    +'<div class="card c4"><div class="cl">Závazky</div><div class="cv" style="color:var(--a4)">'+fmtK(tZ)+'</div></div>'
+    +'<div class="card c5"><div class="cl">Leasingy + úvěry / 30 dní</div><div class="cv" style="color:#a855f7">'+fmtK(tUVmes)+'</div><div class="cs" style="cursor:pointer;color:var(--a)" onclick="goTab(\'uvery\')">Detail →</div></div>'
+    +'</div>';
+
+  html+='<div id="cfBB" style="display:none;background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:12px 16px;margin-bottom:16px;">'
+    +'<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+    +'<label style="margin:0">Zůstatek (Kč):</label><input type="number" id="cfBI" value="'+bal+'" style="width:160px;">'
+    +'<button class="btn bp bsm" onclick="cfSvBal()">Uložit</button>'
+    +'<button class="btn bg bsm" onclick="document.getElementById(\'cfBB\').style.display=\'none\'">×</button>'
+    +'</div></div>';
+
+  // Graf 60 dní
+  html+=rCFChart(nezapl,nezavz,bal,today);
+
+  // Po splatnosti
+  if(pospl.length>0){
+    var ov=pospl.slice().sort(function(a,b){return a.splatnost<b.splatnost?-1:1;});
+    html+='<div class="sec"><div class="sh"><div class="st" style="color:var(--a3)">Po splatnosti ('+ov.length+')</div></div>'
+      +'<div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl"><thead>'
+      +'<tr><th>č.</th><th>Faktura</th><th>Splatnost</th><th class="r">Dní po</th><th class="r">Dluh</th><th></th></tr>'
+      +'</thead><tbody>';
+    for(var i=0;i<ov.length;i++){
+      var f=ov[i],dl=Math.ceil((today-new Date(f.splatnost))/86400000);
+      html+='<tr>'
+        +'<td style="color:var(--mu);font-family:DM Mono,monospace;font-size:0.8rem">'+f.cislo+'</td>'
+        +'<td><b>'+f.nazev+'</b></td>'
+        +'<td style="font-size:0.82rem">'+fmtD(f.splatnost)+'</td>'
+        +'<td class="r" style="color:var(--a3);font-weight:700">'+dl+'</td>'
+        +'<td class="r" style="font-weight:700;color:var(--a3)">'+fmtK(f.dluh)+'</td>'
+        +'<td><button class="btn bsm" style="background:rgba(0,212,170,0.1);color:var(--a2);border:1px solid rgba(0,212,170,0.2)" onclick="cfPayRucne(\''+f.cislo+'\')">✓ Zaplaceno</button></td>'
+        +'</tr>';
+    }
+    html+='</tbody></table></div></div>';
+  }
+  return html;
+}
+
+function rCFPohledavky(nezapl,pospl,tP,tO,bal,today){
+  var sorted=nezapl.slice().sort(function(a,b){return (a.splatnost||'')>(b.splatnost||'')?1:-1;});
+  var html='<div style="display:flex;justify-content:flex-end;margin-bottom:12px;">'
+    +'<button class="btn bp bsm" onclick="cfAddP()">+ Přidat</button></div>'
+    +'<div class="sec"><div class="sh"><div class="st">Nezaplacené pohledávky</div><b style="color:var(--a2)">'+fmtK(tP)+'</b></div>'
+    +'<div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:520px;">'
+    +'<thead><tr><th>č.</th><th>Název</th><th>Splatnost</th><th class="r">Dní</th><th class="r">Dluh</th><th></th></tr></thead><tbody>';
+  if(!sorted.length)html+='<tr><td colspan="6" class="nd">Vše zaplaceno 🎉</td></tr>';
+  for(var i=0;i<sorted.length;i++){
+    var f=sorted[i];
+    var dl=f.splatnost?Math.ceil((new Date(f.splatnost)-today)/86400000):null;
+    var col=dl===null?'var(--mu)':dl<0?'var(--a3)':dl<=7?'var(--a4)':'var(--a2)';
+    var dt=dl===null?'--':dl<0?Math.abs(dl)+' po':dl===0?'Dnes':dl+' d';
+    html+='<tr>'
+      +'<td style="color:var(--mu);font-family:DM Mono,monospace;font-size:0.8rem">'+f.cislo+'</td>'
+      +'<td><b>'+f.nazev+'</b></td>'
+      +'<td style="font-size:0.82rem">'+fmtD(f.splatnost)+'</td>'
+      +'<td class="r" style="color:'+col+';font-weight:700">'+dt+'</td>'
+      +'<td class="r" style="font-weight:700">'+fmtK(f.dluh)+'</td>'
+      +'<td style="display:flex;gap:4px;">'
+      +'<button class="btn bsm" style="background:rgba(0,212,170,0.1);color:var(--a2);border:1px solid rgba(0,212,170,0.2)" onclick="cfPayRucne(\''+f.cislo+'\')">✓</button>'
+      +'<button class="dbtn" style="opacity:1" onclick="cfRmP(\''+f.cislo+'\')">×</button>'
+      +'</td></tr>';
+  }
+  html+='</tbody></table></div></div>';
+  return html;
+}
+
+function rCFZavazky(nezavz,tZ,today){
+  ensureUV();
+  var L=dat.leasingy,U=dat.uvery;
+
+  // Sestavime splatky leasingu a uveru pro nasledujicich 60 dni
+  var uvItems=uvGetCashflowItems(60);
+  // Seradime podle splatnosti
+  uvItems=uvItems.slice().sort(function(a,b){return a.splatnost>b.splatnost?1:-1;});
+  var tUV=0;for(var i=0;i<uvItems.length;i++)tUV+=uvItems[i].castka;
+
+  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+    +'<button class="btn bp bsm" onclick="cfAddZ()">+ Přidat ručně</button>'
+    +'<div><input type="file" id="cfZxlsxInput" accept=".xlsx" style="display:none" onchange="cfHandleZxlsx(event)">'
+    +'<button class="btn bg bsm" onclick="cfImportZ()" style="border-color:#4f7fff;color:#4f7fff;">⬆ Aktualizovat z Excelu</button>'
+    +'</div></div>';
+
+  // ── LEASINGY A UVERY ── příští splátky (60 dní)
+  html+='<div class="sec" style="margin-bottom:16px;">'
+    +'<div class="sh"><div class="st" style="color:var(--a4)">Leasingy a úvěry — příští splátky <span style="font-size:0.72rem;color:var(--mu);font-weight:400;margin-left:8px;">příštích 60 dní</span></div>'
+    +'<b style="color:var(--a4)">'+fmtK(tUV)+'</b></div>'
+    +'<div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:480px;">'
+    +'<thead><tr><th>Název</th><th>Typ</th><th>Splatnost</th><th class="r">Dní</th><th class="r">Částka</th></tr></thead><tbody>';
+
+  if(!uvItems.length){
+    html+='<tr><td colspan="5" class="nd">Žádné splátky v příštích 60 dnech.</td></tr>';
+  }
+  for(var i=0;i<uvItems.length;i++){
+    var it=uvItems[i];
+    var dl=it.splatnost?Math.ceil((new Date(it.splatnost)-today)/86400000):null;
+    var col=dl===null?'var(--mu)':dl<0?'var(--a3)':dl<=7?'var(--a4)':'var(--tx)';
+    var dt=dl===null?'--':dl<0?Math.abs(dl)+' po':dl===0?'Dnes':dl+' d';
+    var rowBg=dl!==null&&dl<=7?'background:rgba(247,201,72,0.04)':'';
+    // Zjisti jestli je to leasing nebo uver
+    var typLabel='Leasing';var typCol='#a855f7';
+    for(var j=0;j<U.length;j++){if(U[j].nazev===it.nazev){typLabel='Úvěr';typCol='var(--a4)';break;}}
+    html+='<tr style="'+rowBg+'">'
+      +'<td><b>'+it.nazev+'</b></td>'
+      +'<td><span style="font-size:0.68rem;padding:2px 7px;border-radius:4px;background:'+typCol+'22;color:'+typCol+'">'+typLabel+'</span></td>'
+      +'<td style="font-size:0.82rem;color:var(--mu)">'+fmtD(it.splatnost)+'</td>'
+      +'<td class="r" style="color:'+col+';font-weight:700">'+dt+'</td>'
+      +'<td class="r" style="font-weight:700;color:var(--a4)">'+fmtK(it.castka)+'</td>'
+      +'</tr>';
+  }
+  html+='</tbody></table></div></div>';
+
+  // ── OSTATNI ZAVAZKY ──
+  html+='<div class="sec"><div class="sh"><div class="st">Ostatní závazky k úhradě</div><b style="color:var(--a3)">'+fmtK(tZ)+'</b></div>'
+    +'<div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl" style="min-width:500px;">'
+    +'<thead><tr><th>Firma</th><th>Splatnost</th><th class="r">Dní</th><th class="r">Celkem s DPH</th><th></th></tr></thead><tbody>';
+  if(!nezavz.length)html+='<tr><td colspan="5" class="nd">Žádné závazky.</td></tr>';
+  var sorted=nezavz.slice().sort(function(a,b){return (a.splatnost||'')>(b.splatnost||'')?1:-1;});
+  for(var i=0;i<sorted.length;i++){
+    var x=sorted[i];
+    var dl=x.splatnost?Math.ceil((new Date(x.splatnost)-today)/86400000):null;
+    var col=dl===null?'var(--mu)':dl<0?'var(--a3)':dl<=7?'var(--a4)':'var(--tx)';
+    var dt=dl===null?'--':dl<0?Math.abs(dl)+' po':dl===0?'Dnes':dl+' d';
+    var rowBg=dl!==null&&dl<0?'background:rgba(255,107,107,0.05)':'';
+    html+='<tr style="'+rowBg+'">'
+      +'<td><b>'+x.nazev+'</b></td>'
+      +'<td style="font-size:0.82rem">'+fmtD(x.splatnost)+'</td>'
+      +'<td class="r" style="color:'+col+';font-weight:700">'+dt+'</td>'
+      +'<td class="r" style="font-weight:700;color:var(--a3)">'+fmtK(x.castka)+'</td>'
+      +'<td style="display:flex;gap:4px;">'
+      +'<button class="btn bsm" style="background:rgba(0,212,170,0.1);color:var(--a2);border:1px solid rgba(0,212,170,0.2)" onclick="cfPayZ(\''+x.id+'\')">✓</button>'
+      +'<button class="dbtn" style="opacity:1" onclick="cfRmZ(\''+x.id+'\')">×</button>'
+      +'</td></tr>';
+  }
+  html+='</tbody></table></div></div>';
+  return html;
+}
+
+function cfShowBal(){document.getElementById('cfBB').style.display='block';document.getElementById('cfBI').focus();}
+function cfSvBal(){dat.cfBal=parseFloat(document.getElementById('cfBI').value)||0;save();render();toast('Uloženo');}
+function cfPayRucne(cislo){if(!confirm('Označit fakturu č.'+cislo+' jako zaplacenou (bude smazána)?'))return;delete dat.cfP[cislo];save();render();toast('Zaplaceno ✓');}
+function cfRmP(cislo){if(!confirm('Smazat fakturu č.'+cislo+'?'))return;delete dat.cfP[cislo];save();render();}
+function cfPayZ(id){for(var i=0;i<dat.cfZ.length;i++)if(dat.cfZ[i].id===id){dat.cfZ[i].zaplaceno=true;break;}save();render();toast('Zaplaceno ✓');}
+function cfRmZ(id){if(!confirm('Smazat?'))return;dat.cfZ=dat.cfZ.filter(function(x){return x.id!==id;});save();render();}
+function cfAddP(){
+  var m=document.createElement('div');m.className='mo op';m.onclick=function(e){if(e.target===m)m.remove();};
+  m.innerHTML='<div class="mb"><h3>Přidat pohledávku</h3><div class="mg">'
+    +'<div class="fg"><label>Číslo faktury</label><input type="number" id="cfPC2" style="width:100%" placeholder="212"></div>'
+    +'<div class="fg"><label>Název (firma)</label><input type="text" id="cfPN" style="width:100%"></div>'
+    +'<div class="fg"><label>Splatnost</label><input type="date" id="cfPS" style="width:100%"></div>'
+    +'<div class="fg"><label>Dluh s DPH (Kč)</label><input type="number" id="cfPD" placeholder="0" style="width:100%"></div>'
+    +'</div><div class="mbt"><button class="btn bg" onclick="this.closest(\'.mo\').remove()">Zrušit</button><button class="btn bp" onclick="cfSvP()">Přidat</button></div></div>';
+  document.body.appendChild(m);document.getElementById('cfPC2').focus();
+}
+function cfSvP(){
+  var cislo=document.getElementById('cfPC2').value.trim();
+  var nazev=document.getElementById('cfPN').value.trim();
+  if(!cislo||!nazev)return;
+  ensureCF();
+  dat.cfP[cislo]={cislo:cislo,nazev:nazev,splatnost:document.getElementById('cfPS').value,dluh:parseFloat(document.getElementById('cfPD').value)||0};
+  save();document.querySelector('.mo.op').remove();render();toast('Přidáno');
+}
+function cfAddZ(){
+  var m=document.createElement('div');m.className='mo op';m.onclick=function(e){if(e.target===m)m.remove();};
+  m.innerHTML='<div class="mb"><h3>Přidat závazek</h3><div class="mg">'
+    +'<div class="fg" style="grid-column:1/-1"><label>Dodavatel / Popis</label><input type="text" id="cfZN" style="width:100%"></div>'
+    +'<div class="fg"><label>Splatnost</label><input type="date" id="cfZS" style="width:100%"></div>'
+    +'<div class="fg"><label>Částka (Kč)</label><input type="number" id="cfZC" placeholder="0" style="width:100%"></div>'
+    +'</div><div class="mbt"><button class="btn bg" onclick="this.closest(\'.mo\').remove()">Zrušit</button><button class="btn bp" onclick="cfSvZ()">Přidat</button></div></div>';
+  document.body.appendChild(m);document.getElementById('cfZN').focus();
+}
+function cfSvZ(){
+  var n=document.getElementById('cfZN').value.trim();if(!n)return;
+  ensureCF();
+  dat.cfZ.push({id:'z'+Date.now(),nazev:n,splatnost:document.getElementById('cfZS').value,castka:parseFloat(document.getElementById('cfZC').value)||0,zaplaceno:false});
+  save();document.querySelector('.mo.op').remove();render();toast('Přidáno');
+}
+
+
+function rOsobniFinance(){
+  var wks=dat.weeks.slice().sort(function(a,b){return a.datum<b.datum?-1:1;});
+  var last=wks[wks.length-1],prev=wks[wks.length-2];
+  if(!last)return'<div class="nd">Zadne zaznamy. Pouzijte zalozku Zadat tyden.</div>';
+  function diff(a,b,fn){var v=fn(a),p=b?fn(b):null;if(p===null)return'';var d=v-p,pct=p?(d/Math.abs(p)*100):0;return'<div class="cs '+(d>0?'up':d<0?'dn':'')+'">'+(d>=0?'+ ':'')+fmtK(d)+' ('+pct.toFixed(1)+'%)</div>';}
+
+  // Karty
+  var osobni=skupKc(last,'osobni'),investice=skupKc(last,'investice'),celkem=osobni+investice;
+  var html='<div class="cards" style="margin-bottom:20px;">';
+  html+='<div class="card"><div class="cl">Celkem osobni</div><div class="cv">'+fmtK(celkem)+'</div><div class="cs">'+fmtD(last.datum)+'</div>'+diff(last,prev,function(w){return skupKc(w,'osobni')+skupKc(w,'investice');})+'</div>';
+  html+='<div class="card" style="--c:#4f7fff"><div class="cl">Osobni majetek</div><div class="cv" style="color:#4f7fff">'+fmtK(osobni)+'</div>'+diff(last,prev,function(w){return skupKc(w,'osobni');})+'</div>';
+  html+='<div class="card" style="--c:#a855f7"><div class="cl">Investice</div><div class="cv" style="color:#a855f7">'+fmtK(investice)+'</div>'+diff(last,prev,function(w){return skupKc(w,'investice');})+'</div>';
+  html+='</div>';
+
+  // Jednotlive ucty - posledni hodnoty
+  var osobniUcty=UCTY.filter(function(u){return u.g==='osobni'||u.g==='investice';});
+  html+='<div class="sec" style="margin-bottom:16px;"><div class="sh"><div class="st">Stav uctu</div><span style="font-size:0.78rem;color:var(--mu)">'+fmtD(last.datum)+'</span></div><div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl"><thead><tr><th>Ucet</th><th>Skupina</th><th class="r">Aktualni stav</th><th class="r">Zmena</th></tr></thead><tbody>';
+  for(var i=0;i<osobniUcty.length;i++){
+    var u=osobniUcty[i];
+    var val=ucetKc(last,u),pval=prev?ucetKc(prev,u):null;
+    var d=pval!==null?val-pval:null;
+    var gc=u.g==='investice'?'#a855f7':'#4f7fff';
+    var gcl=u.g==='investice'?'Investice':'Osobni';
+    html+='<tr><td><b>'+u.label+'</b>'+(u.sfx==='EUR'?' <span style="font-size:0.7rem;color:var(--mu)">(EUR × '+EUR+')</span>':'')+'</td>';
+    html+='<td><span style="font-size:0.72rem;padding:2px 8px;border-radius:12px;background:'+gc+'22;color:'+gc+'">'+gcl+'</span></td>';
+    html+='<td class="r" style="font-weight:700">'+fmtK(val)+'</td>';
+    html+='<td class="r '+(d===null?'':(d>0?'up':d<0?'dn':''))+'">'+(d===null?'--':(d>=0?'+ ':'')+fmtK(d))+'</td></tr>';
+  }
+  html+='</tbody></table></div></div>';
+
+  // Graf vyvoje
+  if(wks.length>=2){
+    var lines=[
+      {c:'#e8eaf0',label:'Celkem',fn:function(w){return skupKc(w,'osobni')+skupKc(w,'investice');}},
+      {c:'#4f7fff',label:'Osobni majetek',fn:function(w){return skupKc(w,'osobni');}},
+      {c:'#a855f7',label:'Investice',fn:function(w){return skupKc(w,'investice');}}
+    ];
+    html+=buildChart(wks,lines,'Vyvoj osobniho majetku','ch_osobni');
+  }
+  return html;
+}
+
+function rFiremniFinance(){
+  var wks=dat.weeks.slice().sort(function(a,b){return a.datum<b.datum?-1:1;});
+  var last=wks[wks.length-1],prev=wks[wks.length-2];
+  if(!last)return'<div class="nd">Zadne zaznamy. Pouzijte zalozku Zadat tyden.</div>';
+  function diff(fn){var v=fn(last),p=prev?fn(prev):null;if(p===null)return'';var d=v-p,pct=p?(d/Math.abs(p)*100):0;return'<div class="cs '+(d>0?'up':d<0?'dn':'')+'">'+(d>=0?'+ ':'')+fmtK(d)+' ('+pct.toFixed(1)+'%)</div>';}
+
+  var firemniUcty=UCTY.filter(function(u){return u.g==='firemni';});
+  var celkem=skupKc(last,'firemni');
+
+  // Karty
+  var html='<div class="cards" style="margin-bottom:20px;">';
+  html+='<div class="card c2"><div class="cl">Firemni majetek celkem</div><div class="cv" style="color:var(--a2)">'+fmtK(celkem)+'</div><div class="cs">'+fmtD(last.datum)+'</div>'+diff(function(w){return skupKc(w,'firemni');})+'</div>';
+  for(var i=0;i<firemniUcty.length;i++){
+    var u=firemniUcty[i],val=ucetKc(last,u);
+    if(!val&&!prev)continue;
+    html+='<div class="card"><div class="cl">'+u.label+'</div><div class="cv" style="color:var(--a2)">'+fmtK(val)+'</div></div>';
+  }
+  html+='</div>';
+
+  // Tabulka uctu
+  html+='<div class="sec" style="margin-bottom:16px;"><div class="sh"><div class="st">Stav firemnich uctu</div><span style="font-size:0.78rem;color:var(--mu)">'+fmtD(last.datum)+'</span></div><div class="sb" style="padding:0;overflow-x:auto;"><table class="tbl"><thead><tr><th>Ucet / Firma</th><th class="r">Aktualni stav</th><th class="r">Predchozi</th><th class="r">Zmena</th><th class="r">Podil</th></tr></thead><tbody>';
+  for(var i=0;i<firemniUcty.length;i++){
+    var u=firemniUcty[i];
+    var val=ucetKc(last,u),pval=prev?ucetKc(prev,u):null;
+    var d=pval!==null?val-pval:null;
+    var podil=celkem?Math.round(val/celkem*100):0;
+    html+='<tr>';
+    html+='<td><b>'+u.label+'</b>'+(u.sfx==='EUR'?' <span style="font-size:0.7rem;color:var(--mu)">(EUR × '+EUR+')</span>':'')+'</td>';
+    html+='<td class="r" style="font-weight:700;color:var(--a2)">'+fmtK(val)+'</td>';
+    html+='<td class="r" style="color:var(--mu)">'+(pval!==null?fmtK(pval):'--')+'</td>';
+    html+='<td class="r '+(d===null?'':(d>0?'up':d<0?'dn':''))+'">'+(d===null?'--':(d>=0?'+ ':'')+fmtK(d))+'</td>';
+    html+='<td class="r"><div style="display:flex;align-items:center;gap:6px;justify-content:flex-end;"><span style="font-size:0.78rem;color:var(--mu)">'+podil+'%</span><div style="width:60px;height:6px;background:var(--bd);border-radius:3px;"><div style="width:'+podil+'%;height:100%;background:var(--a2);border-radius:3px;"></div></div></div></td>';
+    html+='</tr>';
+  }
+  html+='</tbody></table></div></div>';
+
+  // Graf vyvoje
+  if(wks.length>=2){
+    var lines=[
+      {c:'#00d4aa',label:'Firemni majetek',fn:function(w){return skupKc(w,'firemni');}}
+    ];
+    html+=buildChart(wks,lines,'Vyvoj firemniho majetku','ch_firemni');
+  }
+  return html;
+}
+
+load();ensureUV();ensureRZ();ensureOD();ensureVY();ensureCF();render();
+window.addEventListener('beforeunload',function(e){if(!localStorage.getItem(SK+'_lastBackup')){e.preventDefault();e.returnValue='Nezapomeň si stáhnout zálohu JSON.';}});
+
+</script>
+</body>
+</html>
