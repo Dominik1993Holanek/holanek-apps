@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelvion Objednávky</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f9eff;
+    --accent2: #00d4aa;
+    --warn: #f7c948;
+    --done: #3a4060;
+    --done-text: #555a7a;
+    --text: #e8eaf6;
+    --muted: #6b7099;
+    --red: #ff6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; min-height: 100vh; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 1.1rem; color: var(--accent); letter-spacing: 2px; }
+  .logo span { color: var(--accent2); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .stats { font-size: 0.78rem; color: var(--muted); }
+  .stats b { color: var(--warn); }
+
+  .search-bar {
+    flex: 1;
+    max-width: 340px;
+    position: relative;
+  }
+  .search-bar input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    padding: 8px 14px 8px 38px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; }
+
+  .main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+  .objednavka-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .objednavka-header:hover { border-color: var(--accent); }
+  .objednavka-header.open { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .obj-num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--accent); font-size: 0.95rem; }
+  .obj-date { font-size: 0.8rem; color: var(--muted); }
+  .obj-total { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 0.9rem; color: var(--warn); }
+  .obj-progress { font-size: 0.78rem; color: var(--muted); }
+  .obj-arrow { color: var(--muted); font-size: 0.8rem; transition: transform 0.2s; }
+  .objednavka-header.open .obj-arrow { transform: rotate(180deg); }
+
+  .objednavka-body {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .objednavka-body.open { display: block; }
+
+  .polozka {
+    display: grid;
+    grid-template-columns: 40px 140px 1fr 80px 90px 90px 36px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .polozka:last-child { border-bottom: none; }
+  .polozka:hover { background: var(--surface2); }
+  .polozka.vycerpana { opacity: 0.45; }
+  .polozka.vycerpana .mat-num { text-decoration: line-through; color: var(--done-text); }
+  .polozka.highlight { background: rgba(79,158,255,0.08); }
+
+  .col-check { display: flex; align-items: center; justify-content: center; }
+  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent2); cursor: pointer; }
+
+  .mat-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 600; color: var(--accent2); }
+  .mat-nazev { font-size: 0.83rem; color: var(--text); line-height: 1.4; }
+  .col-ks { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; text-align: right; }
+  .col-cena { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--muted); text-align: right; }
+  .col-celkem { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--warn); text-align: right; }
+  .col-del button { background: none; border: none; cursor: pointer; color: var(--red); opacity: 0.4; font-size: 0.9rem; transition: opacity 0.2s; padding: 4px; }
+  .col-del button:hover { opacity: 1; }
+
+  .tabel-head {
+    display: grid;
+    grid-template-columns: 40px 140px 1fr 80px 90px 90px 36px;
+    gap: 12px;
+    padding: 8px 18px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .vycerpane-toggle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 6px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-top: 1px solid var(--border);
+  }
+  .vycerpane-toggle:hover { color: var(--text); }
+
+  .btn-add {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-add:hover { background: #3a8ee6; }
+
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    width: 500px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h3 { font-size: 1rem; margin-bottom: 18px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
+  .form-row { margin-bottom: 12px; }
+  .form-row label { font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 4px; }
+  .form-row input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); padding: 8px 12px;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 0.88rem; outline: none;
+  }
+  .form-row input:focus { border-color: var(--accent); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 16px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; }
+  .btn-save { background: var(--accent2); color: #0f1117; border: none; border-radius: 8px; padding: 8px 20px; font-weight: 700; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 0.9rem; }
+  .empty b { display: block; font-size: 2rem; margin-bottom: 12px; }
+  .no-results { padding: 20px 18px; color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+  @media(max-width: 700px) {
+    .polozka, .tabel-head { grid-template-columns: 36px 110px 1fr 70px; }
+    .col-cena, .col-celkem, .col-del { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">KEL<span>VIO</span>N</div>
+  <div style="font-size:0.75rem;color:var(--muted)">Správa objednávek</div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Hledat číslo materiálu..." oninput="render()">
+  </div>
+  <div class="header-right">
+    <div class="stats" id="statsEl"></div>
+    <button class="btn-add" onclick="exportData()" style="background:var(--surface2);border:1px solid var(--border);color:var(--accent2);font-weight:600;">💾 Záloha</button>
+    <label class="btn-add" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-weight:400;">📂 Nahrát<input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>
+    <button class="btn-add" onclick="openModal()">+ Nová objednávka</button>
+  </div>
+</header>
+
+<div class="main" id="mainEl"></div>
+
+<!-- Modal nová objednávka -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>📋 Nová objednávka</h3>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Číslo objednávky</label>
+        <input id="mObjNum" placeholder="4500929297">
+      </div>
+      <div class="form-row">
+        <label>Datum vystavení</label>
+        <input id="mDatum" placeholder="26.05.2026">
+      </div>
+    </div>
+    <div id="polozkyForm"></div>
+    <button onclick="addPolozkaForm()" style="background:none;border:1px dashed var(--border);color:var(--muted);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;margin-top:8px;width:100%">+ Přidat položku</button>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Zrušit</button>
+      <button class="btn-save" onclick="saveModal()">Uložit objednávku</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal přidat položku do existující objednávky -->
+<div class="modal-bg" id="polozkaModalBg">
+  <div class="modal">
+    <h3>➕ Přidat položku</h3>
+    <input type="hidden" id="pmObjId">
+    <div class="form-row"><label>Číslo materiálu</label><input id="pmMatNum" placeholder="100304452"></div>
+    <div class="form-row"><label>Označení</label><input id="pmNazev" placeholder="Koleno 180° Cu 15x0.75-100D58"></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Pol.</label><input id="pmPol" placeholder="00010"></div>
+      <div class="form-row"><label>Množství (KS)</label><input id="pmKs" type="number" placeholder="400"></div>
+      <div class="form-row"><label>Cena/KS (EUR)</label><input id="pmCenaKs" type="number" step="0.01" placeholder="1.27"></div>
+      <div class="form-row"><label>Datum dodání</label><input id="pmDodani" placeholder="11.06.2026"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closePM()">Zrušit</button>
+      <button class="btn-save" onclick="savePM()">Přidat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SK = 'kelvion_objednavky_v1';
+let state = JSON.parse(localStorage.getItem(SK) || '[]');
+
+if (state.length === 0) {
+  state = [
+    {
+      id: 'obj1', num: '4500929297', datum: '26.05.2026',
+      polozky: [
+        {id:'p1', pol:'00010', mat:'100304452', nazev:'Koleno 180° Cu 15x0.75-100D58', ks:400, cenaKs:1.27, dodani:'11.06.2026', vycerpana:false},
+        {id:'p2', pol:'00020', mat:'100305223', nazev:'Trubka Cu 15x0.75x60 C2/15', ks:500, cenaKs:0.59, dodani:'16.06.2026', vycerpana:false},
+        {id:'p3', pol:'00030', mat:'100304440', nazev:'Koleno 180° Cu 12x1.0-66E40', ks:500, cenaKs:1.26, dodani:'18.06.2026', vycerpana:false},
+        {id:'p4', pol:'00040', mat:'100654405', nazev:'Koleno Cu 180° 12x1.0-50E51', ks:1500, cenaKs:1.42, dodani:'18.06.2026', vycerpana:false},
+        {id:'p5', pol:'00050', mat:'100305236', nazev:'Trubka Cu 12x1.0x52 D2/22.5', ks:400, cenaKs:0.54, dodani:'25.06.2026', vycerpana:false},
+        {id:'p6', pol:'00060', mat:'100304504', nazev:'Koleno 180° SS304 15x0.6-50H51', ks:300, cenaKs:0.99, dodani:'25.06.2026', vycerpana:false},
+        {id:'p7', pol:'00070', mat:'100888979', nazev:'Ht50 SS304 12x0.5x60 T1', ks:100, cenaKs:10.90, dodani:'25.06.2026', vycerpana:false},
+      ]
+    },
+    {
+      id: 'obj2', num: '4500926979', datum: '18.05.2026',
+      polozky: [
+        {id:'p8', pol:'00010', mat:'100305240', nazev:'Trubka SS304 15x0.6x60 S1', ks:500, cenaKs:0.43, dodani:'25.06.2026', vycerpana:false},
+      ]
+    }
+  ];
+  save();
+}
+
+function save() { localStorage.setItem(SK, JSON.stringify(state)); }
+function uid() { return Math.random().toString(36).slice(2); }
+
+let openObjs = new Set(['obj1','obj2']);
+let showVycerpane = {};
+
+function render() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const main = document.getElementById('mainEl');
+
+  let totalItems = 0, doneItems = 0;
+  state.forEach(o => o.polozky.forEach(p => { totalItems++; if(p.vycerpana) doneItems++; }));
+  document.getElementById('statsEl').innerHTML = `Aktivních: <b>${totalItems - doneItems}</b> / ${totalItems}`;
+
+  if (state.length === 0) {
+    main.innerHTML = '<div class="empty"><b>📋</b>Zatím žádné objednávky.<br>Klikni na "+ Nová objednávka"</div>';
+    return;
+  }
+
+  let html = '';
+  state.forEach(obj => {
+    const aktiv = obj.polozky.filter(p => !p.vycerpana);
+    const done = obj.polozky.filter(p => p.vycerpana);
+    const total = obj.polozky.reduce((s,p)=>s+p.ks*p.cenaKs,0);
+    const isOpen = openObjs.has(obj.id);
+    const showDone = showVycerpane[obj.id];
+
+    let aktivFiltered = aktiv;
+    let doneFiltered = done;
+    if (q) {
+      aktivFiltered = aktiv.filter(p => p.mat.toLowerCase().includes(q) || p.nazev.toLowerCase().includes(q));
+      doneFiltered = done.filter(p => p.mat.toLowerCase().includes(q) || p.nazev.toLowerCase().includes(q));
+    }
+    if (q && aktivFiltered.length + doneFiltered.length === 0) return;
+
+    html += `<div>
+      <div class="objednavka-header ${isOpen||q?'open':''}" onclick="toggleObj('${obj.id}')">
+        <div>
+          <div class="obj-num">📋 Obj. ${obj.num}</div>
+          <div class="obj-date">${obj.datum}</div>
+        </div>
+        <div class="obj-progress">${aktiv.length} aktivních · ${done.length} vyčerpaných</div>
+        <div class="obj-total">${total.toLocaleString('cs-CZ',{minimumFractionDigits:2})} EUR</div>
+        <button onclick="event.stopPropagation();openPM('${obj.id}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--accent);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.75rem;">+ Pol.</button>
+        <button onclick="event.stopPropagation();deleteObj('${obj.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;opacity:0.5;font-size:0.85rem;">🗑</button>
+        <div class="obj-arrow">▼</div>
+      </div>`;
+
+    if (isOpen || q) {
+      html += `<div class="objednavka-body open">
+        <div class="tabel-head">
+          <div></div><div>Materiál</div><div>Označení</div><div style="text-align:right">Množství</div><div style="text-align:right">Cena/KS</div><div style="text-align:right">Celkem EUR</div><div></div>
+        </div>`;
+
+      if (aktivFiltered.length === 0 && !q) {
+        html += `<div class="no-results">✅ Všechny položky vyčerpány</div>`;
+      }
+
+      aktivFiltered.forEach(p => {
+        const hi = q && (p.mat.toLowerCase().includes(q) || p.nazev.toLowerCase().includes(q));
+        html += `<div class="polozka ${hi?'highlight':''}">
+          <div class="col-check"><input type="checkbox" onchange="togglePolozka('${obj.id}','${p.id}',this.checked)"></div>
+          <div>
+            <div class="mat-num">${p.mat}</div>
+            <div style="font-size:0.7rem;color:var(--muted)">Pol. ${p.pol}${p.dodani?` · <span style="color:${dodaniColor(p.dodani)};font-weight:600">${p.dodani}</span>`:''}</div>
+          </div>
+          <div class="mat-nazev">${p.nazev}</div>
+          <div class="col-ks">${p.ks.toLocaleString('cs-CZ')} KS</div>
+          <div class="col-cena">${p.cenaKs.toFixed(2)}</div>
+          <div class="col-celkem">${(p.ks*p.cenaKs).toLocaleString('cs-CZ',{minimumFractionDigits:2})}</div>
+          <div class="col-del"><button onclick="deletePolozka('${obj.id}','${p.id}')" title="Smazat">✕</button></div>
+        </div>`;
+      });
+
+      if (done.length > 0) {
+        html += `<div class="vycerpane-toggle" onclick="toggleVycerpane('${obj.id}')">
+          ${showDone?'▲':'▼'} Vyčerpané položky (${done.length})
+        </div>`;
+        if (showDone) {
+          doneFiltered.forEach(p => {
+            html += `<div class="polozka vycerpana">
+              <div class="col-check"><input type="checkbox" onchange="togglePolozka('${obj.id}','${p.id}',this.checked)" checked></div>
+              <div><div class="mat-num">${p.mat}</div><div style="font-size:0.7rem;color:var(--muted)">Pol. ${p.pol}</div></div>
+              <div class="mat-nazev">${p.nazev}</div>
+              <div class="col-ks">${p.ks.toLocaleString('cs-CZ')} KS</div>
+              <div class="col-cena">${p.cenaKs.toFixed(2)}</div>
+              <div class="col-celkem">${(p.ks*p.cenaKs).toLocaleString('cs-CZ',{minimumFractionDigits:2})}</div>
+              <div class="col-del"><button onclick="deletePolozka('${obj.id}','${p.id}')">✕</button></div>
+            </div>`;
+          });
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  if (!html) html = `<div class="empty"><b>🔍</b>Nic nenalezeno pro "<b>${q}</b>"</div>`;
+  main.innerHTML = html;
+}
+
+function exportData() {
+  const now = new Date();
+  const stamp = now.toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kelvion_objednavky_backup_' + stamp + '.json';
+  a.click();
+  localStorage.setItem(SK + '_lastBackup', now.toISOString());
+  render();
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) { alert('Neplatný soubor zálohy.'); return; }
+      if (!confirm('Načíst zálohu? Aktuální data budou přepsána.')) return;
+      state = imported;
+      openObjs = new Set(state.map(o=>o.id));
+      save();
+      render();
+      alert('✅ Záloha načtena — ' + state.length + ' objednávek.');
+    } catch(err) {
+      alert('Chyba při čtení souboru: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function dodaniColor(dodani) {
+  if (!dodani) return 'var(--muted)';
+  const parts = dodani.split('.');
+  if (parts.length !== 3) return 'var(--muted)';
+  const d = new Date(parts[2], parts[1]-1, parts[0]);
+  const diff = Math.ceil((d - new Date()) / 86400000);
+  if (diff <= 3) return '#ff6b6b';
+  if (diff <= 7) return '#f7c948';
+  return '#00d4aa';
+}
+
+function toggleObj(id) {
+  if (openObjs.has(id)) openObjs.delete(id); else openObjs.add(id);
+  render();
+}
+function toggleVycerpane(id) {
+  showVycerpane[id] = !showVycerpane[id];
+  render();
+}
+function togglePolozka(objId, polId, checked) {
+  const obj = state.find(o=>o.id===objId);
+  const pol = obj.polozky.find(p=>p.id===polId);
+  pol.vycerpana = checked;
+  save(); render();
+}
+function deletePolozka(objId, polId) {
+  const obj = state.find(o=>o.id===objId);
+  obj.polozky = obj.polozky.filter(p=>p.id!==polId);
+  save(); render();
+}
+function deleteObj(id) {
+  if (!confirm('Smazat celou objednávku?')) return;
+  state = state.filter(o=>o.id!==id);
+  save(); render();
+}
+
+let polozkyForms = [];
+function openModal() {
+  polozkyForms = [{}];
+  renderPolozkyForm();
+  document.getElementById('mObjNum').value = '';
+  document.getElementById('mDatum').value = '';
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function addPolozkaForm() { polozkyForms.push({}); renderPolozkyForm(); }
+function renderPolozkyForm() {
+  document.getElementById('polozkyForm').innerHTML = polozkyForms.map((p,i)=>`
+    <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid var(--border)">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Položka ${i+1}</div>
+      <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;margin-bottom:8px">
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Pol.</label><input class="pf-pol" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="00010"></div>
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Číslo materiálu</label><input class="pf-mat" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="100304452"></div>
+      </div>
+      <div style="margin-bottom:8px"><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Označení</label><input class="pf-naz" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-size:0.82rem;outline:none" placeholder="Koleno 180° Cu..."></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Množství (KS)</label><input class="pf-ks" data-i="${i}" type="number" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="400"></div>
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Cena/KS (EUR)</label><input class="pf-cena" data-i="${i}" type="number" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="1.27"></div>
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Datum dodání</label><input class="pf-dodani" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-size:0.82rem;outline:none" placeholder="11.06.2026"></div>
+      </div>
+    </div>
+  `).join('');
+}
+function saveModal() {
+  const num = document.getElementById('mObjNum').value.trim();
+  const datum = document.getElementById('mDatum').value.trim();
+  if (!num) { alert('Zadej číslo objednávky'); return; }
+  const polozky = [];
+  document.querySelectorAll('.pf-mat').forEach((el,i) => {
+    const mat = el.value.trim();
+    if (!mat) return;
+    polozky.push({
+      id: uid(),
+      pol: document.querySelectorAll('.pf-pol')[i].value.trim() || `000${(i+1)*10}`,
+      mat,
+      nazev: document.querySelectorAll('.pf-naz')[i].value.trim(),
+      ks: parseInt(document.querySelectorAll('.pf-ks')[i].value)||0,
+      cenaKs: parseFloat(document.querySelectorAll('.pf-cena')[i].value)||0,
+      dodani: document.querySelectorAll('.pf-dodani')[i].value.trim(),
+      vycerpana: false
+    });
+  });
+  const obj = {id: uid(), num, datum, polozky};
+  state.unshift(obj);
+  openObjs.add(obj.id);
+  save(); closeModal(); render();
+}
+
+function openPM(objId) {
+  document.getElementById('pmObjId').value = objId;
+  ['pmMatNum','pmNazev','pmPol','pmKs','pmCenaKs','pmDodani'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('polozkaModalBg').classList.add('open');
+}
+function closePM() { document.getElementById('polozkaModalBg').classList.remove('open'); }
+function savePM() {
+  const objId = document.getElementById('pmObjId').value;
+  const obj = state.find(o=>o.id===objId);
+  const mat = document.getElementById('pmMatNum').value.trim();
+  if (!mat) { alert('Zadej číslo materiálu'); return; }
+  obj.polozky.push({
+    id: uid(),
+    pol: document.getElementById('pmPol').value.trim(),
+    mat,
+    nazev: document.getElementById('pmNazev').value.trim(),
+    ks: parseInt(document.getElementById('pmKs').value)||0,
+    cenaKs: parseFloat(document.getElementById('pmCenaKs').value)||0,
+    dodani: document.getElementById('pmDodani').value.trim(),
+    vycerpana: false
+  });
+  save(); closePM(); render();
+}
+
+render();
+</script>
+</body>
+</html>
