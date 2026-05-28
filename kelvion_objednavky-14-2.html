@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelvion Objednávky</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #4f9eff;
+    --accent2: #00d4aa;
+    --warn: #f7c948;
+    --done: #3a4060;
+    --done-text: #555a7a;
+    --text: #e8eaf6;
+    --muted: #6b7099;
+    --red: #ff6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; min-height: 100vh; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 1.1rem; color: var(--accent); letter-spacing: 2px; }
+  .logo span { color: var(--accent2); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .stats { font-size: 0.78rem; color: var(--muted); }
+  .stats b { color: var(--warn); }
+
+  .search-bar {
+    flex: 1;
+    max-width: 340px;
+    position: relative;
+  }
+  .search-bar input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    padding: 8px 14px 8px 38px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; }
+
+  .main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+  .objednavka-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .objednavka-header:hover { border-color: var(--accent); }
+  .objednavka-header.open { border-color: var(--accent); border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .obj-num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--accent); font-size: 0.95rem; }
+  .obj-date { font-size: 0.8rem; color: var(--muted); }
+  .obj-total { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 0.9rem; color: var(--warn); }
+  .obj-progress { font-size: 0.78rem; color: var(--muted); }
+  .obj-arrow { color: var(--muted); font-size: 0.8rem; transition: transform 0.2s; }
+  .objednavka-header.open .obj-arrow { transform: rotate(180deg); }
+
+  .objednavka-body {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .objednavka-body.open { display: block; }
+
+  .polozka {
+    display: grid;
+    grid-template-columns: 40px 140px 1fr 120px 80px 90px 90px 36px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .polozka:last-child { border-bottom: none; }
+  .polozka:hover { background: var(--surface2); }
+  .polozka.vycerpana { opacity: 0.45; }
+  .polozka.vycerpana .mat-num { text-decoration: line-through; color: var(--done-text); }
+  .polozka.highlight { background: rgba(79,158,255,0.08); }
+
+  .col-check { display: flex; align-items: center; justify-content: center; }
+  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent2); cursor: pointer; }
+
+  .mat-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 600; color: var(--accent2); }
+  .mat-nazev { font-size: 0.83rem; color: var(--text); line-height: 1.4; }
+  .col-ks { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; text-align: right; }
+  .col-cena { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--muted); text-align: right; }
+  .col-celkem { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--warn); text-align: right; }
+  .col-del button { background: none; border: none; cursor: pointer; color: var(--red); opacity: 0.4; font-size: 0.9rem; transition: opacity 0.2s; padding: 4px; }
+  .col-del button:hover { opacity: 1; }
+
+  .tabel-head {
+    display: grid;
+    grid-template-columns: 40px 140px 1fr 120px 80px 90px 90px 36px;
+    gap: 12px;
+    padding: 8px 18px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+
+  .vycerpane-toggle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 6px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-top: 1px solid var(--border);
+  }
+  .vycerpane-toggle:hover { color: var(--text); }
+
+  .btn-add {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-add:hover { background: #3a8ee6; }
+
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    width: 500px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h3 { font-size: 1rem; margin-bottom: 18px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
+  .form-row { margin-bottom: 12px; }
+  .form-row label { font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 4px; }
+  .form-row input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); padding: 8px 12px;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 0.88rem; outline: none;
+  }
+  .form-row input:focus { border-color: var(--accent); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 16px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; }
+  .btn-save { background: var(--accent2); color: #0f1117; border: none; border-radius: 8px; padding: 8px 20px; font-weight: 700; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 0.9rem; }
+  .empty b { display: block; font-size: 2rem; margin-bottom: 12px; }
+  .no-results { padding: 20px 18px; color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+  @media(max-width: 700px) {
+    .polozka, .tabel-head { grid-template-columns: 36px 110px 1fr 70px; }
+    .col-cena, .col-celkem, .col-del { display: none; } .col-tavba { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">KEL<span>VIO</span>N</div>
+  <div style="font-size:0.75rem;color:var(--muted)">Správa objednávek</div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Hledat číslo materiálu..." oninput="render()">
+  </div>
+  <div class="header-right">
+    <div class="stats" id="statsEl"></div>
+    <button class="btn-add" onclick="openDodaciList()" style="background:var(--accent2);color:#0f1117;font-weight:700;">📋 Dodací list</button>
+    <button class="btn-add" onclick="exportData()" style="background:var(--surface2);border:1px solid var(--border);color:var(--accent2);font-weight:600;">💾 Záloha</button>
+    <label class="btn-add" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-weight:400;">📂 Nahrát<input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>
+    <button class="btn-add" onclick="openModal()">+ Nová objednávka</button>
+  </div>
+</header>
+
+<div class="main" id="mainEl"></div>
+
+<!-- Modal nová objednávka -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3>📋 Nová objednávka</h3>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Číslo objednávky</label>
+        <input id="mObjNum" placeholder="4500929297">
+      </div>
+      <div class="form-row">
+        <label>Datum vystavení</label>
+        <input id="mDatum" placeholder="26.05.2026">
+      </div>
+    </div>
+    <div id="polozkyForm"></div>
+    <button onclick="addPolozkaForm()" style="background:none;border:1px dashed var(--border);color:var(--muted);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;margin-top:8px;width:100%">+ Přidat položku</button>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Zrušit</button>
+      <button class="btn-save" onclick="saveModal()">Uložit objednávku</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal dodací list -->
+<div class="modal-bg" id="dlModalBg">
+  <div class="modal" style="width:600px;max-width:98vw;">
+    <h3>📋 Dodací list</h3>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="form-row"><label>Číslo dodacího listu</label><input id="dlCislo" placeholder="CZ 26/26"></div>
+      <div class="form-row"><label>Datum</label><input id="dlDatum" placeholder="27.05.2026"></div>
+    </div>
+    <div id="dlPolozkyPreview" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:12px;font-size:0.82rem;max-height:300px;overflow-y:auto;"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeDL()">Zrušit</button>
+      <button class="btn-save" onclick="generateDL()">📥 Generovat PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Injektuj dodaci list funkce za existující script
+</script>
+<div class="modal-bg" id="polozkaModalBg">
+  <div class="modal">
+    <h3>➕ Přidat položku</h3>
+    <input type="hidden" id="pmObjId">
+    <div class="form-row"><label>Číslo materiálu</label><input id="pmMatNum" placeholder="100304452"></div>
+    <div class="form-row"><label>Označení</label><input id="pmNazev" placeholder="Koleno 180° Cu 15x0.75-100D58"></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Pol.</label><input id="pmPol" placeholder="00010"></div>
+      <div class="form-row"><label>Množství (KS)</label><input id="pmKs" type="number" placeholder="400"></div>
+      <div class="form-row"><label>Cena/KS (EUR)</label><input id="pmCenaKs" type="number" step="0.01" placeholder="1.27"></div>
+      <div class="form-row"><label>Datum dodání</label><input id="pmDodani" placeholder="11.06.2026"></div>
+      <div class="form-row" style="grid-column:1/-1"><label>Tavba</label><input id="pmTavba" placeholder="např. 3055595501"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closePM()">Zrušit</button>
+      <button class="btn-save" onclick="savePM()">Přidat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SK = 'kelvion_objednavky_v1';
+let state = JSON.parse(localStorage.getItem(SK) || '[]');
+
+if (state.length === 0) {
+  state = [
+    {
+      id: 'obj1', num: '4500929297', datum: '26.05.2026',
+      polozky: [
+        {id:'p1', pol:'00010', mat:'100304452', nazev:'Koleno 180° Cu 15x0.75-100D58', ks:400, cenaKs:1.27, dodani:'11.06.2026', vycerpana:false},
+        {id:'p2', pol:'00020', mat:'100305223', nazev:'Trubka Cu 15x0.75x60 C2/15', ks:500, cenaKs:0.59, dodani:'16.06.2026', vycerpana:false},
+        {id:'p3', pol:'00030', mat:'100304440', nazev:'Koleno 180° Cu 12x1.0-66E40', ks:500, cenaKs:1.26, dodani:'18.06.2026', vycerpana:false},
+        {id:'p4', pol:'00040', mat:'100654405', nazev:'Koleno Cu 180° 12x1.0-50E51', ks:1500, cenaKs:1.42, dodani:'18.06.2026', vycerpana:false},
+        {id:'p5', pol:'00050', mat:'100305236', nazev:'Trubka Cu 12x1.0x52 D2/22.5', ks:400, cenaKs:0.54, dodani:'25.06.2026', vycerpana:false},
+        {id:'p6', pol:'00060', mat:'100304504', nazev:'Koleno 180° SS304 15x0.6-50H51', ks:300, cenaKs:0.99, dodani:'25.06.2026', vycerpana:false},
+        {id:'p7', pol:'00070', mat:'100888979', nazev:'Ht50 SS304 12x0.5x60 T1', ks:100, cenaKs:10.90, dodani:'25.06.2026', vycerpana:false},
+      ]
+    },
+    {
+      id: 'obj2', num: '4500926979', datum: '18.05.2026',
+      polozky: [
+        {id:'p8', pol:'00010', mat:'100305240', nazev:'Trubka SS304 15x0.6x60 S1', ks:500, cenaKs:0.43, dodani:'25.06.2026', vycerpana:false},
+      ]
+    }
+  ];
+  save();
+}
+
+function save() { localStorage.setItem(SK, JSON.stringify(state)); }
+function uid() { return Math.random().toString(36).slice(2); }
+
+let openObjs = new Set(['obj1','obj2']);
+let showVycerpane = {};
+
+function render() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const main = document.getElementById('mainEl');
+
+  let totalItems = 0, doneItems = 0;
+  state.forEach(o => o.polozky.forEach(p => { totalItems++; if(p.vycerpana) doneItems++; }));
+  document.getElementById('statsEl').innerHTML = `Aktivních: <b>${totalItems - doneItems}</b> / ${totalItems}`;
+
+  if (state.length === 0) {
+    main.innerHTML = '<div class="empty"><b>📋</b>Zatím žádné objednávky.<br>Klikni na "+ Nová objednávka"</div>';
+    return;
+  }
+
+  let html = '';
+  state.forEach(obj => {
+    const aktiv = obj.polozky.filter(p => !p.vycerpana);
+    const done = obj.polozky.filter(p => p.vycerpana);
+    const total = obj.polozky.reduce((s,p)=>s+p.ks*p.cenaKs,0);
+    const isOpen = openObjs.has(obj.id);
+    const showDone = showVycerpane[obj.id];
+
+    let aktivFiltered = aktiv;
+    let doneFiltered = done;
+    if (q) {
+      aktivFiltered = aktiv.filter(p => p.mat.toLowerCase().includes(q) || p.nazev.toLowerCase().includes(q));
+      doneFiltered = done.filter(p => p.mat.toLowerCase().includes(q) || p.nazev.toLowerCase().includes(q));
+    }
+    if (q && aktivFiltered.length + doneFiltered.length === 0) return;
+
+    html += `<div>
+      <div class="objednavka-header ${isOpen||q?'open':''}" onclick="toggleObj('${obj.id}')">
+        <div>
+          <div class="obj-num">📋 Obj. ${obj.num}</div>
+          <div class="obj-date">${obj.datum}</div>
+        </div>
+        <div class="obj-progress">${aktiv.length} aktivních · ${done.length} vyčerpaných</div>
+        <div class="obj-total">${total.toLocaleString('cs-CZ',{minimumFractionDigits:2})} EUR</div>
+        <button onclick="event.stopPropagation();openPM('${obj.id}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--accent);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.75rem;">+ Pol.</button>
+        <button onclick="event.stopPropagation();deleteObj('${obj.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;opacity:0.5;font-size:0.85rem;">🗑</button>
+        <div class="obj-arrow">▼</div>
+      </div>`;
+
+    if (isOpen || q) {
+      html += `<div class="objednavka-body open">
+        <div class="tabel-head">
+          <div></div><div>Materiál</div><div>Označení</div><div style="color:var(--warn)">Tavba</div><div style="text-align:right">Množství</div><div style="text-align:right">Cena/KS</div><div style="text-align:right">Celkem EUR</div><div></div>
+        </div>`;
+
+      if (aktivFiltered.length === 0 && !q) {
+        html += `<div class="no-results">✅ Všechny položky vyčerpány</div>`;
+      }
+
+      aktivFiltered.forEach(p => {
+        const hi = q && (p.mat.toLowerCase().includes(q) || p.nazev.toLowerCase().includes(q));
+        html += `<div class="polozka ${hi?'highlight':''}">
+          <div class="col-check">
+            <input type="checkbox" title="Vyčerpáno" onchange="togglePolozka('${obj.id}','${p.id}',this.checked)">
+            <input type="checkbox" title="Přidat do dodacího listu" style="accent-color:var(--warn);margin-left:4px" onchange="toggleDL('${obj.id}','${p.id}',this.checked)" ${p.vDL?'checked':''}>
+          </div>
+          <div>
+            <div class="mat-num">${p.mat}</div>
+            <div style="font-size:0.7rem;color:var(--muted)">Pol. ${p.pol}${p.dodani?` · <span style="color:${dodaniColor(p.dodani)};font-weight:600">${p.dodani}</span>`:''}${p.tavba?` · <span style="color:var(--warn)">Tavba: ${p.tavba}</span>`:''}</div>
+          </div>
+          <div class="mat-nazev">${p.nazev}</div>
+          <input type="text" value="${p.tavba||''}" placeholder="Tavba..." onchange="saveTavba('${obj.id}','${p.id}',this.value)" style="width:110px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--warn);font-family:'IBM Plex Mono',monospace;font-size:0.78rem;padding:3px 6px;outline:none" onfocus="this.style.borderColor='var(--warn)'" onblur="this.style.borderColor='var(--border)'">
+          <div class="col-ks">${p.ks.toLocaleString('cs-CZ')} KS</div>
+          <div class="col-cena">${p.cenaKs.toFixed(2)}</div>
+          <div class="col-celkem">${(p.ks*p.cenaKs).toLocaleString('cs-CZ',{minimumFractionDigits:2})}</div>
+          <div class="col-del"><button onclick="deletePolozka('${obj.id}','${p.id}')" title="Smazat">✕</button></div>
+        </div>`;
+      });
+
+      if (done.length > 0) {
+        html += `<div class="vycerpane-toggle" onclick="toggleVycerpane('${obj.id}')">
+          ${showDone?'▲':'▼'} Vyčerpané položky (${done.length})
+        </div>`;
+        if (showDone) {
+          doneFiltered.forEach(p => {
+            html += `<div class="polozka vycerpana">
+              <div class="col-check"><input type="checkbox" onchange="togglePolozka('${obj.id}','${p.id}',this.checked)" checked></div>
+              <div><div class="mat-num">${p.mat}</div><div style="font-size:0.7rem;color:var(--muted)">Pol. ${p.pol}</div></div>
+              <div class="mat-nazev">${p.nazev}</div>
+              <div style="font-size:0.8rem;color:var(--muted);font-family:'IBM Plex Mono',monospace">${p.tavba||'—'}</div>
+              <div class="col-ks">${p.ks.toLocaleString('cs-CZ')} KS</div>
+              <div class="col-cena">${p.cenaKs.toFixed(2)}</div>
+              <div class="col-celkem">${(p.ks*p.cenaKs).toLocaleString('cs-CZ',{minimumFractionDigits:2})}</div>
+              <div class="col-del"><button onclick="deletePolozka('${obj.id}','${p.id}')">✕</button></div>
+            </div>`;
+          });
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  if (!html) html = `<div class="empty"><b>🔍</b>Nic nenalezeno pro "<b>${q}</b>"</div>`;
+  main.innerHTML = html;
+}
+
+function exportData() {
+  const now = new Date();
+  const stamp = now.toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kelvion_objednavky_backup_' + stamp + '.json';
+  a.click();
+  localStorage.setItem(SK + '_lastBackup', now.toISOString());
+  render();
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) { alert('Neplatný soubor zálohy.'); return; }
+      if (!confirm('Načíst zálohu? Aktuální data budou přepsána.')) return;
+      state = imported;
+      openObjs = new Set(state.map(o=>o.id));
+      save();
+      render();
+      alert('✅ Záloha načtena — ' + state.length + ' objednávek.');
+    } catch(err) {
+      alert('Chyba při čtení souboru: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function dodaniColor(dodani) {
+  if (!dodani) return 'var(--muted)';
+  const parts = dodani.split('.');
+  if (parts.length !== 3) return 'var(--muted)';
+  const d = new Date(parts[2], parts[1]-1, parts[0]);
+  const diff = Math.ceil((d - new Date()) / 86400000);
+  if (diff <= 3) return '#ff6b6b';
+  if (diff <= 7) return '#f7c948';
+  return '#00d4aa';
+}
+
+function saveTavba(objId, polId, val) {
+  var obj = state.find(function(o){return o.id===objId;});
+  var pol = obj.polozky.find(function(p){return p.id===polId;});
+  pol.tavba = val.trim();
+  save();
+}
+
+
+function toggleDL(objId, polId, checked) {
+  const obj = state.find(o=>o.id===objId);
+  const pol = obj.polozky.find(p=>p.id===polId);
+  pol.vDL = checked;
+  save();
+}
+
+function openDodaciList() {
+  const selected = [];
+  state.forEach(obj => {
+    obj.polozky.filter(p=>p.vDL).forEach(p => {
+      selected.push({...p, objNum: obj.num});
+    });
+  });
+  const today = new Date();
+  const dd = String(today.getDate()).padStart(2,'0');
+  const mm2 = String(today.getMonth()+1).padStart(2,'0');
+  document.getElementById('dlDatum').value = `${dd}.${mm2}.${today.getFullYear()}`;
+  // Auto-increment DL number
+  var lastDL = parseInt(localStorage.getItem('kelvion_last_dl_num') || '0');
+  var nextDL = lastDL + 1;
+  var year = String(today.getFullYear()).slice(-2);
+  document.getElementById('dlCislo').value = nextDL + '/' + year;
+  const preview = document.getElementById('dlPolozkyPreview');
+  if (selected.length === 0) {
+    preview.innerHTML = '<div style="color:var(--warn);text-align:center;padding:20px">⚠️ Žádné položky nejsou označeny žlutým checkboxem.<br>Označ položky které chceš přidat do dodacího listu.</div>';
+  } else {
+    preview.innerHTML = `<div style="color:var(--muted);margin-bottom:8px;font-size:0.75rem">Vybrané položky (${selected.length}):</div>${selected.map(p=>`<div style="display:grid;grid-template-columns:28px 1fr 60px;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:0.75rem">${p.pol}</div><div><div style="color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:0.78rem">${p.mat}</div><div>${p.nazev}</div></div><div style="text-align:right;font-weight:700">${p.ks} KS</div></div>`).join('')}`;
+  }
+  document.getElementById('dlModalBg').classList.add('open');
+}
+
+function closeDL() { document.getElementById('dlModalBg').classList.remove('open'); }
+
+function generateDL() {
+  const cislo = document.getElementById('dlCislo').value.trim() || '1/26';
+  const datum = document.getElementById('dlDatum').value.trim();
+  const selected = [];
+  state.forEach(obj => {
+    obj.polozky.filter(p=>p.vDL).forEach(p => { selected.push({...p, objNum: obj.num, objDatum: obj.datum}); });
+  });
+  if (selected.length === 0) { alert('Nejsou vybrány žádné položky!'); return; }
+
+  const html = `<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Dodací list č. ${cislo}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 9.5pt; color: #000; padding: 15mm 18mm; }
+  .title-row { display: flex; justify-content: flex-end; margin-bottom: 2mm; }
+  .faktura-row { display: flex; justify-content: flex-end; margin-bottom: 6mm; }
+  .dl-title { font-size: 13pt; font-weight: bold; border: 2px solid #000; padding: 3mm 8mm; }
+  .dl-cislo { font-size: 13pt; font-weight: bold; margin-left: 4mm; border: 2px solid #000; padding: 3mm 8mm; min-width: 30mm; text-align: center; }
+  .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; margin-bottom: 6mm; }
+  .party-label { font-weight: bold; font-size: 9pt; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 1mm; margin-bottom: 2mm; }
+  .party-name { font-weight: bold; font-size: 10pt; }
+  .party-info { font-size: 9pt; line-height: 1.5; }
+  .datum-row { margin-bottom: 5mm; font-size: 9pt; }
+  .datum-row span { font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 6mm; }
+  table th { background: #fff; border: 1px solid #000; padding: 2mm 3mm; font-size: 8.5pt; font-weight: bold; text-align: center; }
+  table td { border: 1px solid #000; padding: 2mm 3mm; font-size: 9pt; vertical-align: top; }
+  .col-poz { width: 12mm; text-align: center; }
+  .col-mat { width: 32mm; }
+  .col-nazev { }
+  .col-mnoz { width: 20mm; text-align: center; }
+  .col-mj { width: 12mm; text-align: center; }
+  .obj-row td { border: none; border-top: 1px dashed #aaa; font-size: 8pt; color: #444; padding: 1mm 3mm; }
+  .footer { margin-top: 20mm; display: grid; grid-template-columns: 1fr 1fr; gap: 30mm; }
+  .sign-box { border-top: 1px solid #000; padding-top: 2mm; font-size: 8.5pt; text-align: center; }
+  @media print { 
+    body { padding: 12mm 15mm; }
+    @page { size: A4 portrait; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="title-row" style="display:flex;justify-content:space-between;align-items:center;">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBARXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAABoKADAAQAAAABAAAA/gAAAAD/4gJASUNDX1BST0ZJTEUAAQEAAAIwQURCRQIQAABtbnRyUkdCIFhZWiAH0AAIAAsAEwAzADthY3NwQVBQTAAAAABub25lAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLUFEQkUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApjcHJ0AAAA/AAAADJkZXNjAAABMAAAAGt3dHB0AAABnAAAABRia3B0AAABsAAAABRyVFJDAAABxAAAAA5nVFJDAAAB1AAAAA5iVFJDAAAB5AAAAA5yWFlaAAAB9AAAABRnWFlaAAACCAAAABRiWFlaAAACHAAAABR0ZXh0AAAAAENvcHlyaWdodCAyMDAwIEFkb2JlIFN5c3RlbXMgSW5jb3Jwb3JhdGVkAAAAZGVzYwAAAAAAAAARQWRvYmUgUkdCICgxOTk4KQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWFlaIAAAAAAAAPNRAAEAAAABFsxYWVogAAAAAAAAAAAAAAAAAAAAAGN1cnYAAAAAAAAAAQIzAABjdXJ2AAAAAAAAAAECMwAAY3VydgAAAAAAAAABAjMAAFhZWiAAAAAAAACcGAAAT6UAAAT8WFlaIAAAAAAAADSNAACgLAAAD5VYWVogAAAAAAAAJjEAABAvAAC+nP/AABEIAP4BoAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2wBDAAICAgICAgMCAgMFAwMDBQYFBQUFBggGBgYGBggKCAgICAgICgoKCgoKCgoMDAwMDAwODg4ODg8PDw8PDw8PDw//2wBDAQICAgQEBAcEBAcQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/3QAEABr/2gAMAwEAAhEDEQA/AP38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/0P38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/0f38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKo6nqenaLp1zq+sXUVjY2cbTTzzuscUUaDLO7sQqqAMkk4Ar4a8Xf8FAvhEdP1DT/g1a6l8RvEwJt9PtdO067+y3N2zBFU3LRKmwE5ZlyNoO3PFAWPvOivhHT/AIM/tq+K7SPXfGPx6h8JajdgO+k6N4fs7mzs93PlLPcN5su3oWbPsSOavf8ADO37Vf8A0c5f/wDhM6b/APF0DPuCivh//hnb9qv/AKOcv/8AwmdN/wDi6qX3wT/bR8OWsms+Ev2gYvEmo2w3x6brHh2zgs7ojnypJoGMsYbpuQZ+nWgD7ror4H8I/wDBQD4W2unWel/HSz1H4deLIXa01O2u9Pu3soLuNzGdlykbIY3I3KxOADyTjJ+59I1f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" style="height:22mm;width:auto;object-fit:contain;" alt="Holánek logo">
+    <div>
+      <div style="display:flex;align-items:center;margin-bottom:3mm;">
+        <div class="dl-title">DODACÍ LIST Č.</div>
+        <div class="dl-cislo">${cislo}</div>
+      </div>
+      <div class="faktura-row" style="display:flex;align-items:center;">
+        <div class="dl-title">FAKTURA Č.</div>
+        <div class="dl-cislo" style="min-width:40mm;">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div>
+      <div class="party-label">Dodavatel:</div>
+      <div class="party-info">
+        <div class="party-name">Zámečnictví Holánek, s. r. o.</div>
+        Okružní 142<br>
+        Loučeň, 289 37<br>
+        IČ: 05703361
+      </div>
+    </div>
+    <div>
+      <div class="party-label">Odběratel:</div>
+      <div class="party-info">
+        <div class="party-name">Kelvion, s. r. o.</div>
+        Kostomlátecká 180<br>
+        Nymburk, 288 02<br>
+        IČ: 04832981
+      </div>
+    </div>
+  </div>
+
+  <div class="datum-row">Datum: <span>${datum}</span></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="col-poz">Poz.</th>
+        <th class="col-mat">Číslo výrobku</th>
+        <th class="col-nazev">Název výrobku</th>
+        <th class="col-mnoz">Množství</th>
+        <th class="col-mj">MJ</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      ${selected.map((p, i) => `
+        <tr>
+          <td class="col-poz">${p.pol || (i+1)*10}</td>
+          <td class="col-mat" style="font-family:'Courier New',monospace;font-size:8.5pt">${p.mat}</td>
+          <td class="col-nazev">${p.nazev}${p.tavba ? '<br><span style="font-size:8pt;color:#555">Tavba: ' + p.tavba + '</span>' : ''}</td>
+          <td class="col-mnoz" style="font-weight:bold">${p.ks.toLocaleString('cs-CZ')}</td>
+          <td class="col-mj">ks</td>
+
+        </tr>
+        <tr class="obj-row">
+          <td colspan="6">K objednávce č.: ${p.objNum}${p.dodani ? ' &nbsp;|&nbsp; Datum dodání: ' + p.dodani : ''}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <div class="sign-box">Vystavil / Dodavatel</div>
+    <div class="sign-box">Převzal / Odběratel</div>
+  </div>
+
+</body>
+</html>`;
+
+  // Save last DL number
+  var dlNum = parseInt(cislo.split('/')[0]) || 0;
+  localStorage.setItem('kelvion_last_dl_num', dlNum);
+  const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Dodaci_list_${cislo.replace(/\//g,'-')}_${datum.replace(/\./g,'-')}.html`;
+  a.click();
+  closeDL();
+}
+
+function toggleObj(id) {
+  if (openObjs.has(id)) openObjs.delete(id); else openObjs.add(id);
+  render();
+}
+function toggleVycerpane(id) {
+  showVycerpane[id] = !showVycerpane[id];
+  render();
+}
+function togglePolozka(objId, polId, checked) {
+  const obj = state.find(o=>o.id===objId);
+  const pol = obj.polozky.find(p=>p.id===polId);
+  pol.vycerpana = checked;
+  save(); render();
+}
+function deletePolozka(objId, polId) {
+  const obj = state.find(o=>o.id===objId);
+  obj.polozky = obj.polozky.filter(p=>p.id!==polId);
+  save(); render();
+}
+function deleteObj(id) {
+  if (!confirm('Smazat celou objednávku?')) return;
+  state = state.filter(o=>o.id!==id);
+  save(); render();
+}
+
+let polozkyForms = [];
+function openModal() {
+  polozkyForms = [{}];
+  renderPolozkyForm();
+  document.getElementById('mObjNum').value = '';
+  document.getElementById('mDatum').value = '';
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
+function addPolozkaForm() { polozkyForms.push({}); renderPolozkyForm(); }
+function renderPolozkyForm() {
+  document.getElementById('polozkyForm').innerHTML = polozkyForms.map((p,i)=>`
+    <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:8px;border:1px solid var(--border)">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Položka ${i+1}</div>
+      <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;margin-bottom:8px">
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Pol.</label><input class="pf-pol" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="00010"></div>
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Číslo materiálu</label><input class="pf-mat" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="100304452"></div>
+      </div>
+      <div style="margin-bottom:8px"><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Označení</label><input class="pf-naz" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-size:0.82rem;outline:none" placeholder="Koleno 180° Cu..."></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Množství (KS)</label><input class="pf-ks" data-i="${i}" type="number" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="400"></div>
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Cena/KS (EUR)</label><input class="pf-cena" data-i="${i}" type="number" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;outline:none" placeholder="1.27"></div>
+        <div><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Datum dodání</label><input class="pf-dodani" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-size:0.82rem;outline:none" placeholder="11.06.2026"></div>
+      </div>
+      <div style="margin-top:8px"><label style="font-size:0.72rem;color:var(--muted);display:block;margin-bottom:3px">Tavba</label><input class="pf-tavba" data-i="${i}" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:6px 8px;font-size:0.82rem;outline:none" placeholder="např. 3055595501"></div>
+    </div>
+  `).join('');
+}
+function saveModal() {
+  const num = document.getElementById('mObjNum').value.trim();
+  const datum = document.getElementById('mDatum').value.trim();
+  if (!num) { alert('Zadej číslo objednávky'); return; }
+  const polozky = [];
+  document.querySelectorAll('.pf-mat').forEach((el,i) => {
+    const mat = el.value.trim();
+    if (!mat) return;
+    polozky.push({
+      id: uid(),
+      pol: document.querySelectorAll('.pf-pol')[i].value.trim() || `000${(i+1)*10}`,
+      mat,
+      nazev: document.querySelectorAll('.pf-naz')[i].value.trim(),
+      ks: parseInt(document.querySelectorAll('.pf-ks')[i].value)||0,
+      cenaKs: parseFloat(document.querySelectorAll('.pf-cena')[i].value)||0,
+      dodani: document.querySelectorAll('.pf-dodani')[i].value.trim(),
+      tavba: (document.querySelectorAll('.pf-tavba')[i] || {}).value || '',
+      vycerpana: false
+    });
+  });
+  const obj = {id: uid(), num, datum, polozky};
+  state.unshift(obj);
+  openObjs.add(obj.id);
+  save(); closeModal(); render();
+}
+
+function openPM(objId) {
+  document.getElementById('pmObjId').value = objId;
+  ['pmMatNum','pmNazev','pmPol','pmKs','pmCenaKs','pmDodani','pmTavba'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('polozkaModalBg').classList.add('open');
+}
+function closePM() { document.getElementById('polozkaModalBg').classList.remove('open'); }
+function savePM() {
+  const objId = document.getElementById('pmObjId').value;
+  const obj = state.find(o=>o.id===objId);
+  const mat = document.getElementById('pmMatNum').value.trim();
+  if (!mat) { alert('Zadej číslo materiálu'); return; }
+  obj.polozky.push({
+    id: uid(),
+    pol: document.getElementById('pmPol').value.trim(),
+    mat,
+    nazev: document.getElementById('pmNazev').value.trim(),
+    ks: parseInt(document.getElementById('pmKs').value)||0,
+    cenaKs: parseFloat(document.getElementById('pmCenaKs').value)||0,
+    dodani: document.getElementById('pmDodani').value.trim(),
+    tavba: document.getElementById('pmTavba').value.trim(),
+    vycerpana: false
+  });
+  save(); closePM(); render();
+}
+
+render();
+</script>
+</body>
+</html>
